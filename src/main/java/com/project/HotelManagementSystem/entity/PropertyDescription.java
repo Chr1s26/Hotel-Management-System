@@ -4,15 +4,14 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
 
-@Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "reviews")
-public class Review {
+@Data
+@Table(name = "propertyDescriptions")
+public class PropertyDescription {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,16 +21,14 @@ public class Review {
     private String description;
 
     @Column
-    private double rating;
+    private LocalDate openingDate;
 
     @Column
-    private LocalDate reviewDate;
+    private LocalDate renovationDate;
 
-    @ManyToOne
-    @JoinColumn(name = "hotel_id")
+    @Column
+    private int numberOfRooms;
+
+    @OneToOne(mappedBy = "propertyDescription")
     private Hotel hotel;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
 }

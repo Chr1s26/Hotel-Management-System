@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.entity;
 
+import com.project.HotelManagementSystem.entity.constants.CurrencyType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,27 +12,29 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "reviews")
-public class Review {
+@Table(name = "cartItems")
+public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
-    private String description;
+    private LocalDate checkInDate;
 
     @Column
-    private double rating;
+    private LocalDate checkOutDate;
 
     @Column
-    private LocalDate reviewDate;
+    private int quantity;
+
+    @Column
+    private double price;
+
+    @Column(name = "currency_type")
+    private CurrencyType currencyType;
 
     @ManyToOne
-    @JoinColumn(name = "hotel_id")
-    private Hotel hotel;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 }

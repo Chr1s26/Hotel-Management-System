@@ -5,35 +5,26 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Data
-@Table(name = "addresses")
-public class Address {
+@Table(name = "cities")
+public class City {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
-    private double latitude;
+    private String name;
 
-    @Column
-    private double longitude;
-
-    @Column
-    private String road;
-
-    @OneToOne(mappedBy = "address")
-    private Hotel hotel;
+    @OneToMany(mappedBy = "city")
+    private List<Address> addresses;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "city_id")
-    private City city;
-
-    @Column
-    private String zipCode;
-
+    @JoinColumn(name = "region_id")
+    private Region region;
 }

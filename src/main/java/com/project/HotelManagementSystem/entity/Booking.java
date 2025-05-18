@@ -1,12 +1,13 @@
 package com.project.HotelManagementSystem.entity;
 
+import com.project.HotelManagementSystem.entity.constants.BookingStatus;
+import com.project.HotelManagementSystem.entity.constants.CurrencyType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,27 +15,27 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "booking")
+@Table(name = "bookings")
 public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column
-    private LocalDate bookingDate;
+    private LocalDateTime bookingDate;
 
     @Column
-    private Date checkInDate;
+    private LocalDate checkInDate;
 
     @Column
-    private Date checkOutDate;
+    private LocalDate checkOutDate;
 
     @Column
     private String description;
 
-    @Column
-    private String status;
+    @Column(name = "booking_status")
+    private BookingStatus bookingStatus;
 //    confirm cancel complete onprogess
 
     @Column
@@ -45,6 +46,18 @@ public class Booking {
 
     @Column
     private boolean isPaid;
+
+    @Column
+    private double amount;
+
+    @Column
+    private double tax;
+
+    @Column
+    private double total;
+
+    @Column(name = "currency_type")
+    private CurrencyType currencyType;
 
     @ManyToOne
     @JoinColumn(name = "hotel_id")
@@ -59,4 +72,7 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToOne(mappedBy = "booking")
+    private Payment payment;
 }

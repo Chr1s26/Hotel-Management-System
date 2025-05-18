@@ -6,7 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -17,23 +19,21 @@ public class Amenities {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column
-    private boolean isWifiAvailable;
+    private String name;
 
     @Column
-    private boolean breakfast;
+    private String description;
 
-    @Column
-    private boolean spa;
+    @ManyToMany(mappedBy = "amenities")
+    private Set<Room> rooms = new HashSet<>();
 
-    @Column
-    private boolean cleaningService;
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Amenities parent;
 
-    @Column
-    private boolean laundryService;
-
-    @OneToMany(mappedBy = "amenities")
-    private List<Room> room = new ArrayList<>();
+    @OneToMany(mappedBy = "parent")
+    private Set<Amenities> children = new HashSet<>();
 }

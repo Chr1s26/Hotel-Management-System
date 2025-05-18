@@ -5,29 +5,29 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "room_type")
-public class RoomType {
+@Table(name = "policies")
+public class Policy {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column
-    private int type;
-
-    @Column
-    private int size;
+    private String title;
 
     @Column
     private String description;
 
-    @OneToMany(mappedBy = "roomType")
-    private List<Room> rooms = new ArrayList<>();
+    @Column
+    private String applicableTo;
+
+    @ManyToMany(mappedBy = "policies")
+    private Set<Hotel> hotels = new HashSet<>();
 }

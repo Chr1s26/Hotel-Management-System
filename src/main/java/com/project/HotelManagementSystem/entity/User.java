@@ -1,10 +1,14 @@
 package com.project.HotelManagementSystem.entity;
 
+import com.project.HotelManagementSystem.entity.constants.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,13 +18,12 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@SuperBuilder
-public abstract class User {
+@Table(name = "users")
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @Column
     private String name;
@@ -34,8 +37,20 @@ public abstract class User {
     @Column
     private String phone;
 
+    @Column(name = "user_role")
+    private UserRole userRole;
+
     @Column
-    private String role;
+    private LocalDate dateOfBirth;
+
+    @Column
+    private String nationality;
+
+    @Column
+    private int point;
+
+    @Column
+    private LocalDateTime confirmedAt;
 
     @OneToMany(mappedBy = "user")
     private List<Payment> payments = new ArrayList<>();
@@ -44,12 +59,18 @@ public abstract class User {
     private List<Invoice> invoices = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private List<Review>  reviews = new ArrayList<>();
+    private List<Review> reviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private List<Booking>  bookings = new ArrayList<>();
+    private List<Cart> carts = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "user")
-    private Set<Hotel> hotels = new HashSet<>();
+    @OneToMany(mappedBy = "user")
+    private List<Booking> bookings = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(name = "user_promotion",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "promotion_id"))
+    private Set<Promotion> promotions = new HashSet<>();
 
 }

@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.entity;
 
+import com.project.HotelManagementSystem.entity.constants.HotelType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,12 +15,12 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "hotel")
+@Table(name = "hotels")
 public class Hotel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column
     private String name;
@@ -34,11 +35,24 @@ public class Hotel {
     private String description;
 
     @Column
-    private int rating;
+    private double rating;
+
+    @Column(name = "hotel_type")
+    private HotelType hotelType;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private Address address;
+
+    @OneToOne
+    @JoinColumn(name = "propertyDescription_id")
+    private PropertyDescription propertyDescription;
+
+    @ManyToMany
+    @JoinTable(name = "hotel_policy",
+    joinColumns = @JoinColumn(name = "hotel_id"),
+    inverseJoinColumns = @JoinColumn(name = "policy_id"))
+    private Set<Policy> policies = new HashSet<>();
 
     @OneToMany(mappedBy = "hotel" ,cascade = CascadeType.ALL)
     private List<Room> rooms = new ArrayList<>();
@@ -49,10 +63,8 @@ public class Hotel {
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
     private List<Review> reviews = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(name = "user_hotel",
-    joinColumns = @JoinColumn(name = "hotel_id"),
-    inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> user = new HashSet<>();
+    @OneToMany(mappedBy = "hotel",cascade = CascadeType.ALL)
+    private List<Invoice> invoices = new ArrayList<>();
+
 
 }
