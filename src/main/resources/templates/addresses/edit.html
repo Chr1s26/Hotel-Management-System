@@ -28,7 +28,7 @@
         <input type="text" th:field="*{zipCode}" class="form-control"/>
         <div class="text-danger" th:if="${#fields.hasErrors('zipCode')}" th:errors="*{zipCode}"></div>
     </div>
-    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="submit" class="btn btn-primary">Update Address</button>
     <a class="btn btn-secondary" th:href="@{/addresses}">Cancel</a>
 </form>
 </body>

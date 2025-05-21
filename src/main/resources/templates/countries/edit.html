@@ -13,7 +13,7 @@
         <input type="text" th:field="*{name}" class="form-control"/>
         <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
     </div>
-    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="submit" class="btn btn-primary">Update Country</button>
     <a class="btn btn-secondary" th:href="@{/countries}">Cancel</a>
 </form>
 </body>

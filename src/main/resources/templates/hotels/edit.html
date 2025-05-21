@@ -33,7 +33,7 @@
         <input type="text" th:field="*{rating}" class="form-control"/>
         <div class="text-danger" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></div>
     </div>
-    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="submit" class="btn btn-primary">Update Hotel</button>
     <a class="btn btn-secondary" th:href="@{/hotels}">Cancel</a>
 </form>
 </body>
