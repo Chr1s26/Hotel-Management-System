@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Amenities List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="container mt-4">
+<h2>Amenities</h2>
+<a class="btn btn-primary mb-3" th:href="@{/amenities/new}">Add Amenities</a>
+<table class="table table-bordered">]
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="am : ${amenities}">
+            <td th:text="${am.id}"></td>
+            <td th:text="${am.name}"></td>
+            <td th:text="${am.description}"></td>
+            <td>
+                <a class="btn btn-sm btn-warning" th:href="@{'/amenities/edit/' + ${am.id}}">Edit</a>
+                <a class="btn btn-sm btn-danger" th:href="@{'/amenities/delete/' + ${am.id}}">Delete</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</body>
+</html>

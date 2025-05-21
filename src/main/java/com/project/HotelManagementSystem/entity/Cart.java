@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.entity;
 
+import com.project.HotelManagementSystem.converter.CartStatusConverter;
 import com.project.HotelManagementSystem.entity.constants.CartStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ public class Cart {
     private Long id;
 
     @Column(name = "cart_status")
+    @Convert(converter = CartStatusConverter.class)
     private CartStatus cartStatus;
 
     @ManyToOne

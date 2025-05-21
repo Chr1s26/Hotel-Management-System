@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-@Getter
-public enum RoomType {
+public enum RoomType implements BaseEnum<Integer>{
 
     SINGLE(1),
     DOUBLE(2),
@@ -20,4 +19,8 @@ public enum RoomType {
 
     private final int value;
 
+    @Override
+    public Integer getValue() {
+        return this.value;
+    }
 }

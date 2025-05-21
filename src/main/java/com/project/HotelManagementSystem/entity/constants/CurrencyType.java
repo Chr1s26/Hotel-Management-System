@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-@Getter
-public enum CurrencyType {
+public enum CurrencyType implements BaseEnum<Integer> {
 
     USD(1),    // US Dollar
     EUR(2),    // Euro
@@ -20,4 +19,8 @@ public enum CurrencyType {
 
     private final int value;
 
+    @Override
+    public Integer getValue() {
+        return this.value;
+    }
 }

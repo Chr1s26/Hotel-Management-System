@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-@Getter
-public enum HotelType {
+public enum HotelType implements BaseEnum<Integer> {
 
     APARTMENT(1),
     VILLA(2),
@@ -20,4 +19,8 @@ public enum HotelType {
 
     private final int value;
 
+    @Override
+    public Integer getValue() {
+        return this.value;
+    }
 }

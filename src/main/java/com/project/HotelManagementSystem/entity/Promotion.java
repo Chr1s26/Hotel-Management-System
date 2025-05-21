@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.entity;
 
+import com.project.HotelManagementSystem.converter.DiscountTypeConverter;
 import com.project.HotelManagementSystem.entity.constants.DiscountType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,7 @@ public class Promotion {
     private String code;
 
     @Column(name = "discount_type")
+    @Convert(converter = DiscountTypeConverter.class)
     private DiscountType discountType;
 
     @Column

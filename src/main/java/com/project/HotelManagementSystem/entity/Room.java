@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.entity;
 
+import com.project.HotelManagementSystem.converter.RoomTypeConverter;
 import com.project.HotelManagementSystem.entity.constants.RoomType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -33,6 +34,7 @@ public class Room {
     private String description;
 
     @Column(name = "room_type")
+    @Convert(converter = RoomTypeConverter.class)
     private RoomType roomType;
 
     @Column

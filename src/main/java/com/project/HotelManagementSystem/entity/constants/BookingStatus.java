@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-@Getter
-public enum BookingStatus {
+public enum BookingStatus implements BaseEnum<Integer>{
 
     PENDING(1),
     CONFIRMED(2),
@@ -14,4 +13,8 @@ public enum BookingStatus {
 
     private final int value;
 
+    @Override
+    public Integer getValue() {
+        return this.value;
+    }
 }

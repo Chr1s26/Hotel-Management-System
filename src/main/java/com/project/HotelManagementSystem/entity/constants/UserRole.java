@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-@Getter
-public enum UserRole {
+public enum UserRole implements BaseEnum<Integer> {
 
     ADMIN(1),
     EDITOR(2),
@@ -13,4 +12,8 @@ public enum UserRole {
 
     private final int value;
 
+    @Override
+    public Integer getValue() {
+        return this.value;
+    }
 }

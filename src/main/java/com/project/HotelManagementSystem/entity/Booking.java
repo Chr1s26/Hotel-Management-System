@@ -1,5 +1,7 @@
 package com.project.HotelManagementSystem.entity;
 
+import com.project.HotelManagementSystem.converter.BookingStatusConverter;
+import com.project.HotelManagementSystem.converter.CurrencyTypeConverter;
 import com.project.HotelManagementSystem.entity.constants.BookingStatus;
 import com.project.HotelManagementSystem.entity.constants.CurrencyType;
 import jakarta.persistence.*;
@@ -35,6 +37,7 @@ public class Booking {
     private String description;
 
     @Column(name = "booking_status")
+    @Convert(converter = BookingStatusConverter.class)
     private BookingStatus bookingStatus;
 //    confirm cancel complete onprogess
 
@@ -57,6 +60,7 @@ public class Booking {
     private double total;
 
     @Column(name = "currency_type")
+    @Convert(converter = CurrencyTypeConverter.class)
     private CurrencyType currencyType;
 
     @ManyToOne

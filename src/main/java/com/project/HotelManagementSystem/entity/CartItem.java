@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.entity;
 
+import com.project.HotelManagementSystem.converter.CurrencyTypeConverter;
 import com.project.HotelManagementSystem.entity.constants.CurrencyType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,7 @@ public class CartItem {
     private double price;
 
     @Column(name = "currency_type")
+    @Convert(converter = CurrencyTypeConverter.class)
     private CurrencyType currencyType;
 
     @ManyToOne

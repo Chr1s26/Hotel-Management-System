@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.entity;
 
+import com.project.HotelManagementSystem.converter.UserRoleConverter;
 import com.project.HotelManagementSystem.entity.constants.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -38,6 +39,7 @@ public class User {
     private String phone;
 
     @Column(name = "user_role")
+    @Convert(converter = UserRoleConverter.class)
     private UserRole userRole;
 
     @Column

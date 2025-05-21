@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
-@Getter
-public enum PaymentStatus {
+public enum PaymentStatus implements BaseEnum<Integer> {
 
     PENDING(1),
     PAID(2),
@@ -15,4 +14,8 @@ public enum PaymentStatus {
 
     private final int value;
 
+    @Override
+    public Integer getValue() {
+        return 0;
+    }
 }

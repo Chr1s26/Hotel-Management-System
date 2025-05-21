@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.entity;
 
+import com.project.HotelManagementSystem.converter.HotelTypeConverter;
 import com.project.HotelManagementSystem.entity.constants.HotelType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -38,6 +39,7 @@ public class Hotel {
     private double rating;
 
     @Column(name = "hotel_type")
+    @Convert(converter = HotelTypeConverter.class)
     private HotelType hotelType;
 
     @OneToOne(cascade = CascadeType.ALL)
