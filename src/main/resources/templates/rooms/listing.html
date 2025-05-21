@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Room List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="container mt-4">
+<h2>Rooms</h2>
+<a class="btn btn-primary mb-3" th:href="@{/rooms/new}">Add Room</a>
+<table class="table table-bordered">
+    <thead>
+    <tr><th>ID</th><th>Price</th><th>Is Available</th><th>Floor</th><th>Description</th><th>Room Type</th><th>Max Capacity</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="room : ${rooms}">
+        <td th:text="${room.id}"></td>
+        <td th:text="${room.price}"></td>
+        <td th:text="${room.isAvailable}"></td>
+        <td th:text="${room.floor}"></td>
+        <td th:text="${room.description}"></td>
+        <td th:text="${room.roomType}"></td>
+        <td th:text="${room.maxCapacity}"></td>
+        <td>
+            <a class="btn btn-sm btn-warning" th:href="@{'/rooms/edit/' + ${room.id}}">Edit</a>
+            <a class="btn btn-sm btn-danger" th:href="@{'/rooms/delete/' + ${room.id}}">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

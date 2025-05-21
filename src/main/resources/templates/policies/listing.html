@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Policy List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="container mt-4">
+<h2>Hotels</h2>
+<a class="btn btn-primary mb-3" th:href="@{/policies/new}">Add Policy</a>
+<table class="table table-bordered">
+    <thead>
+    <tr><th>ID</th><th>Title</th><th>Description</th><th>Applicable To</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="pol : ${policies}">
+        <td th:text="${pol.id}"></td>
+        <td th:text="${pol.title}"></td>
+        <td th:text="${pol.description}"></td>
+        <td th:text="${pol.applicableTo}"></td>
+        <td>
+            <a class="btn btn-sm btn-warning" th:href="@{'/policies/edit/' + ${pol.id}}">Edit</a>
+            <a class="btn btn-sm btn-danger" th:href="@{'/policies/delete/' + ${pol.id}}">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

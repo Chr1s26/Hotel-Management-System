@@ -45,7 +45,7 @@ public class PropertyDescriptionController {
         return "redirect:/propertyDescriptions";
     }
 
-    @GetMapping
+    @GetMapping("/delete/{id}")
     public String deletePropertyDescription(@PathVariable Long id) {
         this.propertyDescriptionService.deletePropertyDescription(id);
         return "redirect:/propertyDescriptions";
