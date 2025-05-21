@@ -7,7 +7,7 @@
 <body class="container mt-4">
 <!--<div th:replace="fragments/navbar :: navbar"></div>-->
 <h2>Update Address</h2>
-<form th:action="@{/addresses/create}" th:object="${address}" method="post" class="needs-validation">
+<form th:action="@{/addresses/update/{id}(id=${address.id})}" th:object="${address}" method="post" class="needs-validation">
     <div class="mb-3">
         <label class="form-label">Road</label>
         <input type="text" th:field="*{road}" class="form-control"/>
