@@ -23,4 +23,9 @@ public class Country {
 
     @OneToMany(mappedBy = "country")
     private List<Region> regions;
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

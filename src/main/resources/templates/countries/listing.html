@@ -6,7 +6,6 @@
 </head>
 <body class="container mt-4">
 <h2>Countries</h2>
-<a class="btn btn-primary mb-3" th:href="@{/countries/new}">Add Country</a>
 <table class="table table-bordered">
     <thead>
     <tr><th>ID</th><th>Name</th></tr>
@@ -22,5 +21,8 @@
     </tr>
     </tbody>
 </table>
+<div class="text-center my-3">
+    <a class="btn btn-primary btn-sm" th:href="@{/countries/new}">Add Country</a>
+</div>
 </body>
 </html>

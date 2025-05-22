@@ -28,9 +28,6 @@ public class Room {
     private boolean isAvailable;
 
     @Column
-    private int floor;
-
-    @Column
     private String description;
 
     @Column(name = "room_type")
@@ -53,4 +50,10 @@ public class Room {
     joinColumns = @JoinColumn(name = "room_id"),
     inverseJoinColumns = @JoinColumn(name = "amenities_id)"))
     private Set<Amenities> amenities = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(name = "room_promotion",
+    joinColumns = @JoinColumn(name = "room_id"),
+    inverseJoinColumns = @JoinColumn(name = "promotion_id"))
+    private Set<Promotion> promotions = new HashSet<>();
 }

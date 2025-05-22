@@ -24,7 +24,6 @@ public class RoomService {
             Room updatedRoom = roomOp.get();
             updatedRoom.setPrice(room.getPrice());
             updatedRoom.setAvailable(room.isAvailable());
-            updatedRoom.setFloor(room.getFloor());
             updatedRoom.setRoomType(room.getRoomType());
             updatedRoom.setMaxCapacity(room.getMaxCapacity());
             return roomRepository.save(updatedRoom);

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Hotel Management System - Home</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link" th:href="@{/users}">Users</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/hotels}">Hotels</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/rooms}">Rooms</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/addresses}">Addresses</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/amenities}">Amenities</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/countries}">Countries</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/regions}">Regions</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/cities}">Cities</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/promotions}">Promotions</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/policies}">Policies</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/propertyDescriptions}">Property Descriptions</a></li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5 text-center">
+    <h1>Welcome to Hotel Management System</h1>
+    <p>Select an entity from the navigation bar to manage data.</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+</html>

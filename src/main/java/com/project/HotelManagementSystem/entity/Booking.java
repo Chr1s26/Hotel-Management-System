@@ -51,13 +51,16 @@ public class Booking {
     private boolean isPaid;
 
     @Column
-    private double amount;
+    private double roomPrice;
 
     @Column
     private double tax;
 
     @Column
-    private double total;
+    private double discountPrice;
+
+    @Column
+    private double totalPrice;
 
     @Column(name = "currency_type")
     @Convert(converter = CurrencyTypeConverter.class)

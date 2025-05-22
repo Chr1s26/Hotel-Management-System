@@ -2,6 +2,7 @@ package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.entity.City;
 import com.project.HotelManagementSystem.service.CityService;
+import com.project.HotelManagementSystem.service.RegionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class CityController {
 
     private final CityService cityService;
+    private final RegionService regionService;
 
     @GetMapping()
     public String getAllCities(Model model) {
@@ -24,6 +26,7 @@ public class CityController {
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("city", new City());
+        model.addAttribute("regions", regionService.findAllRegion());
         return "cities/create";
     }
 
@@ -36,7 +39,8 @@ public class CityController {
     @GetMapping("/edit/{id}")
     public String showUpdateForm(@PathVariable Long id, Model model) {
         model.addAttribute("city",cityService.findCityById(id));
-        return "regions/edit";
+        model.addAttribute("regions", regionService.findAllRegion());
+        return "cities/edit";
     }
 
     @PostMapping("/update/{id}")

@@ -25,9 +25,6 @@ public class Payment {
     private Long id;
 
     @Column
-    private double amount;
-
-    @Column
     private String payment_method;
 
     @Column

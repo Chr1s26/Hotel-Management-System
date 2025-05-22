@@ -68,5 +68,9 @@ public class Hotel {
     @OneToMany(mappedBy = "hotel",cascade = CascadeType.ALL)
     private List<Invoice> invoices = new ArrayList<>();
 
-
+    @ManyToMany
+    @JoinTable(name = "hotel_promotion",
+            joinColumns = @JoinColumn(name = "hotel_id"),
+            inverseJoinColumns = @JoinColumn(name = "promotion_id"))
+    private Set<Promotion> promotions = new HashSet<>();
 }

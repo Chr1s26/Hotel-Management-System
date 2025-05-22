@@ -1,9 +1,9 @@
 package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.entity.Region;
+import com.project.HotelManagementSystem.service.CountryService;
 import com.project.HotelManagementSystem.service.RegionService;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class RegionController {
 
     private final RegionService regionService;
+    private final CountryService countryService;
 
     @GetMapping
     public String getAllRegions(Model model) {
@@ -24,6 +25,7 @@ public class RegionController {
     @GetMapping("/new")
     public String showCreateForm(Model model){
         model.addAttribute("region", new Region());
+        model.addAttribute("countries", countryService.findAllCountries());
         return "regions/create";
     }
 
@@ -34,8 +36,9 @@ public class RegionController {
     }
 
     @GetMapping("/edit/{id}")
-    public String showUpdateForm(@PathVariable Long id, Model model){
+    public String showUpdateForm(@PathVariable("id") Long id, Model model){
         model.addAttribute("region",regionService.findRegionById(id));
+        model.addAttribute("countries", countryService.findAllCountries());
         return "regions/edit";
     }
 

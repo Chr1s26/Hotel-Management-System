@@ -1,7 +1,6 @@
 package com.project.HotelManagementSystem.entity.constants;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 @AllArgsConstructor
 public enum BookingStatus implements BaseEnum<Integer>{
