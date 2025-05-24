@@ -27,4 +27,9 @@ public class City {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id")
     private Region region;
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

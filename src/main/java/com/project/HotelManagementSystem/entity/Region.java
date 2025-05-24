@@ -27,4 +27,9 @@ public class Region {
     @ManyToOne
     @JoinColumn(name = "country_id")
     private Country country;
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

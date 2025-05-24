@@ -38,8 +38,8 @@ public class PolicyService {
         }
     }
 
-    public Optional<Policy> findPolicyById(Long id) {
-        return policyRepository.findById(id);
+    public Policy findPolicyById(Long id) {
+        return policyRepository.findById(id).orElse(null);
     }
 
     public List<Policy> findAllPolicies() {

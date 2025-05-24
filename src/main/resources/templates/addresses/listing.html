@@ -6,10 +6,10 @@
 </head>
 <body class="container mt-4">
 <h2>Addresses</h2>
-<a class="btn btn-primary mb-3" th:href="@{/addresses/new}">Add Address</a>
+
 <table class="table table-bordered">
     <thead>
-    <tr><th>ID</th><th>Road</th><th>Latitude</th><th>Longitude</th><th>Zip Code</th></tr>
+    <tr><th>ID</th><th>Road</th><th>Latitude</th><th>Longitude</th><th>City</th><th>Zip Code</th></tr>
     </thead>
     <tbody>
     <tr th:each="addr : ${addresses}">
@@ -17,6 +17,7 @@
         <td th:text="${addr.road}"></td>
         <td th:text="${addr.latitude}"></td>
         <td th:text="${addr.longitude}"></td>
+        <td th:text="${addr.city}"></td>
         <td th:text="${addr.zipCode}"></td>
         <td>
             <a class="btn btn-sm btn-warning" th:href="@{'/addresses/edit/' + ${addr.id}}">Edit</a>
@@ -25,5 +26,8 @@
     </tr>
     </tbody>
 </table>
+<div class="text-center my-3">
+    <a class="btn btn-primary btn-sm" th:href="@{/addresses/new}">Add Address</a>
+</div>
 </body>
 </html>

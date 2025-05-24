@@ -6,7 +6,7 @@
 </head>
 <body class="container mt-4">
 <h2>Cities</h2>
-<a class="btn btn-primary mb-3" th:href="@{/cities/new}">Add Cities</a>
+
 <table class="table table-bordered">
     <thead>
     <tr>
@@ -19,7 +19,7 @@
     <tr th:each="ct : ${cities}">
         <td th:text="${ct.id}"></td>
         <td th:text="${ct.name}"></td>
-        <td th:text="${ct.regions}"></td>
+        <td th:text="${ct.region}"></td>
         <td>
             <a class="btn btn-sm btn-warning" th:href="@{'/cities/edit/' + ${ct.id}}">Edit</a>
             <a class="btn btn-sm btn-danger" th:href="@{'/cities/delete/' + ${ct.id}}">Delete</a>
@@ -27,5 +27,8 @@
     </tr>
     </tbody>
 </table>
+<div class="text-center my-3">
+    <a class="btn btn-primary btn-sm" th:href="@{/cities/new}">Add City</a>
+</div>
 </body>
 </html>

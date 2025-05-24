@@ -18,8 +18,8 @@ public class UserService {
         return this.userRepository.save(user);
     }
 
-    public User updateUser(User user) {
-        Optional<User> optionalUser = this.userRepository.findById(user.getId());
+    public User updateUser(Long id,User user) {
+        Optional<User> optionalUser = this.userRepository.findById(id);
         if (optionalUser.isPresent()) {
             User updatedUser = optionalUser.get();
             updatedUser.setName(user.getName());
@@ -27,9 +27,11 @@ public class UserService {
             updatedUser.setPassword(user.getPassword());
             updatedUser.setPhone(user.getPhone());
             updatedUser.setUserRole(user.getUserRole());
-            updatedUser.setDateOfBirth(user.getDateOfBirth());
+            if(user.getDateOfBirth() != null){
+                updatedUser.setDateOfBirth(user.getDateOfBirth());
+            }
             updatedUser.setNationality(user.getNationality());
-            updatedUser.setPoint(updatedUser.getPoint());
+            updatedUser.setPoint(user.getPoint());
             return this.userRepository.save(updatedUser);
         }
         return null;

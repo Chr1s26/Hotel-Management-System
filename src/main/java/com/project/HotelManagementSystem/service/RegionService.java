@@ -24,7 +24,6 @@ public class RegionService {
         if(regionOp.isPresent()){
             Region updatedRegion = regionOp.get();
             updatedRegion.setName(region.getName());
-            updatedRegion.setCities(region.getCities());
             updatedRegion.setCountry(region.getCountry());
             regionRepository.save(updatedRegion);
             return updatedRegion;

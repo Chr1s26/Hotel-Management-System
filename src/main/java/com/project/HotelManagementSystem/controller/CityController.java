@@ -17,7 +17,7 @@ public class CityController {
     private final CityService cityService;
     private final RegionService regionService;
 
-    @GetMapping()
+    @GetMapping
     public String getAllCities(Model model) {
         model.addAttribute("cities", cityService.findAllCity());
         return "cities/listing";

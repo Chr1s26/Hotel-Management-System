@@ -27,7 +27,7 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public String createUser(@ModelAttribute("user") User user) {
+    public String createUser(@ModelAttribute User user) {
         this.userService.createUser(user);
         return "redirect:/users";
     }
@@ -39,8 +39,8 @@ public class UserController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateUser(@PathVariable Long id, @ModelAttribute("user") User user) {
-        this.userService.updateUser(user);
+    public String updateUser(@PathVariable Long id, @ModelAttribute User user) {
+        this.userService.updateUser(id,user);
         return "redirect:/users";
     }
 

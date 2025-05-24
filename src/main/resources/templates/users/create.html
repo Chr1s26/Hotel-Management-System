@@ -13,19 +13,14 @@
         <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
     </div>
     <div class="mb-3">
-        <label class="form-label">Email</label>
-        <input type="text" th:field="*{email}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Password</label>
-        <input type="text" th:field="*{password}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
-    </div>
-    <div class="mb-3">
         <label class="form-label">Phone</label>
         <input type="text" th:field="*{phone}" class="form-control"/>
         <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="text" th:field="*{email}" class="form-control"/>
+        <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
     </div>
     <div class="mb-3">
         <label class="form-label">Date Of Birth</label>
@@ -38,14 +33,23 @@
         <div class="text-danger" th:if="${#fields.hasErrors('nationality')}" th:errors="*{nationality}"></div>
     </div>
     <div class="mb-3">
+        <label class="form-label">Role</label>
+        <select th:field="*{userRole}" class="form-select">
+            <option th:each="r : ${T(com.project.HotelManagementSystem.entity.constants.UserRole).values()}"
+                    th:value="${r}"
+                    th:text="${r.name()}">Role</option>
+        </select>
+        <div class="text-danger" th:if="${#fields.hasErrors('userRole')}" th:errors="*{userRole}"></div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="text" th:field="*{password}" class="form-control"/>
+        <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+    </div>
+    <div class="mb-3">
         <label class="form-label">Point</label>
         <input type="text" th:field="*{point}" class="form-control"/>
         <div class="text-danger" th:if="${#fields.hasErrors('point')}" th:errors="*{point}"></div>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Confirmed At</label>
-        <input type="date" th:field="*{confirmedAt}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('confirmedAt')}" th:errors="*{confirmedAt}"></div>
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
     <a class="btn btn-secondary" th:href="@{/users}">Cancel</a>

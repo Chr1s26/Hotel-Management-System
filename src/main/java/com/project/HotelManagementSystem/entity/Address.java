@@ -36,4 +36,8 @@ public class Address {
     @Column
     private String zipCode;
 
+    @Override
+    public String toString() {
+        return " Road = "+road+" Lat = "+latitude+" Long = "+longitude+"Zip Code = "+zipCode;
+    }
 }

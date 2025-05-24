@@ -42,7 +42,7 @@ public class Hotel {
     @Convert(converter = HotelTypeConverter.class)
     private HotelType hotelType;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "address_id")
     private Address address;
 

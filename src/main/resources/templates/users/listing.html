@@ -6,7 +6,6 @@
 </head>
 <body class="container mt-4">
 <h2>Users</h2>
-<a class="btn btn-primary mb-3" th:href="@{/users/new}">Add User</a>
 <table class="table table-bordered">
     <thead>
     <tr><th>ID</th><th>Name</th><th>Email</th><th>Password</th><th>Phone</th><th>User Role</th><th>Date Of Birth</th><th>Nationality</th><th>Point</th><th>Confirmed At</th></tr>
@@ -30,5 +29,8 @@
     </tr>
     </tbody>
 </table>
+<div class="text-center my-3">
+    <a class="btn btn-primary btn-sm" th:href="@{/users/new}">Add User</a>
+</div>
 </body>
 </html>

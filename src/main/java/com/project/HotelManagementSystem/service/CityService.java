@@ -23,7 +23,6 @@ public class CityService {
         if(cityOp.isPresent()){
             City updatedCity = cityOp.get();
             updatedCity.setName(city.getName());
-            updatedCity.setAddresses(city.getAddresses());
             updatedCity.setRegion(city.getRegion());
             cityRepository.save(updatedCity);
             return updatedCity;

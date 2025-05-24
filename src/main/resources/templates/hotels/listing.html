@@ -6,10 +6,10 @@
 </head>
 <body class="container mt-4">
 <h2>Hotels</h2>
-<a class="btn btn-primary mb-3" th:href="@{/hotels/new}">Add Hotel</a>
+
 <table class="table table-bordered">
     <thead>
-    <tr><th>ID</th><th>Name</th><th>Phone Number</th><th>Email</th><th>Description</th><th>Rating</th></tr>
+    <tr><th>ID</th><th>Name</th><th>Phone Number</th><th>Email</th><th>Description</th><th>Rating</th><th>Hotel Type</th><th>Address</th><th>Property Description</th></tr>
     </thead>
     <tbody>
     <tr th:each="hotel : ${hotels}">
@@ -19,12 +19,18 @@
         <td th:text="${hotel.email}"></td>
         <td th:text="${hotel.description}"></td>
         <td th:text="${hotel.rating}"></td>
+        <td th:text="${hotel.hotelType}"></td>
+        <td th:text="${hotel.address}"></td>
+        <td th:text="${hotel.propertyDescription}"></td>
         <td>
-            <a class="btn btn-sm btn-warning" th:href="@{'/regions/edit/' + ${reg.id}}">Edit</a>
-            <a class="btn btn-sm btn-danger" th:href="@{'/regions/delete/' + ${reg.id}}">Delete</a>
+            <a class="btn btn-sm btn-warning" th:href="@{'/hotels/edit/' + ${hotel.id}}">Edit</a>
+            <a class="btn btn-sm btn-danger" th:href="@{'/hotels/delete/' + ${hotel.id}}">Delete</a>
         </td>
     </tr>
     </tbody>
 </table>
+<div class="text-center my-3">
+    <a class="btn btn-primary btn-sm" th:href="@{/hotels/new}">Add Hotel</a>
+</div>
 </body>
 </html>

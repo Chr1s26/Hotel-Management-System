@@ -28,10 +28,8 @@ public class AddressService {
             updatedAddress.setLongitude(address.getLongitude());
             updatedAddress.setZipCode(address.getZipCode());
             updatedAddress.setCity(address.getCity());
-            updatedAddress.setHotel(address.getHotel());
             return addressRepository.save(updatedAddress);
         }
-
         return null;
     }
 
@@ -42,10 +40,9 @@ public class AddressService {
         }
     }
 
-    public Optional<Address> findAddressById(Long id) {
+    public Address findAddressById(Long id) {
         Optional<Address> addressOp = addressRepository.findById(id);
-        return addressOp;
-
+        return addressOp.orElse(null);
     }
 
     public List<Address> findAllAddress() {

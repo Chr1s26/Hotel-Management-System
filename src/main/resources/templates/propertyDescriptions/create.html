@@ -27,7 +27,6 @@
         <input type="text" th:field="*{numberOfRooms}" class="form-control"/>
         <div class="text-danger" th:if="${#fields.hasErrors('numberOfRooms')}" th:errors="*{numberOfRooms}"></div>
     </div>
-
     <button type="submit" class="btn btn-primary">Save</button>
     <a class="btn btn-secondary" th:href="@{/propertyDescriptions}">Cancel</a>
 </form>

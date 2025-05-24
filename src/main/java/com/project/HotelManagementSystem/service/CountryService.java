@@ -23,7 +23,6 @@ public class CountryService {
         if(optionalCountry.isPresent()) {
             Country updatedCountry = optionalCountry.get();
             updatedCountry.setName(country.getName());
-            updatedCountry.setRegions(country.getRegions());
             country = this.countryRepository.save(updatedCountry);
             return country;
         }

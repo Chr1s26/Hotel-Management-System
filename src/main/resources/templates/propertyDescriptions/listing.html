@@ -6,7 +6,6 @@
 </head>
 <body class="container mt-4">
 <h2>Property Description</h2>
-<a class="btn btn-primary mb-3" th:href="@{/propertyDescriptions/new}">Add Property Description</a>
 <table class="table table-bordered">
     <thead>
     <tr><th>ID</th><th>Description</th><th>Opening Date</th><th>Renovation Date</th><th>Number Of Rooms</th></tr>
@@ -25,5 +24,8 @@
     </tr>
     </tbody>
 </table>
+<div class="text-center my-3">
+    <a class="btn btn-primary btn-sm" th:href="@{/propertyDescriptions/new}">Add PropertyDescription</a>
+</div>
 </body>
 </html>
