@@ -24,8 +24,8 @@ public class Room {
     @Column
     private double price;
 
-    @Column
-    private boolean isAvailable;
+    @Column(name = "is_available")
+    private boolean available;
 
     @Column
     private String description;
@@ -56,4 +56,12 @@ public class Room {
     joinColumns = @JoinColumn(name = "room_id"),
     inverseJoinColumns = @JoinColumn(name = "promotion_id"))
     private Set<Promotion> promotions = new HashSet<>();
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
 }

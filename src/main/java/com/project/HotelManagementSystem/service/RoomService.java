@@ -24,8 +24,10 @@ public class RoomService {
             Room updatedRoom = roomOp.get();
             updatedRoom.setPrice(room.getPrice());
             updatedRoom.setAvailable(room.isAvailable());
+            updatedRoom.setDescription(room.getDescription());
             updatedRoom.setRoomType(room.getRoomType());
             updatedRoom.setMaxCapacity(room.getMaxCapacity());
+            updatedRoom.setHotel(room.getHotel());
             return roomRepository.save(updatedRoom);
         }
         return null;
@@ -38,8 +40,8 @@ public class RoomService {
         }
     }
 
-    public Optional<Room> findRoomById(Long id) {
-        return roomRepository.findById(id);
+    public Room findRoomById(Long id) {
+        return roomRepository.findById(id).orElse(null);
     }
 
     public List<Room> findAllRooms() {

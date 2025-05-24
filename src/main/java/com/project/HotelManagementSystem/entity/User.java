@@ -73,4 +73,8 @@ public class User {
     inverseJoinColumns = @JoinColumn(name = "promotion_id"))
     private Set<Promotion> promotions = new HashSet<>();
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }

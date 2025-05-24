@@ -30,10 +30,4 @@ public class Amenities {
     @ManyToMany(mappedBy = "amenities")
     private Set<Room> rooms = new HashSet<>();
 
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    private Amenities parent;
-
-    @OneToMany(mappedBy = "parent")
-    private Set<Amenities> children = new HashSet<>();
 }

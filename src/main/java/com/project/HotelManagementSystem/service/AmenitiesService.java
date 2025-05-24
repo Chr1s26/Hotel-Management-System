@@ -24,9 +24,6 @@ public class AmenitiesService {
             Amenities updatedAmenities = updatedAmenitiesOp.get();
             updatedAmenities.setName(amenities.getName());
             updatedAmenities.setDescription(amenities.getDescription());
-            updatedAmenities.setRooms(amenities.getRooms());
-            updatedAmenities.setParent(amenities.getParent());
-            updatedAmenities.setChildren(amenities.getChildren());
             amenities = this.amenitiesRepository.save(updatedAmenities);
             return amenities;
         }
@@ -40,9 +37,9 @@ public class AmenitiesService {
         }
     }
 
-    public Optional<Amenities> findAmenitiesById(Long id) {
+    public Amenities findAmenitiesById(Long id) {
         Optional<Amenities> amenitiesOp = this.amenitiesRepository.findById(id);
-        return amenitiesOp;
+        return amenitiesOp.orElse(null);
     }
 
     public List<Amenities> findAllAmenities() {

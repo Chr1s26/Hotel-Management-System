@@ -3,34 +3,84 @@
 <head>
     <title>Hotel Management System - Home</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .btn-luxury {
+            background-color: #BFC9CA; /* light luxury gray */
+            color: #2E4053;            /* elegant dark gray/navy text */
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-luxury:hover {
+            background-color: #D5D8DC; /* slightly lighter on hover */
+            color: #1C2833;
+        }
+    </style>
 </head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<body style="background-color: #2E4053; color: #f8f9fa; border-radius: 10px;">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg" style="background-color: #BFC9CA;">
     <div class="container-fluid">
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav mx-auto">
-                <li class="nav-item"><a class="nav-link" th:href="@{/users}">Users</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/hotels}">Hotels</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/rooms}">Rooms</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/amenities}">Amenities</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/addresses}">Addresses</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/countries}">Countries</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/regions}">Regions</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/cities}">Cities</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/promotions}">Promotions</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/policies}">Policies</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/propertyDescriptions}">Property Descriptions</a></li>
-
+                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/users}">Users</a></li>
+                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/hotels}">Hotels</a></li>
+                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/rooms}">Rooms</a></li>
+                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/amenities}">Amenities</a></li>
+                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/addresses}">Addresses</a></li>
+                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/countries}">Countries</a></li>
+                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/regions}">Regions</a></li>
+                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/cities}">Cities</a></li>
+                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/promotions}">Promotions</a></li>
+                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/policies}">Policies</a></li>
+                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/propertyDescriptions}">Property Descriptions</a></li>
+                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/reviews}">Reviews</a></li>
             </ul>
         </div>
     </div>
 </nav>
 
-<div class="container mt-5 text-center">
+<div class="container mt-5 text-center p-4">
     <h1>Welcome to Hotel Management System</h1>
     <p>Select an entity from the navigation bar to manage data.</p>
+
+    <div class="row row-cols-1 row-cols-md-2 g-3 justify-content-center mt-4">
+        <div class="col">
+            <a th:href="@{/room-service/add}" class="btn btn-luxury w-100">Add Service to Room</a>
+        </div>
+        <div class="col">
+            <a th:href="@{/room-service/show}" class="btn btn-luxury w-100">Show Room Service Table</a>
+        </div>
+        <div class="col">
+            <a th:href="@{/hotel-policy/add}" class="btn btn-luxury w-100">Add Policy to Hotel</a>
+        </div>
+        <div class="col">
+            <a th:href="@{/hotel-policy/show}" class="btn btn-luxury w-100">Show Hotel Policy Table</a>
+        </div>
+        <div class="col">
+            <a th:href="@{/hotel-promotion/add}" class="btn btn-luxury w-100">Add Promotion to Hotel</a>
+        </div>
+        <div class="col">
+            <a th:href="@{/hotel-promotion/show}" class="btn btn-luxury w-100">Show Hotel Promotion Table</a>
+        </div>
+        <div class="col">
+            <a th:href="@{/room-promotion/add}" class="btn btn-luxury w-100">Add Promotion to Room</a>
+        </div>
+        <div class="col">
+            <a th:href="@{/room-promotion/show}" class="btn btn-luxury w-100">Show Room Promotion Table</a>
+        </div>
+        <div class="col">
+            <a th:href="@{/user-promotion/add}" class="btn btn-luxury w-100">Add Promotion to User</a>
+        </div>
+        <div class="col">
+            <a th:href="@{/user-promotion/show}" class="btn btn-luxury w-100">Show User Promotion Table</a>
+        </div>
+    </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
 </body>
 </html>
