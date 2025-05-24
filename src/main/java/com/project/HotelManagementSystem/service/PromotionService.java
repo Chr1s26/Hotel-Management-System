@@ -25,8 +25,12 @@ public class PromotionService {
             updatedPromotion.setCode(promotion.getCode());
             updatedPromotion.setDiscountType(promotion.getDiscountType());
             updatedPromotion.setDiscountAmount(promotion.getDiscountAmount());
-            updatedPromotion.setStartDate(promotion.getStartDate());
-            updatedPromotion.setEndDate(promotion.getEndDate());
+            if(promotion.getStartDate() != null) {
+                updatedPromotion.setStartDate(promotion.getStartDate());
+            }
+            if(promotion.getEndDate() != null) {
+                updatedPromotion.setEndDate(promotion.getEndDate());
+            }
             updatedPromotion.setPointAmount(promotion.getPointAmount());
             updatedPromotion.setUsageLimit(promotion.getUsageLimit());
             updatedPromotion.setTimesUsed(promotion.getTimesUsed());
