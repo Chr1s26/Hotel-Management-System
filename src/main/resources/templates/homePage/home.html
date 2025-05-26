@@ -20,26 +20,7 @@
 <body style="background-color: #2E4053; color: #f8f9fa; border-radius: 10px;">
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg" style="background-color: #BFC9CA;">
-    <div class="container-fluid">
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav mx-auto">
-                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/users}">Users</a></li>
-                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/hotels}">Hotels</a></li>
-                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/rooms}">Rooms</a></li>
-                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/amenities}">Amenities</a></li>
-                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/addresses}">Addresses</a></li>
-                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/countries}">Countries</a></li>
-                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/regions}">Regions</a></li>
-                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/cities}">Cities</a></li>
-                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/promotions}">Promotions</a></li>
-                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/policies}">Policies</a></li>
-                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/propertyDescriptions}">Property Descriptions</a></li>
-                <li class="nav-item"><a class="nav-link text-dark" th:href="@{/reviews}">Reviews</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<div th:replace="fragments/navbar :: navbar"></div>
 
 <div class="container mt-5 text-center p-4">
     <h1>Welcome to Hotel Management System</h1>

@@ -8,6 +8,8 @@
         body {
             background-color: #2E4053; /* Dark gray background */
             color: white;              /* White text globally */
+            padding-top: 70px;
+
         }
         form {
             background-color: #6E6E6E; /* Slightly lighter gray for form background */
@@ -54,6 +56,7 @@
     </style>
 </head>
 <body class="container mt-4">
+<div th:replace="fragments/navbar :: navbar"></div>
 <h2>Create Review</h2>
 <form th:action="@{/reviews/create}" th:object="${review}" method="post" class="needs-validation">
     <div class="mb-3">

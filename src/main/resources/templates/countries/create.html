@@ -7,6 +7,7 @@
         body {
             background-color: #2E4053; /* Dark gray background */
             color: white;              /* White text globally */
+            padding-top: 70px;
         }
         form {
             background-color: #6E6E6E; /* Slightly lighter gray for form background */
@@ -53,7 +54,7 @@
     </style>
 </head>
 <body class="container mt-4">
-
+<div th:replace="fragments/navbar :: navbar"></div>
 <h2>Create Country</h2>
 <form th:action="@{/countries/create}" th:object="${country}" method="post" class="needs-validation">
     <div class="mb-3">

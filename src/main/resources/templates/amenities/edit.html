@@ -7,6 +7,7 @@
         body {
             background-color: #2E4053; /* Dark gray background */
             color: white;              /* White text globally */
+            padding-top: 70px;
         }
         form {
             background-color: #6E6E6E; /* Slightly lighter gray for form background */
@@ -54,6 +55,7 @@
 </head>
 
 <body class="container mt-4">
+<div th:replace="fragments/navbar :: navbar"></div>
 <h2>Edit Amenities</h2>
 <form th:action="@{/amenities/update/{id}(id=${amenities.id})}" th:object="${amenities}" method="post">
     <div class="mb-3">

@@ -7,11 +7,12 @@
         body {
             background-color: #2E4053;
             color: white;
+            padding-top: 100px;
         }
 
         h2 {
+            padding-top: 30px;
             text-align: center;
-            margin-bottom: 20px;
         }
 
         table {
@@ -80,7 +81,8 @@
     </style>
 </head>
 <body class="container mt-4">
-<h2>Users</h2>
+<div th:replace="fragments/navbar :: navbar"></div>
+<div><h2>Users</h2></div>
 <table class="table table-bordered">
     <thead>
     <tr><th>ID</th><th>Name</th><th>Email</th><th>Password</th><th>Phone</th><th>User Role</th><th>Date Of Birth</th><th>Nationality</th><th>Point</th><th>Confirmed At</th></tr>

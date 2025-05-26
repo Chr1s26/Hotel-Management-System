@@ -1,6 +1,7 @@
 package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.entity.User;
+import com.project.HotelManagementSystem.helper.StringUtil;
 import com.project.HotelManagementSystem.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -27,7 +28,33 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public String createUser(@ModelAttribute User user) {
+    public String createUser(@ModelAttribute User user,Model model) {
+        boolean hasError = false;
+        if(StringUtil.isEmpty(user.getName())) {
+            model.addAttribute("nameError", "Please enter your name");
+            hasError = true;
+        }
+        if(StringUtil.isEmpty(user.getPhone())) {
+            model.addAttribute("phoneError", "Please enter your phone");
+            hasError = true;
+        }
+        if(StringUtil.isEmpty(user.getEmail())) {
+            model.addAttribute("emailError", "Please enter your email");
+            hasError = true;
+        }
+        if(StringUtil.isEmpty(user.getPassword())) {
+            model.addAttribute("passwordError", "Please enter your password");
+            hasError = true;
+        }
+        if(StringUtil.isEmpty(user.getNationality())) {
+            model.addAttribute("nationalityError", "Please enter your nationality");
+            hasError = true;
+        }
+
+        if(hasError) {
+            model.addAttribute("user", user);
+            return "users/create";
+        }
         this.userService.createUser(user);
         return "redirect:/users";
     }
