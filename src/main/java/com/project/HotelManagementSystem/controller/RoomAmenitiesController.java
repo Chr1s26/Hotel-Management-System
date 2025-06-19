@@ -23,6 +23,7 @@ public class RoomAmenitiesController {
     public String showCreateForm(Model model) {
         model.addAttribute("rooms", roomService.findAllRooms());
         model.addAttribute("amenities", amenitiesService.findAllAmenities());
-        return "roomAmenities/add";
+        return "roomAmenities/create";
     }
+
 }
