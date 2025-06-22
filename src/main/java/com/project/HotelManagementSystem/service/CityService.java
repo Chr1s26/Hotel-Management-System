@@ -1,8 +1,18 @@
 package com.project.HotelManagementSystem.service;
 
+import com.project.HotelManagementSystem.dto.city.CityCreateDTO;
+import com.project.HotelManagementSystem.dto.city.CityDTO;
+import com.project.HotelManagementSystem.dto.city.CityResponse;
+import com.project.HotelManagementSystem.dto.city.CityUpdateDTO;
 import com.project.HotelManagementSystem.entity.City;
 import com.project.HotelManagementSystem.repository.CityRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,18 +24,24 @@ public class CityService {
 
     private final CityRepository cityRepository;
 
-    public City createCity(City city) {
-        return cityRepository.save(city);
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public CityCreateDTO createCity(CityCreateDTO cityCreateDTO) {
+        City city = modelMapper.map(cityCreateDTO, City.class);
+        City savedCity = cityRepository.save(city);
+        return modelMapper.map(savedCity,CityCreateDTO.class);
     }
 
-    public City updateCity(Long id,City city) {
+    public CityUpdateDTO updateCity(Long id, CityUpdateDTO cityUpdateDTO) {
         Optional<City> cityOp = cityRepository.findById(id);
+        City city = modelMapper.map(cityUpdateDTO, City.class);
         if(cityOp.isPresent()){
             City updatedCity = cityOp.get();
             updatedCity.setName(city.getName());
             updatedCity.setRegion(city.getRegion());
-            cityRepository.save(updatedCity);
-            return updatedCity;
+            City savedCity = cityRepository.save(updatedCity);
+            return modelMapper.map(savedCity,CityUpdateDTO.class);
         }
         return null;
     }
@@ -37,13 +53,31 @@ public class CityService {
         }
     }
 
-    public City findCityById(Long id) {
-        Optional<City> cityOp = cityRepository.findById(id);
-        return cityOp.orElse(null);
+    public CityDTO findCityById(Long id) {
+        City city = cityRepository.findById(id).get();
+        return modelMapper.map(city,CityDTO.class);
     }
 
-    public List<City> findAllCity() {
-        return cityRepository.findAll();
+    public CityResponse findAllCitiesWithPagination(Integer pageNumber,Integer pageSize,String sortBy, String sortOrder){
+        Sort sortByAndSortOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNumber,pageSize,sortByAndSortOrder);
+        Page<City> cityPage = cityRepository.findAll(pageable);
+        List<City> cities = cityPage.getContent();
+        List<CityDTO> cityDTOList = cities.stream().map(c -> modelMapper.map(c, CityDTO.class)).toList();
+        CityResponse cityResponse = new CityResponse();
+        cityResponse.setCities(cityDTOList);
+        cityResponse.setPageNumber(pageNumber);
+        cityResponse.setPageSize(pageSize);
+        cityResponse.setTotalPages(cityPage.getTotalPages());
+        cityResponse.setTotalElements(cityPage.getTotalElements());
+        cityResponse.setLastPage(cityPage.isLast());
+        return cityResponse;
+    }
+
+    public List<CityDTO> findAllCities() {
+        List<City> cities = cityRepository.findAll();
+        List<CityDTO> cityDTOS =  cities.stream().map(c -> modelMapper.map(c,CityDTO.class)).toList();
+        return cityDTOS;
     }
 
 }

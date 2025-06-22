@@ -37,21 +37,21 @@ public class Room {
     @Column
     private int maxCapacity;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_id")
     private Booking booking;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "room_amenities",
     joinColumns = @JoinColumn(name = "room_id"),
     inverseJoinColumns = @JoinColumn(name = "amenities_id)"))
     private Set<Amenities> amenities = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch =  FetchType.LAZY)
     @JoinTable(name = "room_promotion",
     joinColumns = @JoinColumn(name = "room_id"),
     inverseJoinColumns = @JoinColumn(name = "promotion_id"))
@@ -63,5 +63,10 @@ public class Room {
 
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

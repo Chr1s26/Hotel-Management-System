@@ -28,6 +28,12 @@ public class City {
     @JoinColumn(name = "region_id")
     private Region region;
 
+    public City(Long id, String name, Region region) {
+        this.id = id;
+        this.name = name;
+        this.region = region;
+    }
+
     @Override
     public String toString() {
         return name;
