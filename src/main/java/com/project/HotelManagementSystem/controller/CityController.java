@@ -1,5 +1,8 @@
 package com.project.HotelManagementSystem.controller;
 
+import com.project.HotelManagementSystem.config.AppConstants;
+import com.project.HotelManagementSystem.dto.city.CityDTO;
+import com.project.HotelManagementSystem.dto.city.CityResponse;
 import com.project.HotelManagementSystem.entity.City;
 import com.project.HotelManagementSystem.service.CityService;
 import com.project.HotelManagementSystem.service.RegionService;
@@ -7,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @Controller
@@ -18,8 +23,17 @@ public class CityController {
     private final RegionService regionService;
 
     @GetMapping
-    public String getAllCities(Model model) {
-        model.addAttribute("cities", cityService.findAllCity());
+    public String getAllCities(Model model,
+                               @RequestParam(defaultValue = AppConstants.PAGE_NUMBER,required = false) Integer pageNumber,
+                               @RequestParam(defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
+                               @RequestParam(defaultValue = AppConstants.SORT_BY_Id,required = false) String sortBy,
+                               @RequestParam(defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
+        CityResponse response = cityService.findAllCitiesWithPagination(pageNumber,pageSize,sortBy,sortOrder);
+        List<CityDTO> cities = response.getCities();
+        model.addAttribute("cities", cities);
+        model.addAttribute("response", response);
+        model.addAttribute("sortOrder", sortOrder);
+        model.addAttribute("sortBy", sortBy);
         return "cities/listing";
     }
 

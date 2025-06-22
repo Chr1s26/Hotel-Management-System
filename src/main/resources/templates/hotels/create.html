@@ -105,7 +105,7 @@
     <div class="mb-3">
         <label class="form-label">Property Description</label>
         <select id="property-select" th:field="*{propertyDescription.id}" class="form-select" required>
-            <option value="" disabled selected>-- Select Address --</option>
+            <option value="" disabled selected>-- Select PropertyDescription --</option>
             <option th:each="propertyDescription : ${propertyDescriptions}"
                     th:value="${propertyDescription.id}"
                     th:text="${propertyDescription}">

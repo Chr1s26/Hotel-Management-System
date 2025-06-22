@@ -1,11 +1,16 @@
 package com.project.HotelManagementSystem.controller;
 
+import com.project.HotelManagementSystem.config.AppConstants;
+import com.project.HotelManagementSystem.dto.country.CountryDTO;
+import com.project.HotelManagementSystem.dto.country.CountryResponse;
 import com.project.HotelManagementSystem.entity.Country;
 import com.project.HotelManagementSystem.service.CountryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -15,8 +20,17 @@ public class CountryController {
     private final CountryService countryService;
 
     @GetMapping
-    public String getAllCountries(Model model) {
-        model.addAttribute("countries", countryService.findAllCountries());
+    public String getAllCountries(Model model,
+                                  @RequestParam(defaultValue = AppConstants.PAGE_NUMBER,required = false) Integer pageNumber,
+                                  @RequestParam(defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
+                                  @RequestParam(defaultValue = AppConstants.SORT_BY_Id,required = false) String sortBy,
+                                  @RequestParam(defaultValue = AppConstants.SORT_ORDER,required = false) String sortOrder) {
+        CountryResponse response = countryService.findAllCountriesWithPagination(pageNumber,pageSize,sortBy,sortOrder);
+        List<CountryDTO> countryDTOList = response.getCountries();
+        model.addAttribute("countries", countryDTOList);
+        model.addAttribute("response",response);
+        model.addAttribute("sortBy",sortBy);
+        model.addAttribute("sortOrder",sortOrder);
         return "countries/listing";
     }
 

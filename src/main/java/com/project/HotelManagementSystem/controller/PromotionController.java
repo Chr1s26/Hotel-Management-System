@@ -1,11 +1,16 @@
 package com.project.HotelManagementSystem.controller;
 
+import com.project.HotelManagementSystem.config.AppConstants;
+import com.project.HotelManagementSystem.dto.promotion.PromotionDTO;
+import com.project.HotelManagementSystem.dto.promotion.PromotionResponse;
 import com.project.HotelManagementSystem.entity.Promotion;
 import com.project.HotelManagementSystem.service.PromotionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -15,8 +20,17 @@ public class PromotionController {
     private final PromotionService promotionService;
 
     @GetMapping
-    public String getAllPromotions(Model model) {
-        model.addAttribute("promotions",this.promotionService.findAllPromotions());
+    public String getAllPromotions(Model model,
+                                   @RequestParam(defaultValue = AppConstants.PAGE_NUMBER,required = false) Integer pageNumber,
+                                   @RequestParam(defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
+                                   @RequestParam(defaultValue = AppConstants.SORT_BY_Id,required = false) String sortBy,
+                                   @RequestParam(defaultValue = AppConstants.SORT_ORDER,required = false) String sortOrder) {
+        PromotionResponse response = this.promotionService.findAllPromotionsWithPagination(pageNumber,pageSize,sortBy,sortOrder);
+        List<PromotionDTO> promotionDTOList = response.getPromotions();
+        model.addAttribute("promotions",promotionDTOList);
+        model.addAttribute("response",response);
+        model.addAttribute("sortBy",sortBy);
+        model.addAttribute("sortOrder",sortOrder);
         return "promotions/listing";
     }
 

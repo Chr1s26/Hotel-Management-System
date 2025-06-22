@@ -22,7 +22,7 @@ public class RoomAmenitiesController {
     @GetMapping("/room-amenities/new")
     public String showCreateForm(Model model) {
         model.addAttribute("rooms", roomService.findAllRooms());
-        model.addAttribute("amenities", amenitiesService.findAllAmenities());
+//        model.addAttribute("amenities", amenitiesService.findAllAmenities());
         return "roomAmenities/create";
     }
 

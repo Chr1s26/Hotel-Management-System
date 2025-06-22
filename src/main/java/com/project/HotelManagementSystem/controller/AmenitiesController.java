@@ -1,11 +1,16 @@
 package com.project.HotelManagementSystem.controller;
 
+import com.project.HotelManagementSystem.config.AppConstants;
+import com.project.HotelManagementSystem.dto.amenities.AmenitiesDTO;
+import com.project.HotelManagementSystem.dto.amenities.AmenitiesResponse;
 import com.project.HotelManagementSystem.entity.Amenities;
 import com.project.HotelManagementSystem.service.AmenitiesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/amenities")
@@ -27,8 +32,17 @@ public class AmenitiesController {
     }
 
     @GetMapping
-    public String getAllAmenities(Model model) {
-        model.addAttribute("amenities",this.amenitiesService.findAllAmenities());
+    public String getAllAmenities(Model model,
+                                  @RequestParam(defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+                                  @RequestParam(defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
+                                  @RequestParam(defaultValue = AppConstants.SORT_BY_Id,required = false) String sortBy,
+                                  @RequestParam(defaultValue = AppConstants.SORT_ORDER,required = false) String sortOrder) {
+        AmenitiesResponse amenitiesResponse = this.amenitiesService.findAllAmenitiesWithPagination(pageNumber, pageSize, sortBy, sortOrder);
+        List<AmenitiesDTO> amenitiesDTOS = amenitiesResponse.getAmenities();
+        model.addAttribute("amenities",  amenitiesDTOS);
+        model.addAttribute("response", amenitiesResponse);
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("sortOrder", sortOrder);
         return "amenities/listing";
     }
 
