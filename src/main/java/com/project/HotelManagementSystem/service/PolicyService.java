@@ -1,7 +1,9 @@
 package com.project.HotelManagementSystem.service;
 
+import com.project.HotelManagementSystem.dto.policy.PolicyCreateDTO;
 import com.project.HotelManagementSystem.dto.policy.PolicyDTO;
 import com.project.HotelManagementSystem.dto.policy.PolicyResponse;
+import com.project.HotelManagementSystem.dto.policy.PolicyUpdateDTO;
 import com.project.HotelManagementSystem.entity.Policy;
 import com.project.HotelManagementSystem.repository.PolicyRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,20 +28,22 @@ public class PolicyService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public PolicyDTO createPolicy(Policy policy) {
+    public PolicyCreateDTO createPolicy(PolicyCreateDTO policyCreateDTO) {
+        Policy policy = modelMapper.map(policyCreateDTO, Policy.class);
         Policy savedPolicy = this.policyRepository.save(policy);
-        return modelMapper.map(savedPolicy,PolicyDTO.class);
+        return modelMapper.map(savedPolicy,PolicyCreateDTO.class);
     }
 
-    public PolicyDTO updatePolicy(Long id,Policy policy) {
+    public PolicyUpdateDTO updatePolicy(Long id, PolicyUpdateDTO policyUpdateDTO) {
         Optional<Policy> policyOp = policyRepository.findById(id);
+        Policy policy = modelMapper.map(policyUpdateDTO, Policy.class);
         if(policyOp.isPresent()) {
             Policy updatedPolicy = policyOp.get();
             updatedPolicy.setTitle(policy.getTitle());
             updatedPolicy.setDescription(policy.getDescription());
             updatedPolicy.setApplicableTo(policy.getApplicableTo());
             Policy savedPolicy = policyRepository.save(updatedPolicy);
-            return modelMapper.map(savedPolicy,PolicyDTO.class);
+            return modelMapper.map(savedPolicy,PolicyUpdateDTO.class);
         }
         return null;
     }

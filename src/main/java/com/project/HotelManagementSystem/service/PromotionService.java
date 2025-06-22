@@ -1,7 +1,9 @@
 package com.project.HotelManagementSystem.service;
 
+import com.project.HotelManagementSystem.dto.promotion.PromotionCreateDTO;
 import com.project.HotelManagementSystem.dto.promotion.PromotionDTO;
 import com.project.HotelManagementSystem.dto.promotion.PromotionResponse;
+import com.project.HotelManagementSystem.dto.promotion.PromotionUpdateDTO;
 import com.project.HotelManagementSystem.entity.Promotion;
 import com.project.HotelManagementSystem.repository.PromotionRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +29,14 @@ public class PromotionService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public PromotionDTO createPromotion(Promotion promotion) {
+    public PromotionCreateDTO createPromotion(PromotionCreateDTO promotionCreateDTO) {
+        Promotion promotion = modelMapper.map(promotionCreateDTO, Promotion.class);
         Promotion savedPromotion = this.promotionRepository.save(promotion);
-        return modelMapper.map(savedPromotion,PromotionDTO.class);
+        return modelMapper.map(savedPromotion,PromotionCreateDTO.class);
     }
 
-    public Promotion updatePromotion(Long id,Promotion promotion) {
+    public PromotionUpdateDTO updatePromotion(Long id, PromotionUpdateDTO promotionUpdateDTO) {
+        Promotion promotion = modelMapper.map(promotionUpdateDTO, Promotion.class);
         Optional<Promotion> promotionOp = promotionRepository.findById(id);
         if(promotionOp.isPresent()) {
             Promotion updatedPromotion = promotionOp.get();
@@ -49,7 +53,7 @@ public class PromotionService {
             updatedPromotion.setUsageLimit(promotion.getUsageLimit());
             updatedPromotion.setTimesUsed(promotion.getTimesUsed());
             Promotion savedPromotion = this.promotionRepository.save(updatedPromotion);
-            return modelMapper.map(savedPromotion,Promotion.class);
+            return modelMapper.map(savedPromotion,PromotionUpdateDTO.class);
         }
         return null;
     }

@@ -1,8 +1,10 @@
 package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.config.AppConstants;
+import com.project.HotelManagementSystem.dto.country.CountryCreateDTO;
 import com.project.HotelManagementSystem.dto.country.CountryDTO;
 import com.project.HotelManagementSystem.dto.country.CountryResponse;
+import com.project.HotelManagementSystem.dto.country.CountryUpdateDTO;
 import com.project.HotelManagementSystem.entity.Country;
 import com.project.HotelManagementSystem.service.CountryService;
 import lombok.RequiredArgsConstructor;
@@ -36,13 +38,13 @@ public class CountryController {
 
     @GetMapping("/new")
     public String showCreateForm(Model model) {
-        model.addAttribute("country", new Country());
+        model.addAttribute("country", new CountryCreateDTO());
         return "countries/create";
     }
 
     @PostMapping("/create")
-    public String createCountry(@ModelAttribute Country country) {
-        this.countryService.createCountry(country);
+    public String createCountry(@ModelAttribute CountryCreateDTO countryCreateDTO) {
+        this.countryService.createCountry(countryCreateDTO);
         return "redirect:/countries";
     }
 
@@ -53,8 +55,8 @@ public class CountryController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateCountry(@PathVariable Long id, @ModelAttribute Country country) {
-        this.countryService.updateCountry(id, country);
+    public String updateCountry(@PathVariable Long id, @ModelAttribute CountryUpdateDTO countryUpdateDTO) {
+        this.countryService.updateCountry(id, countryUpdateDTO);
         return "redirect:/countries";
     }
 

@@ -1,7 +1,9 @@
 package com.project.HotelManagementSystem.service;
 
+import com.project.HotelManagementSystem.dto.country.CountryCreateDTO;
 import com.project.HotelManagementSystem.dto.country.CountryDTO;
 import com.project.HotelManagementSystem.dto.country.CountryResponse;
+import com.project.HotelManagementSystem.dto.country.CountryUpdateDTO;
 import com.project.HotelManagementSystem.entity.Country;
 import com.project.HotelManagementSystem.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,18 +28,20 @@ public class CountryService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public CountryDTO createCountry(Country country) {
+    public CountryCreateDTO createCountry(CountryCreateDTO countryCreateDTO) {
+        Country country = modelMapper.map(countryCreateDTO, Country.class);
         Country savedCountry = countryRepository.save(country);
-        return modelMapper.map(savedCountry,CountryDTO.class);
+        return modelMapper.map(savedCountry,CountryCreateDTO.class);
     }
 
-    public CountryDTO updateCountry(Long id,Country country) {
+    public CountryUpdateDTO updateCountry(Long id, CountryUpdateDTO countryUpdateDTO) {
         Optional<Country> optionalCountry = countryRepository.findById(id);
+        Country country = modelMapper.map(countryUpdateDTO, Country.class);
         if(optionalCountry.isPresent()) {
             Country updatedCountry = optionalCountry.get();
             updatedCountry.setName(country.getName());
             country = this.countryRepository.save(updatedCountry);
-            return modelMapper.map(country,CountryDTO.class);
+            return modelMapper.map(country,CountryUpdateDTO.class);
         }
         return null;
     }

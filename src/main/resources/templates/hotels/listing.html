@@ -147,7 +147,7 @@
 </div>
 <table class="table table-bordered">
     <thead>
-    <tr><th>ID</th><th>Name</th><th>Phone Number</th><th>Email</th><th>Description</th><th>Rating</th><th>Hotel Type</th><th>Address</th><th>Property Description</th></tr>
+    <tr><th>ID</th><th>Name</th><th>Phone Number</th><th>Email</th><th>Description</th><th>Rating</th><th>Hotel Type</th><th>Address</th><th>Property Description</th><th>Policies</th><th>Promotions</th></tr>
     </thead>
     <tbody>
     <tr th:each="hotel : ${hotels}">
@@ -160,6 +160,16 @@
         <td th:text="${hotel.hotelType}"></td>
         <td th:text="${hotel.address}"></td>
         <td th:text="${hotel.propertyDescription}"></td>
+        <td>
+            <ul class="list-unstyled mb-0" th:if="${hotel.policies != null}">
+                <li th:each="h : ${hotel.policies}" th:text="${h.description}"></li>
+            </ul>
+        </td>
+        <td>
+            <ul class="list-unstyled mb-0" th:if="${hotel.promotions != null}">
+                <li th:each="h : ${hotel.promotions}" th:text="${h.code}"></li>
+            </ul>
+        </td>
         <td>
             <a class="btn btn-sm btn-warning" th:href="@{'/hotels/edit/' + ${hotel.id}}">Edit</a>
             <a class="btn btn-sm btn-danger" th:href="@{'/hotels/delete/' + ${hotel.id}}">Delete</a>

@@ -1,8 +1,10 @@
 package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.config.AppConstants;
+import com.project.HotelManagementSystem.dto.promotion.PromotionCreateDTO;
 import com.project.HotelManagementSystem.dto.promotion.PromotionDTO;
 import com.project.HotelManagementSystem.dto.promotion.PromotionResponse;
+import com.project.HotelManagementSystem.dto.promotion.PromotionUpdateDTO;
 import com.project.HotelManagementSystem.entity.Promotion;
 import com.project.HotelManagementSystem.service.PromotionService;
 import lombok.RequiredArgsConstructor;
@@ -36,13 +38,13 @@ public class PromotionController {
 
     @GetMapping("/new")
     public String showCreateForm(Model model) {
-        model.addAttribute("promotion",new Promotion());
+        model.addAttribute("promotion",new PromotionCreateDTO());
         return "promotions/create";
     }
 
     @PostMapping("/create")
-    public String createPromotion(@ModelAttribute Promotion promotion) {
-        this.promotionService.createPromotion(promotion);
+    public String createPromotion(@ModelAttribute PromotionCreateDTO promotionCreateDTO) {
+        this.promotionService.createPromotion(promotionCreateDTO);
         return "redirect:/promotions";
     }
 
@@ -53,8 +55,8 @@ public class PromotionController {
     }
 
     @PostMapping("/update/{id}")
-    public String updatePromotion(@PathVariable Long id, @ModelAttribute Promotion promotion) {
-        this.promotionService.updatePromotion(id, promotion);
+    public String updatePromotion(@PathVariable Long id, @ModelAttribute PromotionUpdateDTO promotionUpdateDTO) {
+        this.promotionService.updatePromotion(id, promotionUpdateDTO);
         return "redirect:/promotions";
     }
 

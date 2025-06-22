@@ -1,8 +1,10 @@
 package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.config.AppConstants;
+import com.project.HotelManagementSystem.dto.address.AddressCreateDTO;
 import com.project.HotelManagementSystem.dto.address.AddressDTO;
 import com.project.HotelManagementSystem.dto.address.AddressResponse;
+import com.project.HotelManagementSystem.dto.address.AddressUpdateDTO;
 import com.project.HotelManagementSystem.entity.Address;
 import com.project.HotelManagementSystem.entity.City;
 import com.project.HotelManagementSystem.service.AddressService;
@@ -39,14 +41,14 @@ public class AddressController {
 
     @GetMapping("/new")
     public String showCreateForm(Model model) {
-        model.addAttribute("address",new Address());
+        model.addAttribute("address",new AddressCreateDTO());
         model.addAttribute("cities",cityService.findAllCities());
         return "addresses/create";
     }
 
     @PostMapping("/create")
-    public String createAddress(@ModelAttribute Address address){
-        addressService.createAddress(address);
+    public String createAddress(@ModelAttribute AddressCreateDTO addressCreateDTO){
+        addressService.createAddress(addressCreateDTO);
         return "redirect:/addresses";
     }
 
@@ -58,8 +60,8 @@ public class AddressController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateAddress(@PathVariable Long id, @ModelAttribute Address address){
-        addressService.updateAddress(id, address);
+    public String updateAddress(@PathVariable Long id, @ModelAttribute AddressUpdateDTO addressUpdateDTO){
+        addressService.updateAddress(id, addressUpdateDTO);
         return "redirect:/addresses";
     }
 

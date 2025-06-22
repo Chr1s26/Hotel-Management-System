@@ -1,7 +1,9 @@
 package com.project.HotelManagementSystem.service;
 
+import com.project.HotelManagementSystem.dto.amenities.AmenitiesCreateDTO;
 import com.project.HotelManagementSystem.dto.amenities.AmenitiesDTO;
 import com.project.HotelManagementSystem.dto.amenities.AmenitiesResponse;
+import com.project.HotelManagementSystem.dto.amenities.AmenitiesUpdateDTO;
 import com.project.HotelManagementSystem.entity.Amenities;
 import com.project.HotelManagementSystem.repository.AmenitiesRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,19 +27,21 @@ public class AmenitiesService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public AmenitiesDTO createAmenities(Amenities amenities) {
+    public AmenitiesCreateDTO createAmenities(AmenitiesCreateDTO amenitiesCreateDTO) {
+        Amenities amenities = modelMapper.map(amenitiesCreateDTO, Amenities.class);
         Amenities savedAmenities = amenitiesRepository.save(amenities);
-        return modelMapper.map(savedAmenities, AmenitiesDTO.class);
+        return modelMapper.map(savedAmenities, AmenitiesCreateDTO.class);
     }
 
-    public AmenitiesDTO updateAmenities(Long id,Amenities amenities) {
+    public AmenitiesUpdateDTO updateAmenities(Long id, AmenitiesUpdateDTO amenitiesUpdateDTO) {
         Optional<Amenities> updatedAmenitiesOp = this.amenitiesRepository.findById(id);
+        Amenities amenities = modelMapper.map(amenitiesUpdateDTO, Amenities.class);
         if(updatedAmenitiesOp.isPresent()) {
             Amenities updatedAmenities = updatedAmenitiesOp.get();
             updatedAmenities.setName(amenities.getName());
             updatedAmenities.setDescription(amenities.getDescription());
             amenities = this.amenitiesRepository.save(updatedAmenities);
-            return modelMapper.map(amenities, AmenitiesDTO.class);
+            return modelMapper.map(amenities, AmenitiesUpdateDTO.class);
         }
         return null;
     }

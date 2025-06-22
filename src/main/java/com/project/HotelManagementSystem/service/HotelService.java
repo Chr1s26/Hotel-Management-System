@@ -1,9 +1,14 @@
     package com.project.HotelManagementSystem.service;
 
+    import com.project.HotelManagementSystem.dto.hotel.HotelCreateDTO;
     import com.project.HotelManagementSystem.dto.hotel.HotelDTO;
     import com.project.HotelManagementSystem.dto.hotel.HotelResponse;
+    import com.project.HotelManagementSystem.dto.hotel.HotelUpdateDTO;
     import com.project.HotelManagementSystem.entity.Hotel;
+    import com.project.HotelManagementSystem.repository.AmenitiesRepository;
     import com.project.HotelManagementSystem.repository.HotelRepository;
+    import com.project.HotelManagementSystem.repository.PolicyRepository;
+    import com.project.HotelManagementSystem.repository.PromotionRepository;
     import lombok.RequiredArgsConstructor;
     import org.modelmapper.ModelMapper;
     import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +19,7 @@
     import org.springframework.stereotype.Service;
 
     import java.util.ArrayList;
+    import java.util.HashSet;
     import java.util.List;
     import java.util.Optional;
     import java.util.stream.Collectors;
@@ -23,17 +29,23 @@
     public class HotelService {
 
         private final HotelRepository hotelRepository;
+        private final PolicyRepository policyRepository;
+        private final PromotionRepository promotionRepository;
 
         @Autowired
         private ModelMapper modelMapper;
 
-        public HotelDTO createHotel(Hotel hotel) {
+        public HotelCreateDTO createHotel(HotelCreateDTO hotelCreateDTO) {
+            Hotel hotel = modelMapper.map(hotelCreateDTO, Hotel.class);
+            hotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelCreateDTO.getPolicyIds())));
+            hotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelCreateDTO.getPromotionIds())));
             Hotel savedHotel = hotelRepository.save(hotel);
-            return modelMapper.map(savedHotel,HotelDTO.class);
+            return modelMapper.map(savedHotel,HotelCreateDTO.class);
         }
 
-        public HotelDTO updateHotel(Long id,Hotel hotel) {
+        public HotelUpdateDTO updateHotel(Long id, HotelUpdateDTO hotelUpdateDTO) {
             Optional<Hotel> optionalHotel = this.hotelRepository.findById(id);
+            Hotel hotel = modelMapper.map(hotelUpdateDTO, Hotel.class);
             if(optionalHotel.isPresent()) {
                 Hotel updatedHotel = optionalHotel.get();
                 updatedHotel.setName(hotel.getName());
@@ -44,8 +56,10 @@
                 updatedHotel.setHotelType(hotel.getHotelType());
                 updatedHotel.setAddress(hotel.getAddress());
                 updatedHotel.setPropertyDescription(hotel.getPropertyDescription());
+                updatedHotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelUpdateDTO.getPolicyIds())));
+                updatedHotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelUpdateDTO.getPromotionIds())));
                 Hotel savedHotel = this.hotelRepository.save(updatedHotel);
-                return modelMapper.map(savedHotel,HotelDTO.class);
+                return modelMapper.map(savedHotel,HotelUpdateDTO.class);
             }
             return null;
         }
@@ -57,9 +71,10 @@
             }
         }
 
-        public HotelDTO findHotelById(Long id) {
+        public HotelUpdateDTO findHotelById(Long id) {
             Hotel savedHotel = this.hotelRepository.findById(id).get();
-            return modelMapper.map(savedHotel,HotelDTO.class);
+            HotelUpdateDTO hotelUpdateDTO = modelMapper.map(savedHotel, HotelUpdateDTO.class);
+            return hotelUpdateDTO;
         }
 
         public HotelResponse findAllHotelsWithPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {

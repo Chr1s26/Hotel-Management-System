@@ -1,12 +1,12 @@
 package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.config.AppConstants;
+import com.project.HotelManagementSystem.dto.hotel.HotelCreateDTO;
 import com.project.HotelManagementSystem.dto.hotel.HotelDTO;
 import com.project.HotelManagementSystem.dto.hotel.HotelResponse;
+import com.project.HotelManagementSystem.dto.hotel.HotelUpdateDTO;
 import com.project.HotelManagementSystem.entity.Hotel;
-import com.project.HotelManagementSystem.service.AddressService;
-import com.project.HotelManagementSystem.service.HotelService;
-import com.project.HotelManagementSystem.service.PropertyDescriptionService;
+import com.project.HotelManagementSystem.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +22,8 @@ public class HotelController {
     private final HotelService hotelService;
     private final AddressService addressService;
     private final PropertyDescriptionService propertyDescriptionService;
+    private final PromotionService promotionService;
+    private final PolicyService policyService;
 
     @GetMapping
     public String getAllHotels(Model model,
@@ -40,15 +42,17 @@ public class HotelController {
 
     @GetMapping("/new")
     public String showCreateForm(Model model) {
-        model.addAttribute("hotel", new Hotel());
+        model.addAttribute("hotel", new HotelCreateDTO());
         model.addAttribute("addresses", this.addressService.findAllAddress());
         model.addAttribute("propertyDescriptions", this.propertyDescriptionService.findAllPropertyDescriptions());
+        model.addAttribute("promotions", this.promotionService.findAllPromotions());
+        model.addAttribute("policies", this.policyService.findAllPolicies());
         return "hotels/create";
     }
 
     @PostMapping("/create")
-    public String createHotel(@ModelAttribute Hotel hotel) {
-        this.hotelService.createHotel(hotel);
+    public String createHotel(@ModelAttribute HotelCreateDTO hotelCreateDTO) {
+        this.hotelService.createHotel(hotelCreateDTO);
         return "redirect:/hotels";
     }
 
@@ -57,12 +61,14 @@ public class HotelController {
         model.addAttribute("hotel", this.hotelService.findHotelById(id));
         model.addAttribute("addresses", this.addressService.findAllAddress());
         model.addAttribute("propertyDescriptions", this.propertyDescriptionService.findAllPropertyDescriptions());
+        model.addAttribute("promotions", this.promotionService.findAllPromotions());
+        model.addAttribute("policies", this.policyService.findAllPolicies());
         return "hotels/edit";
     }
 
     @PostMapping("/update/{id}")
-    public String updateHotel(@PathVariable Long id, @ModelAttribute Hotel hotel) {
-        this.hotelService.updateHotel(id, hotel);
+    public String updateHotel(@PathVariable Long id, @ModelAttribute HotelUpdateDTO hotelUpdateDTO) {
+        this.hotelService.updateHotel(id, hotelUpdateDTO);
         return "redirect:/hotels";
     }
 

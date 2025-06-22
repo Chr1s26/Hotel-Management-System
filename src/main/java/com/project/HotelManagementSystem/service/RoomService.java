@@ -1,10 +1,18 @@
 package com.project.HotelManagementSystem.service;
 
+import com.project.HotelManagementSystem.dto.room.RoomCreateDTO;
+import com.project.HotelManagementSystem.dto.room.RoomDTO;
+import com.project.HotelManagementSystem.dto.room.RoomUpdateDTO;
 import com.project.HotelManagementSystem.entity.Room;
+import com.project.HotelManagementSystem.repository.AmenitiesRepository;
+import com.project.HotelManagementSystem.repository.PromotionRepository;
 import com.project.HotelManagementSystem.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,13 +21,23 @@ import java.util.Optional;
 public class RoomService {
 
     private final RoomRepository roomRepository;
+    private final AmenitiesRepository amenitiesRepository;
+    private final PromotionRepository promotionRepository;
 
-    public Room createRoom(Room room) {
-        return roomRepository.save(room);
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public Room createRoom(RoomCreateDTO roomCreateDTO) {
+        Room room = modelMapper.map(roomCreateDTO, Room.class);
+        room.setAmenities(new HashSet<>(amenitiesRepository.findAllById(roomCreateDTO.getAmenityIds())));
+        room.setPromotions(new HashSet<>(promotionRepository.findAllById(roomCreateDTO.getPromotionIds())));
+        Room savedRoom = roomRepository.save(room);
+        return modelMapper.map(savedRoom, Room.class);
     }
 
-    public Room updateRoom(Long id,Room room) {
+    public RoomDTO updateRoom(Long id, RoomUpdateDTO roomUpdateDTO) {
         Optional<Room> roomOp = roomRepository.findById(id);
+        Room room = modelMapper.map(roomUpdateDTO, Room.class);
         if (roomOp.isPresent()) {
             Room updatedRoom = roomOp.get();
             updatedRoom.setPrice(room.getPrice());
@@ -28,7 +46,10 @@ public class RoomService {
             updatedRoom.setRoomType(room.getRoomType());
             updatedRoom.setMaxCapacity(room.getMaxCapacity());
             updatedRoom.setHotel(room.getHotel());
-            return roomRepository.save(updatedRoom);
+            updatedRoom.setAmenities(new HashSet<>(amenitiesRepository.findAllById(roomUpdateDTO.getAmenityIds())));
+            updatedRoom.setPromotions(new HashSet<>(promotionRepository.findAllById(roomUpdateDTO.getPromotionIds())));
+            Room savedRoom = roomRepository.save(updatedRoom);
+            return modelMapper.map(savedRoom, RoomDTO.class);
         }
         return null;
     }
@@ -40,8 +61,9 @@ public class RoomService {
         }
     }
 
-    public Room findRoomById(Long id) {
-        return roomRepository.findById(id).orElse(null);
+    public RoomUpdateDTO findRoomById(Long id) {
+        Room room = roomRepository.findById(id).orElse(null);
+        return modelMapper.map(room, RoomUpdateDTO.class);
     }
 
     public List<Room> findAllRooms() {

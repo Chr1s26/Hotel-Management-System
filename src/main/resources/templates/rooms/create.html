@@ -50,7 +50,55 @@
         .btn-secondary:hover {
             background-color: #555555;
             border-color: #555555;
+            color: white;}
+
+        /* Match form background and white text for single select */
+        .select2-container--default .select2-selection--single {
+            background-color: #6E6E6E; /* Match form background */
             color: white;
+            border: 1px solid #999;
+        }
+
+        /* Match form background and white text for multi-select */
+        .select2-container--default .select2-selection--multiple {
+            background-color: #6E6E6E;
+            color: white;
+            border: 1px solid #999;
+        }
+
+        /* White text inside the dropdown list */
+        .select2-container--default .select2-results__option {
+            color: white;
+            background-color: #6E6E6E;
+        }
+
+        /* Highlighted option */
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #7F7F7F;
+            color: white;
+        }
+
+        /* Placeholder text */
+        .select2-container--default .select2-selection--single .select2-selection__placeholder {
+            color: black;
+            font-weight: bold;
+            text-shadow: 0 0 2px #000000;
+        }
+
+        /* Tag style for multiple select selections */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #555555;
+            border: none;
+            color: white;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: white !important;          /* Ensure selected text is white */
+        }
+
+        /* Selected item in dropdown list (highlighted) */
+        .select2-container--default .select2-results__option[aria-selected="true"] {
+            background-color: #444444 !important;  /* Slightly different to indicate selection */
+            color: white !important;
         }
     </style>
 </head>
@@ -98,6 +146,26 @@
         </select>
         <div class="text-danger" th:if="${#fields.hasErrors('hotel')}" th:errors="*{hotel}"></div>
     </div>
+    <div class="mb-3">
+        <label class="form-label">Amenities</label>
+        <select class="form-select" id="amenities-select" th:field="*{amenityIds}" multiple>
+            <option th:each="am : ${amenities}"
+                    th:value="${am.id}"
+                    th:text="${am.name}">
+            </option>
+        </select>
+<!--        <div class="text-danger" th:if="${#fields.hasErrors('amenityIds')}" th:errors="*{amenityIds}"></div>-->
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Promotions</label>
+        <select class="form-select" id="promotions-select" th:field="*{promotionIds}" multiple>
+            <option th:each="promo : ${promotions}"
+                    th:value="${promo.id}"
+                    th:text="${promo.code}">
+            </option>
+        </select>
+<!--        <div class="text-danger" th:if="${#fields.hasErrors('promotionIds')}" th:errors="*{promotionIds}"></div>-->
+    </div>
     <button type="submit" class="btn btn-primary">Save</button>
     <a class="btn btn-secondary" th:href="@{/rooms}">Cancel</a>
 </form>
@@ -109,6 +177,23 @@
         $('#hotel-select').select2({
             placeholder: "Select or type a hotel",
             allowClear: true,
+            width: '100%'
+        });
+    });
+    $(document).ready(function() {
+        $('#hotel-select').select2({
+            placeholder: "Select or type a hotel",
+            allowClear: true,
+            width: '100%'
+        });
+
+        $('#amenities-select').select2({
+            placeholder: "Select amenities",
+            width: '100%'
+        });
+
+        $('#promotions-select').select2({
+            placeholder: "Select promotions",
             width: '100%'
         });
     });

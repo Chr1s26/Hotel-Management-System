@@ -2,8 +2,10 @@ package com.project.HotelManagementSystem.controller;
 
 
 import com.project.HotelManagementSystem.config.AppConstants;
+import com.project.HotelManagementSystem.dto.policy.PolicyCreateDTO;
 import com.project.HotelManagementSystem.dto.policy.PolicyDTO;
 import com.project.HotelManagementSystem.dto.policy.PolicyResponse;
+import com.project.HotelManagementSystem.dto.policy.PolicyUpdateDTO;
 import com.project.HotelManagementSystem.entity.Policy;
 import com.project.HotelManagementSystem.service.PolicyService;
 import lombok.RequiredArgsConstructor;
@@ -37,13 +39,13 @@ public class PolicyController {
 
     @GetMapping("/new")
     public String showCreateForm(Model model) {
-        model.addAttribute("policy", new Policy());
+        model.addAttribute("policy", new PolicyCreateDTO());
         return "policies/create";
     }
 
     @PostMapping("/create")
-    public String createPolicy(@ModelAttribute Policy policy) {
-        policyService.createPolicy(policy);
+    public String createPolicy(@ModelAttribute PolicyCreateDTO policyCreateDTO) {
+        policyService.createPolicy(policyCreateDTO);
         return "redirect:/policies";
     }
 
@@ -54,8 +56,8 @@ public class PolicyController {
     }
 
     @PostMapping("/update/{id}")
-    public String updatePolicy(@PathVariable Long id, @ModelAttribute Policy policy) {
-        policyService.updatePolicy(id, policy);
+    public String updatePolicy(@PathVariable Long id, @ModelAttribute PolicyUpdateDTO policyUpdateDTO) {
+        policyService.updatePolicy(id, policyUpdateDTO);
         return "redirect:/policies";
     }
 

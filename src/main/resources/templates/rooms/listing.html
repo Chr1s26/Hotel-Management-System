@@ -86,7 +86,7 @@
 
 <table class="table table-bordered">
     <thead>
-    <tr><th>ID</th><th>Price</th><th>Is Available</th><th>Description</th><th>Room Type</th><th>Max Capacity</th><th>Hotel</th></tr>
+    <tr><th>ID</th><th>Price</th><th>Is Available</th><th>Description</th><th>Room Type</th><th>Max Capacity</th><th>Hotel</th><th>Amenities</th><th>Promotion</th></tr>
     </thead>
     <tbody>
     <tr th:each="room : ${rooms}">
@@ -97,6 +97,16 @@
         <td th:text="${room.roomType}"></td>
         <td th:text="${room.maxCapacity}"></td>
         <td th:text="${room.hotel}"></td>
+        <td>
+            <ul class="list-unstyled mb-0" th:if="${room.amenities != null}">
+                <li th:each="a : ${room.amenities}" th:text="${a.name}"></li>
+            </ul>
+        </td>
+        <td>
+            <ul class="list-unstyled mb-0" th:if="${room.promotions != null}">
+                <li th:each="p : ${room.promotions}" th:text="${p.code}"></li>
+            </ul>
+        </td>
         <td>
             <a class="btn btn-sm btn-warning" th:href="@{'/rooms/edit/' + ${room.id}}">Edit</a>
             <a class="btn btn-sm btn-danger" th:href="@{'/rooms/delete/' + ${room.id}}">Delete</a>

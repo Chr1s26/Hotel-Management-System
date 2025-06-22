@@ -1,7 +1,9 @@
 package com.project.HotelManagementSystem.service;
 
+import com.project.HotelManagementSystem.dto.city.CityCreateDTO;
 import com.project.HotelManagementSystem.dto.city.CityDTO;
 import com.project.HotelManagementSystem.dto.city.CityResponse;
+import com.project.HotelManagementSystem.dto.city.CityUpdateDTO;
 import com.project.HotelManagementSystem.entity.City;
 import com.project.HotelManagementSystem.repository.CityRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,19 +27,21 @@ public class CityService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public CityDTO createCity(City city) {
+    public CityCreateDTO createCity(CityCreateDTO cityCreateDTO) {
+        City city = modelMapper.map(cityCreateDTO, City.class);
         City savedCity = cityRepository.save(city);
-        return modelMapper.map(savedCity,CityDTO.class);
+        return modelMapper.map(savedCity,CityCreateDTO.class);
     }
 
-    public CityDTO updateCity(Long id,City city) {
+    public CityUpdateDTO updateCity(Long id, CityUpdateDTO cityUpdateDTO) {
         Optional<City> cityOp = cityRepository.findById(id);
+        City city = modelMapper.map(cityUpdateDTO, City.class);
         if(cityOp.isPresent()){
             City updatedCity = cityOp.get();
             updatedCity.setName(city.getName());
             updatedCity.setRegion(city.getRegion());
             City savedCity = cityRepository.save(updatedCity);
-            return modelMapper.map(savedCity,CityDTO.class);
+            return modelMapper.map(savedCity,CityUpdateDTO.class);
         }
         return null;
     }

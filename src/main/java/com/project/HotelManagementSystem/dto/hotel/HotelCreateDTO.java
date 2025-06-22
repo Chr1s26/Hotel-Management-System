@@ -1,8 +1,6 @@
 package com.project.HotelManagementSystem.dto.hotel;
 
 import com.project.HotelManagementSystem.entity.Address;
-import com.project.HotelManagementSystem.entity.Policy;
-import com.project.HotelManagementSystem.entity.Promotion;
 import com.project.HotelManagementSystem.entity.PropertyDescription;
 import com.project.HotelManagementSystem.entity.constants.HotelType;
 import lombok.AllArgsConstructor;
@@ -15,7 +13,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class HotelDTO {
+public class HotelCreateDTO {
     private Long id;
     private String name;
     private String phoneNumber;
@@ -25,6 +23,6 @@ public class HotelDTO {
     private HotelType hotelType;
     private Address address;
     private PropertyDescription propertyDescription;
-    private Set<Promotion> promotions = new HashSet<>();
-    private Set<Policy>  policies = new HashSet<>();
+    private Set<Long> promotionIds = new HashSet<>();
+    private Set<Long> policyIds = new HashSet<>();
 }
