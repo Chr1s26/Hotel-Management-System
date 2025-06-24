@@ -50,7 +50,7 @@ public class Hotel {
     @JoinColumn(name = "propertyDescription_id")
     private PropertyDescription propertyDescription;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "hotel_policy",
     joinColumns = @JoinColumn(name = "hotel_id"),
     inverseJoinColumns = @JoinColumn(name = "policy_id"))
@@ -68,7 +68,7 @@ public class Hotel {
     @OneToMany(mappedBy = "hotel",cascade = CascadeType.ALL)
     private List<Invoice> invoices = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "hotel_promotion",
             joinColumns = @JoinColumn(name = "hotel_id"),
             inverseJoinColumns = @JoinColumn(name = "promotion_id"))
@@ -77,5 +77,10 @@ public class Hotel {
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

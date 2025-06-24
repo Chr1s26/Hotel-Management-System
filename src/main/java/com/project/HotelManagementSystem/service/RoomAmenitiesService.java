@@ -13,11 +13,11 @@ public class RoomAmenitiesService {
     private final RoomService roomService;
     private final AmenitiesService amenitiesService;
     private final RoomRepository roomRepository;
-
-    public Room addAmenitiesToRoom(Long roomId,Long amenityId) {
-        Room room = roomService.findRoomById(roomId);
-        Amenities amenities = amenitiesService.findAmenitiesById(amenityId);
-        room.getAmenities().add(amenities);
-        return roomRepository.save(room);
-    }
+//
+//    public Room addAmenitiesToRoom(Long roomId,Long amenityId) {
+////        Room room = roomService.findRoomById(roomId);
+////        Amenities amenities = amenitiesService.findAmenitiesById(amenityId);
+////        room.getAmenities().add(amenities);
+//        return roomRepository.save(room);
+//    }
 }

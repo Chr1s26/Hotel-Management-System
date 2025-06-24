@@ -1,5 +1,10 @@
 package com.project.HotelManagementSystem.controller;
 
+import com.project.HotelManagementSystem.config.AppConstants;
+import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionCreateDTO;
+import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionDTO;
+import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionResponse;
+import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionUpdateDTO;
 import com.project.HotelManagementSystem.entity.PropertyDescription;
 import com.project.HotelManagementSystem.service.PropertyDescriptionService;
 import lombok.AllArgsConstructor;
@@ -7,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -16,20 +23,29 @@ public class PropertyDescriptionController {
     private final PropertyDescriptionService propertyDescriptionService;
 
     @GetMapping
-    public String getAllPropertyDescriptions(Model model) {
-        model.addAttribute("propertyDescriptions", propertyDescriptionService.findAllPropertyDescriptions());
+    public String getAllPropertyDescriptions(Model model,
+                                             @RequestParam(defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
+                                             @RequestParam(defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
+                                             @RequestParam(defaultValue = AppConstants.SORT_BY_Id) String sortBy,
+                                             @RequestParam(defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
+        PropertyDescriptionResponse propertyDescriptionResponse = propertyDescriptionService.findAllPropertyDescriptionsWithPagination(pageNumber,pageSize,sortBy,sortOrder);
+        List<PropertyDescriptionDTO> propertyDescriptionDTOList = propertyDescriptionResponse.getPropertyDescriptions();
+        model.addAttribute("propertyDescriptions", propertyDescriptionDTOList);
+        model.addAttribute("response",propertyDescriptionResponse);
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("sortOrder", sortOrder);
         return "propertyDescriptions/listing";
     }
 
     @GetMapping("/new")
     public String showCreateForm(Model model) {
-        model.addAttribute("propertyDescription", new PropertyDescription());
+        model.addAttribute("propertyDescription", new PropertyDescriptionCreateDTO());
         return "propertyDescriptions/create";
     }
 
     @PostMapping("/create")
-    public String createPropertyDescription(@ModelAttribute PropertyDescription propertyDescription) {
-        this.propertyDescriptionService.createPropertyDescription(propertyDescription);
+    public String createPropertyDescription(@ModelAttribute PropertyDescriptionCreateDTO propertyDescriptionCreateDTO) {
+        this.propertyDescriptionService.createPropertyDescription(propertyDescriptionCreateDTO);
         return "redirect:/propertyDescriptions";
     }
 
@@ -40,8 +56,8 @@ public class PropertyDescriptionController {
     }
 
     @PostMapping("/update/{id}")
-    public String updatePropertyDescription(@PathVariable Long id, @ModelAttribute PropertyDescription propertyDescription) {
-        this.propertyDescriptionService.updatePropertyDescription(id, propertyDescription);
+    public String updatePropertyDescription(@PathVariable Long id, @ModelAttribute PropertyDescriptionUpdateDTO propertyDescriptionUpdateDTO) {
+        this.propertyDescriptionService.updatePropertyDescription(id, propertyDescriptionUpdateDTO);
         return "redirect:/propertyDescriptions";
     }
 

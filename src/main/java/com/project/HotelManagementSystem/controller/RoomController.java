@@ -1,12 +1,21 @@
 package com.project.HotelManagementSystem.controller;
 
+import com.project.HotelManagementSystem.config.AppConstants;
+import com.project.HotelManagementSystem.dto.room.RoomCreateDTO;
+import com.project.HotelManagementSystem.dto.room.RoomDTO;
+import com.project.HotelManagementSystem.dto.room.RoomResponse;
+import com.project.HotelManagementSystem.dto.room.RoomUpdateDTO;
 import com.project.HotelManagementSystem.entity.Room;
+import com.project.HotelManagementSystem.service.AmenitiesService;
 import com.project.HotelManagementSystem.service.HotelService;
+import com.project.HotelManagementSystem.service.PromotionService;
 import com.project.HotelManagementSystem.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -15,22 +24,35 @@ public class RoomController {
 
     private final RoomService roomService;
     private final HotelService hotelService;
+    private final AmenitiesService amenitiesService;
+    private final PromotionService promotionService;
 
     @GetMapping
-    public String getAllRooms(Model model) {
-        model.addAttribute("rooms", roomService.findAllRooms());
+    public String getAllRooms(Model model,
+                              @RequestParam(defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
+                              @RequestParam(defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
+                              @RequestParam(defaultValue = AppConstants.SORT_BY_Id) String sortBy,
+                              @RequestParam(defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
+        RoomResponse roomResponse = roomService.findAllRoomsWithPagination(pageNumber,pageSize,sortBy,sortOrder);
+        List<RoomDTO> roomDTOList = roomResponse.getRooms();
+        model.addAttribute("rooms",roomDTOList);
+        model.addAttribute("response",roomResponse);
+        model.addAttribute("sortBy",sortBy);
+        model.addAttribute("sortOrder",sortOrder);
         return "rooms/listing";
     }
     @GetMapping("/new")
     public String showCreateForm(Model model) {
-        model.addAttribute("room", new Room());
+        model.addAttribute("room", new RoomCreateDTO());
         model.addAttribute("hotels", hotelService.findAllHotels());
+        model.addAttribute("amenities", amenitiesService.findAllAmenities());
+        model.addAttribute("promotions", promotionService.findAllPromotions());
         return "rooms/create";
     }
 
     @PostMapping("/create")
-    public String createRoom(@ModelAttribute Room room) {
-        roomService.createRoom(room);
+    public String createRoom(@ModelAttribute RoomCreateDTO roomCreateDTO) {
+        roomService.createRoom(roomCreateDTO);
         return "redirect:/rooms";
     }
 
@@ -38,12 +60,14 @@ public class RoomController {
     public String showEditForm(@PathVariable Long id, Model model) {
         model.addAttribute("room", roomService.findRoomById(id));
         model.addAttribute("hotels", hotelService.findAllHotels());
+        model.addAttribute("amenities", amenitiesService.findAllAmenities());
+        model.addAttribute("promotions", promotionService.findAllPromotions());
         return "rooms/edit";
     }
 
     @PostMapping("/update/{id}")
-    public String updateRoom(@PathVariable Long id, @ModelAttribute Room room) {
-        roomService.updateRoom(id, room);
+    public String updateRoom(@PathVariable Long id, @ModelAttribute RoomUpdateDTO RoomUpdateDTO) {
+        roomService.updateRoom(id, RoomUpdateDTO);
         return "redirect:/rooms";
     }
 

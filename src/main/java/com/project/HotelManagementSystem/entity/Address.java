@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @Table(name = "addresses")
-public class Address {
+public class  Address {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +38,6 @@ public class Address {
 
     @Override
     public String toString() {
-        return " Road = "+road+" Lat = "+latitude+" Long = "+longitude+"Zip Code = "+zipCode;
+        return " Road = "+road+". Lat = "+latitude+". Long = "+longitude+". Zip Code = "+zipCode;
     }
 }
