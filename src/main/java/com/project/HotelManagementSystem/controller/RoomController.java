@@ -1,7 +1,9 @@
 package com.project.HotelManagementSystem.controller;
 
+import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.room.RoomCreateDTO;
 import com.project.HotelManagementSystem.dto.room.RoomDTO;
+import com.project.HotelManagementSystem.dto.room.RoomResponse;
 import com.project.HotelManagementSystem.dto.room.RoomUpdateDTO;
 import com.project.HotelManagementSystem.entity.Room;
 import com.project.HotelManagementSystem.service.AmenitiesService;
@@ -12,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,8 +28,17 @@ public class RoomController {
     private final PromotionService promotionService;
 
     @GetMapping
-    public String getAllRooms(Model model) {
-        model.addAttribute("rooms", roomService.findAllRooms());
+    public String getAllRooms(Model model,
+                              @RequestParam(defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
+                              @RequestParam(defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
+                              @RequestParam(defaultValue = AppConstants.SORT_BY_Id) String sortBy,
+                              @RequestParam(defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
+        RoomResponse roomResponse = roomService.findAllRoomsWithPagination(pageNumber,pageSize,sortBy,sortOrder);
+        List<RoomDTO> roomDTOList = roomResponse.getRooms();
+        model.addAttribute("rooms",roomDTOList);
+        model.addAttribute("response",roomResponse);
+        model.addAttribute("sortBy",sortBy);
+        model.addAttribute("sortOrder",sortOrder);
         return "rooms/listing";
     }
     @GetMapping("/new")

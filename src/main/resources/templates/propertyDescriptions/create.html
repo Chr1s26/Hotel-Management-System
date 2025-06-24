@@ -68,11 +68,6 @@
         <div class="text-danger" th:if="${#fields.hasErrors('openingDate')}" th:errors="*{openingDate}"></div>
     </div>
     <div class="mb-3">
-        <label class="form-label">Renovation Date</label>
-        <input type="date" th:field="*{renovationDate}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('renovationDate')}" th:errors="*{renovationDate}"></div>
-    </div>
-    <div class="mb-3">
         <label class="form-label">Number Of Rooms</label>
         <input type="text" th:field="*{numberOfRooms}" class="form-control"/>
         <div class="text-danger" th:if="${#fields.hasErrors('numberOfRooms')}" th:errors="*{numberOfRooms}"></div>
