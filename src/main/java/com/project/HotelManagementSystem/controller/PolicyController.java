@@ -8,9 +8,11 @@ import com.project.HotelManagementSystem.dto.policy.PolicyResponse;
 import com.project.HotelManagementSystem.dto.policy.PolicyUpdateDTO;
 import com.project.HotelManagementSystem.entity.Policy;
 import com.project.HotelManagementSystem.service.PolicyService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,7 +46,10 @@ public class PolicyController {
     }
 
     @PostMapping("/create")
-    public String createPolicy(@ModelAttribute PolicyCreateDTO policyCreateDTO) {
+    public String createPolicy(@Valid @ModelAttribute("policy") PolicyCreateDTO policyCreateDTO, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            return "policies/create";
+        }
         policyService.createPolicy(policyCreateDTO);
         return "redirect:/policies";
     }
@@ -56,7 +61,10 @@ public class PolicyController {
     }
 
     @PostMapping("/update/{id}")
-    public String updatePolicy(@PathVariable Long id, @ModelAttribute PolicyUpdateDTO policyUpdateDTO) {
+    public String updatePolicy(@PathVariable Long id,@Valid @ModelAttribute("policy") PolicyUpdateDTO policyUpdateDTO, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            return "policies/edit";
+        }
         policyService.updatePolicy(id, policyUpdateDTO);
         return "redirect:/policies";
     }

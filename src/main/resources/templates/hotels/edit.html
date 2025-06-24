@@ -96,6 +96,8 @@
 
 <form th:action="@{/hotels/update/{id}(id=${hotel.id})}" th:object="${hotel}" method="post" class="needs-validation">
 
+    <input type="hidden" th:field="*{id}" />
+
     <div class="mb-3">
         <label class="form-label">Name</label>
         <input type="text" th:field="*{name}" class="form-control"/>

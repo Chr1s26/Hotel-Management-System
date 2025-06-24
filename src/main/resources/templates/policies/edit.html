@@ -57,6 +57,7 @@
 <div th:replace="fragments/navbar :: navbar"></div>
 <h2>Update Policy</h2>
 <form th:action="@{/policies/update/{id}(id=${policy.id})}" th:object="${policy}" method="post" class="needs-validation">
+    <input type="hidden" th:field="*{id}" />
     <div class="mb-3">
         <label class="form-label">Title</label>
         <input type="text" th:field="*{title}" class="form-control"/>
