@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -105,7 +106,8 @@ public class PolicyRepositoryTest {
         policyRepository.save(new Policy(null, "P2", "D2", "All", null));
         policyRepository.save(new Policy(null, "P3", "D3", "All", null));
 
-        Page<Policy> page = policyRepository.findAll(PageRequest.of(0, 2));
+        Sort sortByAndSortOrder = Sort.by("id").ascending();
+        Page<Policy> page = policyRepository.findAll(PageRequest.of(0, 2,sortByAndSortOrder));
 
         Assertions.assertThat(page.getContent().size()).isEqualTo(2);
         Assertions.assertThat(page.getTotalElements()).isEqualTo(3);
