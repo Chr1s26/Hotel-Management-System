@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -91,7 +92,8 @@ public class CountryRepositoryTest {
         countryRepository.save(new Country(null, "Vietnam", null));
         countryRepository.save(new Country(null, "Brunei", null));
 
-        Page<Country> page = countryRepository.findAll(PageRequest.of(0, 2));
+        Sort sortByAndSortOrder = Sort.by("id").ascending();
+        Page<Country> page = countryRepository.findAll(PageRequest.of(0, 2,sortByAndSortOrder));
 
         Assertions.assertThat(page.getContent().size()).isEqualTo(2);
         Assertions.assertThat(page.getTotalElements()).isEqualTo(3);

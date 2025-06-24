@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -97,7 +98,8 @@ public class PromotionRepositoryTest {
         promotionRepository.save(createPromotion("PAGE2"));
         promotionRepository.save(createPromotion("PAGE3"));
 
-        Page<Promotion> page = promotionRepository.findAll(PageRequest.of(0, 2));
+        Sort sortByAndSortOrder = Sort.by("id").ascending();
+        Page<Promotion> page = promotionRepository.findAll(PageRequest.of(0, 2,sortByAndSortOrder));
 
         Assertions.assertThat(page.getContent().size()).isEqualTo(2);
         Assertions.assertThat(page.getTotalElements()).isEqualTo(3);

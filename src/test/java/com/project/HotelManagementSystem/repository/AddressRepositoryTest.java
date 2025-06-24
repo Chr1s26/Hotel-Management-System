@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -104,7 +105,8 @@ public class AddressRepositoryTest {
         addressRepository.save(a2);
         addressRepository.save(a3);
 
-        Page<Address> page = addressRepository.findAll(PageRequest.of(0, 2));
+        Sort sortByAndSortOrder = Sort.by("id").ascending();
+        Page<Address> page = addressRepository.findAll(PageRequest.of(0, 2,sortByAndSortOrder));
 
         Assertions.assertThat(page.getContent()).hasSize(2);
         Assertions.assertThat(page.getTotalElements()).isEqualTo(3);
