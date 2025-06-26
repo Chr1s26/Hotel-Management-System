@@ -5,6 +5,7 @@ import com.project.HotelManagementSystem.dto.country.CountryDTO;
 import com.project.HotelManagementSystem.dto.country.CountryResponse;
 import com.project.HotelManagementSystem.dto.country.CountryUpdateDTO;
 import com.project.HotelManagementSystem.entity.Country;
+import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -47,14 +48,12 @@ public class CountryService {
     }
 
     public void deleteCountry(Long id) {
-        Optional<Country> optionalCountry = countryRepository.findById(id);
-        if(optionalCountry.isPresent()) {
-            this.countryRepository.deleteById(id);
-        }
+        Country country = countryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Country", "id", id));
+        this.countryRepository.deleteById(id);
     }
 
     public CountryDTO findCountryById(Long id) {
-        Country country = countryRepository.findById(id).get();
+        Country country = countryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Country", "id", id));
         return modelMapper.map(country,CountryDTO.class);
     }
 

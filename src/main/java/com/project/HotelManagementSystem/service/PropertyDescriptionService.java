@@ -1,6 +1,7 @@
 package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.entity.PropertyDescription;
+import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.PropertyDescriptionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,15 +39,13 @@ public class PropertyDescriptionService {
     }
 
     public void deletePropertyDescription(Long id) {
-        Optional<PropertyDescription> optionalPropertyDescription = this.propertyDescriptionRepository.findById(id);
-        if(optionalPropertyDescription.isPresent()) {
-            this.propertyDescriptionRepository.deleteById(id);
-        }
+        PropertyDescription propertyDescription = this.propertyDescriptionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("PropertyDescription", "id", id));
+        this.propertyDescriptionRepository.deleteById(id);
     }
 
     public PropertyDescription findPropertyDescriptionById(Long id) {
-        Optional<PropertyDescription> optionalPropertyDescription = this.propertyDescriptionRepository.findById(id);
-        return optionalPropertyDescription.orElse(null);
+        PropertyDescription propertyDescription = this.propertyDescriptionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("PropertyDescription", "id", id));
+        return propertyDescription;
     }
 
     public List<PropertyDescription> findAllPropertyDescriptions() {

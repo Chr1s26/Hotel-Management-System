@@ -5,6 +5,8 @@ import com.project.HotelManagementSystem.dto.amenities.AmenitiesDTO;
 import com.project.HotelManagementSystem.dto.amenities.AmenitiesResponse;
 import com.project.HotelManagementSystem.dto.amenities.AmenitiesUpdateDTO;
 import com.project.HotelManagementSystem.entity.Amenities;
+import com.project.HotelManagementSystem.exception.ApiException;
+import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.AmenitiesRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -47,14 +49,12 @@ public class AmenitiesService {
     }
 
     public void deleteAmenities(Long id) {
-        Optional<Amenities> amenitiesOp = this.amenitiesRepository.findById(id);
-        if(amenitiesOp.isPresent()) {
-            this.amenitiesRepository.deleteById(id);
-        }
+        Amenities amenities = this.amenitiesRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Amenities","id",id));
+        this.amenitiesRepository.delete(amenities);
     }
 
     public AmenitiesDTO findAmenitiesById(Long id) {
-        Amenities amenities = this.amenitiesRepository.findById(id).get();
+        Amenities amenities = this.amenitiesRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Amenities","id",id));
         return modelMapper.map(amenities, AmenitiesDTO.class);
     }
 

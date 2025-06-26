@@ -5,6 +5,7 @@
     import com.project.HotelManagementSystem.dto.hotel.HotelResponse;
     import com.project.HotelManagementSystem.dto.hotel.HotelUpdateDTO;
     import com.project.HotelManagementSystem.entity.Hotel;
+    import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
     import com.project.HotelManagementSystem.repository.AmenitiesRepository;
     import com.project.HotelManagementSystem.repository.HotelRepository;
     import com.project.HotelManagementSystem.repository.PolicyRepository;
@@ -65,15 +66,13 @@
         }
 
         public void deleteHotel(Long id) {
-            Optional<Hotel> optionalHotel = hotelRepository.findById(id);
-            if(optionalHotel.isPresent()) {
-                this.hotelRepository.deleteById(id);
-            }
+            Hotel hotel = hotelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Hotel", "id", id));
+            this.hotelRepository.deleteById(id);
         }
 
         public HotelUpdateDTO findHotelById(Long id) {
-            Hotel savedHotel = this.hotelRepository.findById(id).get();
-            HotelUpdateDTO hotelUpdateDTO = modelMapper.map(savedHotel, HotelUpdateDTO.class);
+            Hotel hotel = hotelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Hotel", "id", id));
+            HotelUpdateDTO hotelUpdateDTO = modelMapper.map(hotel, HotelUpdateDTO.class);
             return hotelUpdateDTO;
         }
 

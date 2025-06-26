@@ -5,6 +5,7 @@ import com.project.HotelManagementSystem.dto.city.CityDTO;
 import com.project.HotelManagementSystem.dto.city.CityResponse;
 import com.project.HotelManagementSystem.dto.city.CityUpdateDTO;
 import com.project.HotelManagementSystem.entity.City;
+import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CityRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -47,14 +48,12 @@ public class CityService {
     }
 
     public void deleteCity(Long id) {
-        Optional<City> cityOp = cityRepository.findById(id);
-        if(cityOp.isPresent()){
-            cityRepository.deleteById(id);
-        }
+        City city = cityRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("City", "id", id));
+        cityRepository.delete(city);
     }
 
     public CityDTO findCityById(Long id) {
-        City city = cityRepository.findById(id).get();
+        City city = cityRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("City", "id", id));
         return modelMapper.map(city,CityDTO.class);
     }
 

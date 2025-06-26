@@ -5,6 +5,7 @@ import com.project.HotelManagementSystem.dto.policy.PolicyDTO;
 import com.project.HotelManagementSystem.dto.policy.PolicyResponse;
 import com.project.HotelManagementSystem.dto.policy.PolicyUpdateDTO;
 import com.project.HotelManagementSystem.entity.Policy;
+import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.PolicyRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -49,14 +50,12 @@ public class PolicyService {
     }
 
     public void deletePolicy(Long id) {
-        Optional<Policy> policyOp = policyRepository.findById(id);
-        if(policyOp.isPresent()) {
-            policyRepository.deleteById(id);
-        }
+        Policy policy = policyRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Policy", "id", id));
+        policyRepository.deleteById(id);
     }
 
     public PolicyDTO findPolicyById(Long id) {
-        Policy policy = this.policyRepository.findById(id).get();
+        Policy policy = policyRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Policy", "id", id));
         return modelMapper.map(policy,PolicyDTO.class);
     }
 

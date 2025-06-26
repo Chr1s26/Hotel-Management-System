@@ -5,6 +5,7 @@ import com.project.HotelManagementSystem.dto.promotion.PromotionDTO;
 import com.project.HotelManagementSystem.dto.promotion.PromotionResponse;
 import com.project.HotelManagementSystem.dto.promotion.PromotionUpdateDTO;
 import com.project.HotelManagementSystem.entity.Promotion;
+import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.PromotionRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -59,14 +60,12 @@ public class PromotionService {
     }
 
     public void deletePromotion(Long id) {
-        Optional<Promotion> promotionOp = promotionRepository.findById(id);
-        if(promotionOp.isPresent()) {
-            promotionRepository.deleteById(id);
-        }
+        Promotion promotion = promotionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Promotion", "id", id));
+        promotionRepository.deleteById(id);
     }
 
     public PromotionDTO findPromotionById(Long id) {
-        Promotion promotion = promotionRepository.findById(id).get();
+        Promotion promotion = promotionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Promotion", "id", id));
         return modelMapper.map(promotion,PromotionDTO.class);
     }
 

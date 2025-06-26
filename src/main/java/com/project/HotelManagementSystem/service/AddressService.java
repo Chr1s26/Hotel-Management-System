@@ -6,6 +6,8 @@ import com.project.HotelManagementSystem.dto.address.AddressDTO;
 import com.project.HotelManagementSystem.dto.address.AddressResponse;
 import com.project.HotelManagementSystem.dto.address.AddressUpdateDTO;
 import com.project.HotelManagementSystem.entity.Address;
+import com.project.HotelManagementSystem.exception.ApiException;
+import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.AddressRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,15 +55,13 @@ public class AddressService {
     }
 
     public void deleteAddress(Long id) {
-        Optional<Address> addressOp = addressRepository.findById(id);
-        if(addressOp.isPresent()) {
-            addressRepository.deleteById(id);
-        }
+        Address address = addressRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Address", "id", id));
+        addressRepository.delete(address);
     }
 
     public AddressDTO findAddressById(Long id) {
-        Address addressOp = addressRepository.findById(id).get();
-        return modelMapper.map(addressOp,AddressDTO.class);
+        Address address = addressRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Address", "id", id));
+        return modelMapper.map(address,AddressDTO.class);
     }
 
     public AddressResponse findAllAddressWithPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
