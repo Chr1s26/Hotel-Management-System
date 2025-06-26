@@ -54,7 +54,7 @@ public class RegionService {
     }
 
     public RegionDTO findRegionById(Long id) {
-        Region region = regionRepository.findById(id).orElse(null);
+        Region region = regionRepository.findById(id).get();
         return modelMapper.map(region, RegionDTO.class);
     }
 

@@ -67,7 +67,7 @@ public class RoomService {
     }
 
     public RoomDTO findRoomById(Long id) {
-        Room room = roomRepository.findById(id).orElse(null);
+        Room room = roomRepository.findById(id).get();
         return modelMapper.map(room, RoomDTO.class);
     }
 

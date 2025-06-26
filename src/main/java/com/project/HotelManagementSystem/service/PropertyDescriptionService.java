@@ -59,7 +59,7 @@ public class PropertyDescriptionService {
     }
 
     public PropertyDescriptionDTO findPropertyDescriptionById(Long id) {
-        PropertyDescription propertyDescription = this.propertyDescriptionRepository.findById(id).orElse(null);
+        PropertyDescription propertyDescription = this.propertyDescriptionRepository.findById(id).get();
         return modelMapper.map(propertyDescription, PropertyDescriptionDTO.class);
     }
 
