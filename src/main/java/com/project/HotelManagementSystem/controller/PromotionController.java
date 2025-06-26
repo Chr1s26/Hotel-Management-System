@@ -7,9 +7,11 @@ import com.project.HotelManagementSystem.dto.promotion.PromotionResponse;
 import com.project.HotelManagementSystem.dto.promotion.PromotionUpdateDTO;
 import com.project.HotelManagementSystem.entity.Promotion;
 import com.project.HotelManagementSystem.service.PromotionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,7 +45,10 @@ public class PromotionController {
     }
 
     @PostMapping("/create")
-    public String createPromotion(@ModelAttribute PromotionCreateDTO promotionCreateDTO) {
+    public String createPromotion(@Valid @ModelAttribute("promotion") PromotionCreateDTO promotionCreateDTO, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            return "promotions/create";
+        }
         this.promotionService.createPromotion(promotionCreateDTO);
         return "redirect:/promotions";
     }
@@ -55,7 +60,10 @@ public class PromotionController {
     }
 
     @PostMapping("/update/{id}")
-    public String updatePromotion(@PathVariable Long id, @ModelAttribute PromotionUpdateDTO promotionUpdateDTO) {
+    public String updatePromotion(@PathVariable Long id,@Valid @ModelAttribute("promotion") PromotionUpdateDTO promotionUpdateDTO, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            return "promotions/edit";
+        }
         this.promotionService.updatePromotion(id, promotionUpdateDTO);
         return "redirect:/promotions";
     }

@@ -8,9 +8,11 @@ import com.project.HotelManagementSystem.dto.city.CityUpdateDTO;
 import com.project.HotelManagementSystem.entity.City;
 import com.project.HotelManagementSystem.service.CityService;
 import com.project.HotelManagementSystem.service.RegionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,7 +49,11 @@ public class CityController {
     }
 
     @PostMapping("/create")
-    public String createCity(@ModelAttribute CityCreateDTO cityCreateDTO) {
+    public String createCity(@Valid @ModelAttribute("city") CityCreateDTO cityCreateDTO, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("regions", regionService.findAllRegion());
+            return "cities/create";
+        }
         cityService.createCity(cityCreateDTO);
         return "redirect:/cities";
     }
@@ -60,7 +66,11 @@ public class CityController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateCity(@PathVariable Long id, @ModelAttribute CityUpdateDTO cityUpdateDTO) {
+    public String updateCity(@PathVariable Long id,@Valid @ModelAttribute("city") CityUpdateDTO cityUpdateDTO, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("regions", regionService.findAllRegion());
+            return "cities/edit";
+        }
         cityService.updateCity(id, cityUpdateDTO);
         return "redirect:/cities";
     }

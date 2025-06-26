@@ -57,6 +57,7 @@
 <div th:replace="fragments/navbar :: navbar"></div>
 <h2>Update Promotion</h2>
 <form th:action="@{/promotions/update/{id}(id=${promotion.id})}" th:object="${promotion}" method="post" class="needs-validation">
+    <input type="hidden" th:field="*{id}" />
     <div class="mb-3">
         <label class="form-label">Code</label>
         <input type="text" th:field="*{code}" class="form-control"/>
