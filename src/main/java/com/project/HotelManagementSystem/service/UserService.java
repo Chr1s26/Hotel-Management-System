@@ -1,8 +1,17 @@
 package com.project.HotelManagementSystem.service;
 
+import com.project.HotelManagementSystem.dto.user.UserCreateDTO;
+import com.project.HotelManagementSystem.dto.user.UserDTO;
+import com.project.HotelManagementSystem.dto.user.UserResponse;
+import com.project.HotelManagementSystem.dto.user.UserUpdateDTO;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,13 +22,17 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
-    public User createUser(User user) {
-        return this.userRepository.save(user);
+    public UserCreateDTO createUser(UserCreateDTO userCreateDTO) {
+        User user = modelMapper.map(userCreateDTO, User.class);
+        this.userRepository.save(user);
+        return modelMapper.map(user, UserCreateDTO.class);
     }
 
-    public User updateUser(Long id,User user) {
+    public UserUpdateDTO updateUser(Long id, UserUpdateDTO userUpdateDTO) {
         Optional<User> optionalUser = this.userRepository.findById(id);
+        User user = modelMapper.map(userUpdateDTO, User.class);
         if (optionalUser.isPresent()) {
             User updatedUser = optionalUser.get();
             updatedUser.setName(user.getName());
@@ -27,12 +40,11 @@ public class UserService {
             updatedUser.setPassword(user.getPassword());
             updatedUser.setPhone(user.getPhone());
             updatedUser.setUserRole(user.getUserRole());
-            if(user.getDateOfBirth() != null){
-                updatedUser.setDateOfBirth(user.getDateOfBirth());
-            }
+            updatedUser.setDateOfBirth(user.getDateOfBirth());
             updatedUser.setNationality(user.getNationality());
             updatedUser.setPoint(user.getPoint());
-            return this.userRepository.save(updatedUser);
+            User savedUser = userRepository.save(updatedUser);
+            return modelMapper.map(savedUser, UserUpdateDTO.class);
         }
         return null;
     }
@@ -44,11 +56,29 @@ public class UserService {
         }
     }
 
-    public User findUserById(Long id) {
-        return this.userRepository.findById(id).orElse(null);
+    public UserDTO findUserById(Long id) {
+        User user = this.userRepository.findById(id).get();
+        return modelMapper.map(user, UserDTO.class);
     }
 
-    public List<User> findAllUsers() {
-        return this.userRepository.findAll();
+    public List<UserDTO> findAllUsers() {
+        List<User> users = this.userRepository.findAll();
+        return users.stream().map(user -> modelMapper.map(user,UserDTO.class)).toList();
+    }
+
+    public UserResponse findAllUsersWithPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNumber,pageSize,sortByAndOrder);
+        Page<User> userPage = userRepository.findAll(pageable);
+        List<User> users = userPage.getContent();
+        List<UserDTO> userDTOList = users.stream().map(user -> modelMapper.map(user,UserDTO.class)).toList();
+        UserResponse userResponse = new UserResponse();
+        userResponse.setUsers(userDTOList);
+        userResponse.setPageNumber(userPage.getNumber());
+        userResponse.setPageSize(userPage.getSize());
+        userResponse.setTotalPages(userPage.getTotalPages());
+        userResponse.setTotalElements(userPage.getTotalElements());
+        userResponse.setLastPage(userPage.isLast());
+        return userResponse;
     }
 }

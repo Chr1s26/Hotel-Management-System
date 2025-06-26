@@ -7,12 +7,12 @@
         body {
             background-color: #2E4053;
             color: white;
-            padding-top: 100px;
+            padding-top: 70px;
         }
 
         h2 {
-            padding-top: 30px;
             text-align: center;
+            padding-top: 30px;
         }
 
         table {
@@ -32,7 +32,6 @@
 
         th, td {
             text-align: center;
-            background: #3A3A3A;
             vertical-align: middle;
         }
 
@@ -75,14 +74,80 @@
             padding-top: 20px;
         }
 
-        .text-center a.btn {
-            margin-top: 10px;
+        .pagination .page-item.active .page-link {
+            background-color: #ffc107;
+            color: black;
+            border-color: #ffc107;
+        }
+
+        .pagination .page-link {
+            color: #ffc107;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #e0a800;
+            color: black;
+        }
+
+        .form-label, .form-select {
+            color: white;
+        }
+
+        #pageSize {
+            background-color: #3A3A3A;
+            color: white;
+            border: 1px solid #ccc;
+        }
+
+        #pageSize option {
+            background-color: #2E4053;
+            color: white;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #6c757d; /* Bootstrap gray */
+            color: white;
+            border-color: #6c757d;
+        }
+
+        .pagination .page-link {
+            color: #6c757d; /* Bootstrap gray */
+            background-color: transparent;
+            border: 1px solid transparent;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #5a6268; /* darker gray */
+            color: white;
+            border-color: #5a6268;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #adb5bd; /* lighter gray for disabled */
+            pointer-events: none;
+            background-color: transparent;
+            border-color: transparent;
         }
     </style>
 </head>
 <body class="container mt-4">
 <div th:replace="fragments/navbar :: navbar"></div>
 <div><h2>Users</h2></div>
+
+<div class="d-flex justify-content-between align-items-center my-3">
+
+    <div>
+        Page <span th:text="${response.pageNumber + 1}">1</span> of
+        <span th:text="${response.totalPages}">X</span> —
+        Total: <span th:text="${response.totalElements}">Y</span> users
+    </div>
+
+
+    <div>
+        <a class="btn btn-primary btn-lg" th:href="@{/users/new}">Add Users</a>
+    </div>
+</div>
+
 <table class="table table-bordered">
     <thead>
     <tr><th>ID</th><th>Name</th><th>Email</th><th>Password</th><th>Phone</th><th>User Role</th><th>Date Of Birth</th><th>Nationality</th><th>Point</th><th>Confirmed At</th></tr>
@@ -106,8 +171,47 @@
     </tr>
     </tbody>
 </table>
-<div class="text-center my-3">
-    <a class="btn btn-primary btn-sm" th:href="@{/users/new}">Add User</a>
-</div>
+
+<form th:action="@{/users}" method="get" class="row align-items-center justify-content-between mt-4 mb-3">
+    <!-- Page size selector -->
+    <div class="col-md-4">
+        <label for="pageSize" class="form-label">Show</label>
+        <select id="pageSize" class="form-select d-inline w-auto" name="pageSize" onchange="this.form.submit()">
+            <option th:value="3" th:selected="${response.pageSize == 3}">3</option>
+            <option th:value="6" th:selected="${response.pageSize == 6}">6</option>
+            <option th:value="9" th:selected="${response.pageSize == 9}">9</option>
+        </select>
+        <span>per page</span>
+
+        <!-- Hidden inputs -->
+        <input type="hidden" name="pageNumber" th:value="${response.pageNumber}" />
+        <input type="hidden" name="sortBy" th:value="${sortBy}" />
+        <input type="hidden" name="sortOrder" th:value="${sortOrder}" />
+    </div>
+
+    <!-- Pagination links -->
+    <div class="col-md-8 text-end">
+        <nav class="d-flex justify-content-end mt-2">
+            <ul class="pagination">
+                <li class="page-item" th:classappend="${response.pageNumber == 0} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/users(pageNumber=${response.pageNumber - 1}, pageSize=${response.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}">Previous</a>
+                </li>
+
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, response.totalPages - 1)}"
+                    th:classappend="${i == response.pageNumber} ? 'active'">
+                    <a class="page-link"
+                       th:href="@{/users(pageNumber=${i}, pageSize=${response.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}"
+                       th:text="${i + 1}">1</a>
+                </li>
+
+                <li class="page-item" th:classappend="${response.pageNumber + 1 >= response.totalPages} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/users(pageNumber=${response.pageNumber + 1}, pageSize=${response.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</form>
 </body>
 </html>
