@@ -7,9 +7,11 @@ import com.project.HotelManagementSystem.dto.hotel.HotelResponse;
 import com.project.HotelManagementSystem.dto.hotel.HotelUpdateDTO;
 import com.project.HotelManagementSystem.entity.Hotel;
 import com.project.HotelManagementSystem.service.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,7 +53,14 @@ public class HotelController {
     }
 
     @PostMapping("/create")
-    public String createHotel(@ModelAttribute HotelCreateDTO hotelCreateDTO) {
+    public String createHotel(@Valid @ModelAttribute("hotel") HotelCreateDTO hotelCreateDTO, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("addresses", this.addressService.findAllAddress());
+            model.addAttribute("propertyDescriptions", this.propertyDescriptionService.findAllPropertyDescriptions());
+            model.addAttribute("promotions", this.promotionService.findAllPromotions());
+            model.addAttribute("policies", this.policyService.findAllPolicies());
+            return "hotels/create";
+        }
         this.hotelService.createHotel(hotelCreateDTO);
         return "redirect:/hotels";
     }
@@ -67,7 +76,13 @@ public class HotelController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateHotel(@PathVariable Long id, @ModelAttribute HotelUpdateDTO hotelUpdateDTO) {
+    public String updateHotel(@PathVariable Long id,@Valid @ModelAttribute("hotel") HotelUpdateDTO hotelUpdateDTO, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("addresses", this.addressService.findAllAddress());
+            model.addAttribute("propertyDescriptions", this.propertyDescriptionService.findAllPropertyDescriptions());
+            model.addAttribute("promotions", this.promotionService.findAllPromotions());
+            model.addAttribute("policies", this.policyService.findAllPolicies());
+        }
         this.hotelService.updateHotel(id, hotelUpdateDTO);
         return "redirect:/hotels";
     }

@@ -17,5 +17,4 @@ public class AddressDTO {
     private String road;
     private City city;
     private String zipCode;
-
 }

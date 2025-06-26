@@ -7,9 +7,11 @@ import com.project.HotelManagementSystem.dto.country.CountryResponse;
 import com.project.HotelManagementSystem.dto.country.CountryUpdateDTO;
 import com.project.HotelManagementSystem.entity.Country;
 import com.project.HotelManagementSystem.service.CountryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,7 +45,10 @@ public class CountryController {
     }
 
     @PostMapping("/create")
-    public String createCountry(@ModelAttribute CountryCreateDTO countryCreateDTO) {
+    public String createCountry(@Valid @ModelAttribute("country") CountryCreateDTO countryCreateDTO, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            return "countries/create";
+        }
         this.countryService.createCountry(countryCreateDTO);
         return "redirect:/countries";
     }
@@ -55,7 +60,10 @@ public class CountryController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateCountry(@PathVariable Long id, @ModelAttribute CountryUpdateDTO countryUpdateDTO) {
+    public String updateCountry(@PathVariable Long id,@Valid @ModelAttribute("country") CountryUpdateDTO countryUpdateDTO, BindingResult bindingResult, Model model) {
+        if(bindingResult.hasErrors()) {
+            return "countries/edit";
+        }
         this.countryService.updateCountry(id, countryUpdateDTO);
         return "redirect:/countries";
     }

@@ -7,9 +7,11 @@ import com.project.HotelManagementSystem.dto.amenities.AmenitiesResponse;
 import com.project.HotelManagementSystem.dto.amenities.AmenitiesUpdateDTO;
 import com.project.HotelManagementSystem.entity.Amenities;
 import com.project.HotelManagementSystem.service.AmenitiesService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +30,11 @@ public class AmenitiesController {
     }
 
     @PostMapping("/create")
-    public String createAmenities(@ModelAttribute AmenitiesCreateDTO amenitiesCreateDTO) {
+    public String createAmenities(@Valid @ModelAttribute("amenities") AmenitiesCreateDTO amenitiesCreateDTO, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+//            model.addAttribute("amenities", amenitiesCreateDTO);
+            return "amenities/create";
+        }
         amenitiesService.createAmenities(amenitiesCreateDTO);
         return "redirect:/amenities";
     }
@@ -55,7 +61,10 @@ public class AmenitiesController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateAmenities(@PathVariable("id") Long id, @ModelAttribute AmenitiesUpdateDTO amenitiesUpdateDTO) {
+    public String updateAmenities(@PathVariable("id") Long id,@Valid @ModelAttribute("amenities") AmenitiesUpdateDTO amenitiesUpdateDTO, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            return "amenities/edit";
+        }
         this.amenitiesService.updateAmenities(id, amenitiesUpdateDTO);
         return "redirect:/amenities";
     }
