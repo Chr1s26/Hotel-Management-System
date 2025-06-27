@@ -67,7 +67,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Booking> bookings = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_promotion",
     joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "promotion_id"))
@@ -76,5 +76,11 @@ public class User {
     @Override
     public String toString() {
         return name;
+    }
+
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
