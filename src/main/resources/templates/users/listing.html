@@ -150,7 +150,7 @@
 
 <table class="table table-bordered">
     <thead>
-    <tr><th>ID</th><th>Name</th><th>Email</th><th>Password</th><th>Phone</th><th>User Role</th><th>Date Of Birth</th><th>Nationality</th><th>Point</th><th>Confirmed At</th></tr>
+    <tr><th>ID</th><th>Name</th><th>Email</th><th>Password</th><th>Phone</th><th>User Role</th><th>Date Of Birth</th><th>Nationality</th><th>Point</th><th>Confirmed At</th><th>Promotions</th></tr>
     </thead>
     <tbody>
     <tr th:each="user : ${users}">
@@ -164,6 +164,11 @@
         <td th:text="${user.nationality}"></td>
         <td th:text="${user.point}"></td>
         <td th:text="${user.confirmedAt}"></td>
+        <td>
+            <ul class="list-unstyled mb-0" th:if="${user.promotions != null}">
+                <li th:each="p : ${user.promotions}" th:text="${p.code}"></li>
+            </ul>
+        </td>
         <td>
             <a class="btn btn-sm btn-warning" th:href="@{'/users/edit/' + ${user.id}}">Edit</a>
             <a class="btn btn-sm btn-danger" th:href="@{'/users/delete/' + ${user.id}}">Delete</a>

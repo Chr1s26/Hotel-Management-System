@@ -31,5 +31,5 @@ public class UserUpdateDTO {
     private int point;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime confirmedAt;
-    private Set<Promotion> promotions = new HashSet<>();
+    private Set<Long> promotionIds = new HashSet<>();
 }
