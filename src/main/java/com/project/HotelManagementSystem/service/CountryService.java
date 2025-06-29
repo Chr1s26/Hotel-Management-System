@@ -5,6 +5,7 @@ import com.project.HotelManagementSystem.dto.country.CountryDTO;
 import com.project.HotelManagementSystem.dto.country.CountryResponse;
 import com.project.HotelManagementSystem.dto.country.CountryUpdateDTO;
 import com.project.HotelManagementSystem.entity.Country;
+import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,12 +31,20 @@ public class CountryService {
     private ModelMapper modelMapper;
 
     public CountryCreateDTO createCountry(CountryCreateDTO countryCreateDTO) {
+        Optional<Country> countryOptional = this.countryRepository.findByNameIgnoreCase(countryCreateDTO.getName());
+        if(countryOptional.isPresent()){
+            throw new DuplicateException("Country with name " + countryCreateDTO.getName() + " already exists");
+        }
         Country country = modelMapper.map(countryCreateDTO, Country.class);
         Country savedCountry = countryRepository.save(country);
         return modelMapper.map(savedCountry,CountryCreateDTO.class);
     }
 
     public CountryUpdateDTO updateCountry(Long id, CountryUpdateDTO countryUpdateDTO) {
+        Optional<Country> countryOptional = this.countryRepository.findByNameIgnoreCase(countryUpdateDTO.getName());
+        if(countryOptional.isPresent() && !countryOptional.get().getId().equals(id)){
+            throw new DuplicateException("Country with name " + countryUpdateDTO.getName() + " already exists");
+        }
         Optional<Country> optionalCountry = countryRepository.findById(id);
         Country country = modelMapper.map(countryUpdateDTO, Country.class);
         if(optionalCountry.isPresent()) {

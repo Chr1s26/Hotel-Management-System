@@ -5,6 +5,7 @@ import com.project.HotelManagementSystem.dto.city.CityDTO;
 import com.project.HotelManagementSystem.dto.city.CityResponse;
 import com.project.HotelManagementSystem.dto.city.CityUpdateDTO;
 import com.project.HotelManagementSystem.entity.City;
+import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CityRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,12 +30,20 @@ public class CityService {
     private ModelMapper modelMapper;
 
     public CityCreateDTO createCity(CityCreateDTO cityCreateDTO) {
+        Optional<City> cityOp = this.cityRepository.findByNameIgnoreCase(cityCreateDTO.getName());
+        if(cityOp.isPresent()) {
+            throw new DuplicateException("Another City with name " + cityCreateDTO.getName() + " already exists");
+        }
         City city = modelMapper.map(cityCreateDTO, City.class);
         City savedCity = cityRepository.save(city);
         return modelMapper.map(savedCity,CityCreateDTO.class);
     }
 
     public CityUpdateDTO updateCity(Long id, CityUpdateDTO cityUpdateDTO) {
+        Optional<City> cityOptional = this.cityRepository.findByNameIgnoreCase(cityUpdateDTO.getName());
+        if(cityOptional.isPresent() && !cityOptional.get().getId().equals(id)) {
+            throw new DuplicateException("Another City with name " + cityUpdateDTO.getName() + " already exists");
+        }
         Optional<City> cityOp = cityRepository.findById(id);
         City city = modelMapper.map(cityUpdateDTO, City.class);
         if(cityOp.isPresent()){

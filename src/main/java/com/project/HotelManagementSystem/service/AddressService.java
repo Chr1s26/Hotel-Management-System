@@ -7,6 +7,7 @@ import com.project.HotelManagementSystem.dto.address.AddressResponse;
 import com.project.HotelManagementSystem.dto.address.AddressUpdateDTO;
 import com.project.HotelManagementSystem.entity.Address;
 import com.project.HotelManagementSystem.exception.ApiException;
+import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.AddressRepository;
 import lombok.AllArgsConstructor;
@@ -33,12 +34,20 @@ public class AddressService {
     private ModelMapper modelMapper;
 
     public AddressCreateDTO createAddress(AddressCreateDTO addressCreateDTO) {
+        Optional<Address> addressOp = addressRepository.findByLatitudeAndLongitude(addressCreateDTO.getLatitude(),addressCreateDTO.getLongitude());
+        if(addressOp.isPresent()){
+            throw new DuplicateException("Another address already with same latitude and longitude already exists");
+        }
         Address address = modelMapper.map(addressCreateDTO, Address.class);
         Address savedAddress = addressRepository.save(address);
         return modelMapper.map(savedAddress,AddressCreateDTO.class);
     }
 
     public AddressUpdateDTO updateAddress(Long id, AddressUpdateDTO addressUpdateDTO) {
+        Optional<Address> addressOp = addressRepository.findByLatitudeAndLongitude(addressUpdateDTO.getLatitude(),addressUpdateDTO.getLongitude());
+        if(addressOp.isPresent() && !addressOp.get().getId().equals(id)){
+            throw new DuplicateException("Another address with same latitude and longitude already exists");
+        }
         Optional<Address> updatedAddressOp = addressRepository.findById(id);
         Address address = modelMapper.map(addressUpdateDTO, Address.class);
         if(updatedAddressOp.isPresent()) {

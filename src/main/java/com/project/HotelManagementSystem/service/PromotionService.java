@@ -5,6 +5,7 @@ import com.project.HotelManagementSystem.dto.promotion.PromotionDTO;
 import com.project.HotelManagementSystem.dto.promotion.PromotionResponse;
 import com.project.HotelManagementSystem.dto.promotion.PromotionUpdateDTO;
 import com.project.HotelManagementSystem.entity.Promotion;
+import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.PromotionRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,12 +32,20 @@ public class PromotionService {
     private ModelMapper modelMapper;
 
     public PromotionCreateDTO createPromotion(PromotionCreateDTO promotionCreateDTO) {
+        Optional<Promotion> promotionOp = promotionRepository.findByCode(promotionCreateDTO.getCode());
+        if (promotionOp.isPresent()) {
+            throw new DuplicateException("Promotion with code " + promotionCreateDTO.getCode() + " already exists");
+        }
         Promotion promotion = modelMapper.map(promotionCreateDTO, Promotion.class);
         Promotion savedPromotion = this.promotionRepository.save(promotion);
         return modelMapper.map(savedPromotion,PromotionCreateDTO.class);
     }
 
     public PromotionUpdateDTO updatePromotion(Long id, PromotionUpdateDTO promotionUpdateDTO) {
+        Optional<Promotion> promotionOptional = promotionRepository.findByCode(promotionUpdateDTO.getCode());
+        if (promotionOptional.isPresent() && !promotionOptional.get().getId().equals(id)) {
+            throw new DuplicateException("Promotion with code " + promotionUpdateDTO.getCode() + " already exists");
+        }
         Promotion promotion = modelMapper.map(promotionUpdateDTO, Promotion.class);
         Optional<Promotion> promotionOp = promotionRepository.findById(id);
         if(promotionOp.isPresent()) {
@@ -64,9 +73,9 @@ public class PromotionService {
         promotionRepository.deleteById(id);
     }
 
-    public PromotionDTO findPromotionById(Long id) {
+    public PromotionUpdateDTO findPromotionById(Long id) {
         Promotion promotion = promotionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Promotion", "id", id));
-        return modelMapper.map(promotion,PromotionDTO.class);
+        return modelMapper.map(promotion,PromotionUpdateDTO.class);
     }
 
     public PromotionResponse findAllPromotionsWithPagination(Integer pageNumber, Integer pageSize, String sortBy,String sortOrder) {

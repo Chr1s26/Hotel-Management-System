@@ -5,6 +5,7 @@ import com.project.HotelManagementSystem.dto.policy.PolicyDTO;
 import com.project.HotelManagementSystem.dto.policy.PolicyResponse;
 import com.project.HotelManagementSystem.dto.policy.PolicyUpdateDTO;
 import com.project.HotelManagementSystem.entity.Policy;
+import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.PolicyRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,12 +31,20 @@ public class PolicyService {
     private ModelMapper modelMapper;
 
     public PolicyCreateDTO createPolicy(PolicyCreateDTO policyCreateDTO) {
+        Optional<Policy> optionalPolicy = this.policyRepository.findByTitleAndDescription(policyCreateDTO.getTitle(), policyCreateDTO.getDescription());
+        if (optionalPolicy.isPresent()) {
+            throw new DuplicateException("Policy with title " + policyCreateDTO.getTitle() + " And same description already exists");
+        }
         Policy policy = modelMapper.map(policyCreateDTO, Policy.class);
         Policy savedPolicy = this.policyRepository.save(policy);
         return modelMapper.map(savedPolicy,PolicyCreateDTO.class);
     }
 
     public PolicyUpdateDTO updatePolicy(Long id, PolicyUpdateDTO policyUpdateDTO) {
+        Optional<Policy> optionalPolicy = this.policyRepository.findByTitleAndDescription(policyUpdateDTO.getTitle(), policyUpdateDTO.getDescription());
+        if (optionalPolicy.isPresent()) {
+            throw new DuplicateException("Policy with title " + policyUpdateDTO.getTitle() + " And same description already exists");
+        }
         Optional<Policy> policyOp = policyRepository.findById(id);
         Policy policy = modelMapper.map(policyUpdateDTO, Policy.class);
         if(policyOp.isPresent()) {

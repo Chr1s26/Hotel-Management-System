@@ -3,6 +3,7 @@ package com.project.HotelManagementSystem.dto.promotion;
 import com.project.HotelManagementSystem.entity.constants.DiscountType;
 import com.project.HotelManagementSystem.validator.NotIntegerString;
 import com.project.HotelManagementSystem.validator.NumericString;
+import com.project.HotelManagementSystem.validator.ValidDateRange;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ValidDateRange
 public class PromotionUpdateDTO {
     private Long id;
 

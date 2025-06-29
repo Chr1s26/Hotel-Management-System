@@ -6,6 +6,7 @@ import com.project.HotelManagementSystem.dto.amenities.AmenitiesResponse;
 import com.project.HotelManagementSystem.dto.amenities.AmenitiesUpdateDTO;
 import com.project.HotelManagementSystem.entity.Amenities;
 import com.project.HotelManagementSystem.exception.ApiException;
+import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.AmenitiesRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,12 +31,20 @@ public class AmenitiesService {
     private ModelMapper modelMapper;
 
     public AmenitiesCreateDTO createAmenities(AmenitiesCreateDTO amenitiesCreateDTO) {
+        Optional<Amenities> amenitiesOp = this.amenitiesRepository.findByNameAndDescriptionIgnoreCase(amenitiesCreateDTO.getName(), amenitiesCreateDTO.getDescription());
+        if(amenitiesOp.isPresent()) {
+            throw new DuplicateException("Another Amenities with name " + amenitiesCreateDTO.getName() + " And with same description already exists");
+        }
         Amenities amenities = modelMapper.map(amenitiesCreateDTO, Amenities.class);
         Amenities savedAmenities = amenitiesRepository.save(amenities);
         return modelMapper.map(savedAmenities, AmenitiesCreateDTO.class);
     }
 
     public AmenitiesUpdateDTO updateAmenities(Long id, AmenitiesUpdateDTO amenitiesUpdateDTO) {
+        Optional<Amenities> amenitiesOp = this.amenitiesRepository.findByNameAndDescriptionIgnoreCase(amenitiesUpdateDTO.getName(), amenitiesUpdateDTO.getDescription());
+        if(amenitiesOp.isPresent() && !amenitiesOp.get().getId().equals(id)) {
+            throw new DuplicateException("Another Amenities with name " + amenitiesUpdateDTO.getName() + " And with same description already exists");
+        }
         Optional<Amenities> updatedAmenitiesOp = this.amenitiesRepository.findById(id);
         Amenities amenities = modelMapper.map(amenitiesUpdateDTO, Amenities.class);
         if(updatedAmenitiesOp.isPresent()) {
