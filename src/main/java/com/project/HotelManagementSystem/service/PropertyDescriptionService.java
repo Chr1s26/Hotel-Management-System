@@ -20,22 +20,17 @@ public class PropertyDescriptionService {
     }
 
     public PropertyDescription updatePropertyDescription(Long id,PropertyDescription propertyDescription) {
-        Optional<PropertyDescription> optionalPropertyDescription = this.propertyDescriptionRepository.findById(id);
-        if(optionalPropertyDescription.isPresent()) {
-            PropertyDescription updatedPropertyDescription = optionalPropertyDescription.get();
-            updatedPropertyDescription.setDescription(propertyDescription.getDescription());
-            updatedPropertyDescription.setNumberOfRooms(propertyDescription.getNumberOfRooms());
-
-            if(propertyDescription.getOpeningDate() != null){
-                updatedPropertyDescription.setOpeningDate(propertyDescription.getOpeningDate());
-            }
-            if(propertyDescription.getRenovationDate() != null){
-                updatedPropertyDescription.setRenovationDate(propertyDescription.getRenovationDate());
-            }
-
-            return this.propertyDescriptionRepository.save(updatedPropertyDescription);
+        PropertyDescription optionalPropertyDescription = this.propertyDescriptionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("PropertyDescription", "id", id));
+        optionalPropertyDescription.setDescription(propertyDescription.getDescription());
+        optionalPropertyDescription.setNumberOfRooms(propertyDescription.getNumberOfRooms());
+        if(propertyDescription.getOpeningDate() != null) {
+            optionalPropertyDescription.setOpeningDate(propertyDescription.getOpeningDate());
         }
-        return null;
+        if(propertyDescription.getRenovationDate() != null){
+            optionalPropertyDescription.setRenovationDate(propertyDescription.getRenovationDate());
+        }
+
+        return this.propertyDescriptionRepository.save(optionalPropertyDescription);
     }
 
     public void deletePropertyDescription(Long id) {

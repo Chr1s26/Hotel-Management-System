@@ -25,9 +25,7 @@ import java.util.Optional;
 public class CityService {
 
     private final CityRepository cityRepository;
-
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     public CityCreateDTO createCity(CityCreateDTO cityCreateDTO) {
         Optional<City> cityOp = this.cityRepository.findByNameIgnoreCase(cityCreateDTO.getName());
@@ -44,16 +42,12 @@ public class CityService {
         if(cityOptional.isPresent() && !cityOptional.get().getId().equals(id)) {
             throw new DuplicateException("Another City with name " + cityUpdateDTO.getName() + " already exists");
         }
-        Optional<City> cityOp = cityRepository.findById(id);
+        City cityOp = cityRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("City","id",id));
         City city = modelMapper.map(cityUpdateDTO, City.class);
-        if(cityOp.isPresent()){
-            City updatedCity = cityOp.get();
-            updatedCity.setName(city.getName());
-            updatedCity.setRegion(city.getRegion());
-            City savedCity = cityRepository.save(updatedCity);
-            return modelMapper.map(savedCity,CityUpdateDTO.class);
-        }
-        return null;
+        cityOp.setName(city.getName());
+        cityOp.setRegion(city.getRegion());
+        City savedCity = cityRepository.save(cityOp);
+        return modelMapper.map(savedCity,CityUpdateDTO.class);
     }
 
     public void deleteCity(Long id) {

@@ -28,8 +28,7 @@ public class PromotionService {
 
     private final PromotionRepository promotionRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     public PromotionCreateDTO createPromotion(PromotionCreateDTO promotionCreateDTO) {
         Optional<Promotion> promotionOp = promotionRepository.findByCode(promotionCreateDTO.getCode());
@@ -47,30 +46,26 @@ public class PromotionService {
             throw new DuplicateException("Promotion with code " + promotionUpdateDTO.getCode() + " already exists");
         }
         Promotion promotion = modelMapper.map(promotionUpdateDTO, Promotion.class);
-        Optional<Promotion> promotionOp = promotionRepository.findById(id);
-        if(promotionOp.isPresent()) {
-            Promotion updatedPromotion = promotionOp.get();
-            updatedPromotion.setCode(promotion.getCode());
-            updatedPromotion.setDiscountType(promotion.getDiscountType());
-            updatedPromotion.setDiscountAmount(promotion.getDiscountAmount());
-            if(promotion.getStartDate() != null) {
-                updatedPromotion.setStartDate(promotion.getStartDate());
-            }
-            if(promotion.getEndDate() != null) {
-                updatedPromotion.setEndDate(promotion.getEndDate());
-            }
-            updatedPromotion.setPointAmount(promotion.getPointAmount());
-            updatedPromotion.setUsageLimit(promotion.getUsageLimit());
-            updatedPromotion.setTimesUsed(promotion.getTimesUsed());
-            Promotion savedPromotion = this.promotionRepository.save(updatedPromotion);
-            return modelMapper.map(savedPromotion,PromotionUpdateDTO.class);
+        Promotion promotionOp = promotionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Promotion","id",id));
+        promotionOp.setCode(promotion.getCode());
+        promotionOp.setDiscountType(promotion.getDiscountType());
+        promotionOp.setDiscountAmount(promotion.getDiscountAmount());
+        if(promotion.getStartDate() != null) {
+            promotionOp.setStartDate(promotion.getStartDate());
+        }if(promotion.getEndDate() != null) {
+            promotionOp.setEndDate(promotion.getEndDate());
         }
-        return null;
+        promotionOp.setPointAmount(promotion.getPointAmount());
+        promotionOp.setUsageLimit(promotion.getUsageLimit());
+        promotionOp.setTimesUsed(promotion.getTimesUsed());
+        Promotion savedPromotion = this.promotionRepository.save(promotionOp);
+        return modelMapper.map(savedPromotion,PromotionUpdateDTO.class);
+
     }
 
     public void deletePromotion(Long id) {
         Promotion promotion = promotionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Promotion", "id", id));
-        promotionRepository.deleteById(id);
+        promotionRepository.delete(promotion);
     }
 
     public PromotionUpdateDTO findPromotionById(Long id) {

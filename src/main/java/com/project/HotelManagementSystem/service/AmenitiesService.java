@@ -26,9 +26,7 @@ public class AmenitiesService {
 
 
     private final AmenitiesRepository amenitiesRepository;
-
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     public AmenitiesCreateDTO createAmenities(AmenitiesCreateDTO amenitiesCreateDTO) {
         Optional<Amenities> amenitiesOp = this.amenitiesRepository.findByNameAndDescriptionIgnoreCase(amenitiesCreateDTO.getName(), amenitiesCreateDTO.getDescription());
@@ -45,16 +43,12 @@ public class AmenitiesService {
         if(amenitiesOp.isPresent() && !amenitiesOp.get().getId().equals(id)) {
             throw new DuplicateException("Another Amenities with name " + amenitiesUpdateDTO.getName() + " And with same description already exists");
         }
-        Optional<Amenities> updatedAmenitiesOp = this.amenitiesRepository.findById(id);
+        Amenities updatedAmenitiesOp = this.amenitiesRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Amenities","id",id));
         Amenities amenities = modelMapper.map(amenitiesUpdateDTO, Amenities.class);
-        if(updatedAmenitiesOp.isPresent()) {
-            Amenities updatedAmenities = updatedAmenitiesOp.get();
-            updatedAmenities.setName(amenities.getName());
-            updatedAmenities.setDescription(amenities.getDescription());
-            amenities = this.amenitiesRepository.save(updatedAmenities);
-            return modelMapper.map(amenities, AmenitiesUpdateDTO.class);
-        }
-        return null;
+        updatedAmenitiesOp.setName(amenities.getName());
+        updatedAmenitiesOp.setDescription(amenities.getDescription());
+        amenities = this.amenitiesRepository.save(updatedAmenitiesOp);
+        return modelMapper.map(amenities, AmenitiesUpdateDTO.class);
     }
 
     public void deleteAmenities(Long id) {

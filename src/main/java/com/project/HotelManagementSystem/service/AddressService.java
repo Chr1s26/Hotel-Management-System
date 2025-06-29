@@ -48,19 +48,17 @@ public class AddressService {
         if(addressOp.isPresent() && !addressOp.get().getId().equals(id)){
             throw new DuplicateException("Another address with same latitude and longitude already exists");
         }
-        Optional<Address> updatedAddressOp = addressRepository.findById(id);
+
+        Address updatedAddressOp = addressRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Address","id",id));
         Address address = modelMapper.map(addressUpdateDTO, Address.class);
-        if(updatedAddressOp.isPresent()) {
-            Address updatedAddress = updatedAddressOp.get();
-            updatedAddress.setRoad(address.getRoad());
-            updatedAddress.setLatitude(address.getLatitude());
-            updatedAddress.setLongitude(address.getLongitude());
-            updatedAddress.setZipCode(address.getZipCode());
-            updatedAddress.setCity(address.getCity());
-            Address savedAddress = addressRepository.save(updatedAddress);
-            return modelMapper.map(savedAddress,AddressUpdateDTO.class);
-        }
-        return null;
+
+        updatedAddressOp.setRoad(address.getRoad());
+        updatedAddressOp.setLatitude(address.getLatitude());
+        updatedAddressOp.setLongitude(address.getLongitude());
+        updatedAddressOp.setZipCode(address.getZipCode());
+        updatedAddressOp.setCity(address.getCity());
+        Address savedAddress = addressRepository.save(updatedAddressOp);
+        return modelMapper.map(savedAddress,AddressUpdateDTO.class);
     }
 
     public void deleteAddress(Long id) {

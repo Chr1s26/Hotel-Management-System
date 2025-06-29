@@ -26,9 +26,7 @@ import java.util.stream.Collectors;
 public class PolicyService {
 
     private final PolicyRepository policyRepository;
-
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     public PolicyCreateDTO createPolicy(PolicyCreateDTO policyCreateDTO) {
         Optional<Policy> optionalPolicy = this.policyRepository.findByTitleAndDescription(policyCreateDTO.getTitle(), policyCreateDTO.getDescription());
@@ -45,17 +43,13 @@ public class PolicyService {
         if (optionalPolicy.isPresent()) {
             throw new DuplicateException("Policy with title " + policyUpdateDTO.getTitle() + " And same description already exists");
         }
-        Optional<Policy> policyOp = policyRepository.findById(id);
+        Policy policyOp = policyRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Policy", "id", id));
         Policy policy = modelMapper.map(policyUpdateDTO, Policy.class);
-        if(policyOp.isPresent()) {
-            Policy updatedPolicy = policyOp.get();
-            updatedPolicy.setTitle(policy.getTitle());
-            updatedPolicy.setDescription(policy.getDescription());
-            updatedPolicy.setApplicableTo(policy.getApplicableTo());
-            Policy savedPolicy = policyRepository.save(updatedPolicy);
-            return modelMapper.map(savedPolicy,PolicyUpdateDTO.class);
-        }
-        return null;
+        policyOp.setTitle(policy.getTitle());
+        policyOp.setDescription(policy.getDescription());
+        policyOp.setApplicableTo(policy.getApplicableTo());
+        Policy savedPolicy = policyRepository.save(policyOp);
+        return modelMapper.map(savedPolicy,PolicyUpdateDTO.class);
     }
 
     public void deletePolicy(Long id) {

@@ -27,8 +27,7 @@ public class CountryService {
 
     private final CountryRepository countryRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     public CountryCreateDTO createCountry(CountryCreateDTO countryCreateDTO) {
         Optional<Country> countryOptional = this.countryRepository.findByNameIgnoreCase(countryCreateDTO.getName());
@@ -45,15 +44,11 @@ public class CountryService {
         if(countryOptional.isPresent() && !countryOptional.get().getId().equals(id)){
             throw new DuplicateException("Country with name " + countryUpdateDTO.getName() + " already exists");
         }
-        Optional<Country> optionalCountry = countryRepository.findById(id);
+        Country optionalCountry = countryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Country", "id", id));
         Country country = modelMapper.map(countryUpdateDTO, Country.class);
-        if(optionalCountry.isPresent()) {
-            Country updatedCountry = optionalCountry.get();
-            updatedCountry.setName(country.getName());
-            country = this.countryRepository.save(updatedCountry);
-            return modelMapper.map(country,CountryUpdateDTO.class);
-        }
-        return null;
+        optionalCountry.setName(country.getName());
+        country = this.countryRepository.save(optionalCountry);
+        return modelMapper.map(country,CountryUpdateDTO.class);
     }
 
     public void deleteCountry(Long id) {
@@ -81,6 +76,7 @@ public class CountryService {
         countryResponse.setLastPage(page.isLast());
         return countryResponse;
     }
+
     public List<CountryDTO> findAllCountries() {
         List<Country> countryList = countryRepository.findAll();
         List<CountryDTO> countryDTOList = countryList.stream().map(country -> modelMapper.map(country, CountryDTO.class)).toList();
