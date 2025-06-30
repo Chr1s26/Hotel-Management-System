@@ -3,36 +3,38 @@
 <head>
     <title>Create Hotel</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <style>
         body {
-            background-color: #2E4053; /* Dark gray background */
-            color: white;              /* White text globally */
+            background-color: #2E4053;
+            color: white;
             padding-top: 70px;
         }
         form {
-            background-color: #6E6E6E; /* Slightly lighter gray for form background */
+            background-color: #6E6E6E;
             padding: 20px;
             border-radius: 8px;
         }
         label.form-label {
-            color: white; /* Ensure labels are white */
+            color: white;
         }
         .form-control, .form-select {
-            background-color: #7F7F7F; /* Medium gray input background */
-            color: white;              /* White text inside inputs */
+            background-color: #7F7F7F;
+            color: white;
             border: 1px solid #999;
         }
         .form-control:focus, .form-select:focus {
-            background-color: #8F8F8F; /* Slightly lighter on focus */
+            background-color: #8F8F8F;
             color: white;
             border-color: #ccc;
             box-shadow: none;
         }
         .text-danger {
-            color: #FF6B6B; /* Keep error text red for visibility */
+            color: #FF6B6B;
         }
         .btn-primary {
-            background-color: #555555; /* Dark gray button */
+            background-color: #555555;
             border-color: #555555;
             color: white;
         }
@@ -42,7 +44,7 @@
             color: white;
         }
         .btn-secondary {
-            background-color: #333333; /* Even darker gray */
+            background-color: #333333;
             border-color: #333333;
             color: white;
         }
@@ -51,37 +53,79 @@
             border-color: #555555;
             color: white;
         }
+
+        /* Select2 Styling */
+        .select2-container--default .select2-selection--single,
+        .select2-container--default .select2-selection--multiple {
+            background-color: #6E6E6E;
+            color: white;
+            border: 1px solid #999;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered,
+        .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+            color: white !important;
+        }
+        .select2-container--default .select2-results__option {
+            background-color: #6E6E6E;
+            color: white;
+        }
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #7F7F7F;
+            color: white;
+        }
+        .select2-container--default .select2-results__option[aria-selected="true"] {
+            background-color: #444444 !important;
+            color: white !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__placeholder {
+            color: white;
+            font-weight: bold;
+        }
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #555555;
+            color: white;
+            border: none;
+        }
     </style>
 </head>
 <body class="container mt-4">
+
 <div th:replace="fragments/navbar :: navbar"></div>
+
 <h2>Create Hotel</h2>
+
 <form th:action="@{/hotels/create}" th:object="${hotel}" method="post" class="needs-validation">
+
     <div class="mb-3">
         <label class="form-label">Name</label>
         <input type="text" th:field="*{name}" class="form-control"/>
         <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
     </div>
+
     <div class="mb-3">
         <label class="form-label">Phone Number</label>
         <input type="text" th:field="*{phoneNumber}" class="form-control"/>
         <div class="text-danger" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
     </div>
+
     <div class="mb-3">
         <label class="form-label">Email</label>
         <input type="text" th:field="*{email}" class="form-control"/>
         <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
     </div>
+
     <div class="mb-3">
         <label class="form-label">Description</label>
         <input type="text" th:field="*{description}" class="form-control"/>
         <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
     </div>
+
     <div class="mb-3">
         <label class="form-label">Rating</label>
         <input type="text" th:field="*{rating}" class="form-control"/>
         <div class="text-danger" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></div>
     </div>
+
     <div class="mb-3">
         <label class="form-label">Hotel Type</label>
         <select th:field="*{hotelType}" class="form-select">
@@ -91,6 +135,7 @@
         </select>
         <div class="text-danger" th:if="${#fields.hasErrors('hotelType')}" th:errors="*{hotelType}"></div>
     </div>
+
     <div class="mb-3">
         <label class="form-label">Addresses</label>
         <select id="address-select" th:field="*{address.id}" class="form-select" required>
@@ -102,10 +147,11 @@
         </select>
         <div class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
     </div>
+
     <div class="mb-3">
         <label class="form-label">Property Description</label>
         <select id="property-select" th:field="*{propertyDescription.id}" class="form-select" required>
-            <option value="" disabled selected>-- Select Address --</option>
+            <option value="" disabled selected>-- Select PropertyDescription --</option>
             <option th:each="propertyDescription : ${propertyDescriptions}"
                     th:value="${propertyDescription.id}"
                     th:text="${propertyDescription}">
@@ -113,28 +159,45 @@
         </select>
         <div class="text-danger" th:if="${#fields.hasErrors('propertyDescription')}" th:errors="*{propertyDescription}"></div>
     </div>
+
+    <div class="mb-3">
+        <label class="form-label">Policies</label>
+        <select class="form-select" id="amenities-select" th:field="*{policyIds}" multiple>
+            <option th:each="pol : ${policies}"
+                    th:value="${pol.id}"
+                    th:text="${pol.description}">
+            </option>
+        </select>
+        <div class="text-danger" th:if="${#fields.hasErrors('policyIds')}" th:errors="*{policyIds}"></div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Promotions</label>
+        <select class="form-select" id="promotions-select" th:field="*{promotionIds}" multiple>
+            <option th:each="promo : ${promotions}"
+                    th:value="${promo.id}"
+                    th:text="${promo.code}">
+            </option>
+        </select>
+        <div class="text-danger" th:if="${#fields.hasErrors('promotionIds')}" th:errors="*{promotionIds}"></div>
+    </div>
+
     <button type="submit" class="btn btn-primary">Save</button>
     <a class="btn btn-secondary" th:href="@{/hotels}">Cancel</a>
 </form>
 
+<!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        $('#address-select').select2({
-            placeholder: "Select or type a address",
-            allowClear: true,
-            width: '100%'
-        });
-    });
-</script>
-<script>
-    $(document).ready(function() {
-        $('#property-select').select2({
-            placeholder: "Select or type a propertyDescription",
-            allowClear: true,
-            width: '100%'
+    $(document).ready(function () {
+        $('#address-select, #property-select, #amenities-select, #promotions-select').select2({
+            width: '100%',
+            placeholder: function(){
+                return $(this).attr('placeholder');
+            },
+            allowClear: true
         });
     });
 </script>

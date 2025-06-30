@@ -56,7 +56,7 @@
     </style>
 </head>
 <body class="container mt-4">
-<div th:replace="fragments/navbar :: navbar"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 <h2>Create Address</h2>
 <form th:action="@{/addresses/create}" th:object="${address}" method="post" class="needs-validation">
     <div class="mb-3">
