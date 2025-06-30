@@ -32,7 +32,6 @@ public class AmenitiesController {
     @PostMapping("/create")
     public String createAmenities(@Valid @ModelAttribute("amenities") AmenitiesCreateDTO amenitiesCreateDTO, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-//            model.addAttribute("amenities", amenitiesCreateDTO);
             return "amenities/create";
         }
         amenitiesService.createAmenities(amenitiesCreateDTO);

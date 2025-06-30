@@ -5,6 +5,7 @@ import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescrip
 import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionResponse;
 import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionUpdateDTO;
 import com.project.HotelManagementSystem.entity.PropertyDescription;
+import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.PropertyDescriptionRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -37,7 +38,7 @@ public class PropertyDescriptionService {
     public PropertyDescriptionUpdateDTO updatePropertyDescription(Long id, PropertyDescriptionUpdateDTO propertyDescriptionUpdateDTO) {
         Optional<PropertyDescription> optionalPropertyDescription = this.propertyDescriptionRepository.findById(id);
         PropertyDescription propertyDescription = modelMapper.map(propertyDescriptionUpdateDTO, PropertyDescription.class);
-        if(optionalPropertyDescription.isPresent()) {
+        if (optionalPropertyDescription.isPresent()) {
             PropertyDescription updatedPropertyDescription = optionalPropertyDescription.get();
             updatedPropertyDescription.setDescription(propertyDescription.getDescription());
             updatedPropertyDescription.setNumberOfRooms(propertyDescription.getNumberOfRooms());
@@ -52,15 +53,14 @@ public class PropertyDescriptionService {
     }
 
     public void deletePropertyDescription(Long id) {
-        Optional<PropertyDescription> optionalPropertyDescription = this.propertyDescriptionRepository.findById(id);
-        if(optionalPropertyDescription.isPresent()) {
-            this.propertyDescriptionRepository.deleteById(id);
-        }
+        PropertyDescription propertyDescription = this.propertyDescriptionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("PropertyDescription", "id", id));
+        this.propertyDescriptionRepository.deleteById(id);
     }
 
     public PropertyDescriptionDTO findPropertyDescriptionById(Long id) {
         PropertyDescription propertyDescription = this.propertyDescriptionRepository.findById(id).get();
         return modelMapper.map(propertyDescription, PropertyDescriptionDTO.class);
+
     }
 
     public List<PropertyDescriptionDTO> findAllPropertyDescriptions() {

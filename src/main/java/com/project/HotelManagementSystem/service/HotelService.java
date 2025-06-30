@@ -5,6 +5,8 @@
     import com.project.HotelManagementSystem.dto.hotel.HotelResponse;
     import com.project.HotelManagementSystem.dto.hotel.HotelUpdateDTO;
     import com.project.HotelManagementSystem.entity.Hotel;
+    import com.project.HotelManagementSystem.exception.DuplicateException;
+    import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
     import com.project.HotelManagementSystem.repository.AmenitiesRepository;
     import com.project.HotelManagementSystem.repository.HotelRepository;
     import com.project.HotelManagementSystem.repository.PolicyRepository;
@@ -31,11 +33,13 @@
         private final HotelRepository hotelRepository;
         private final PolicyRepository policyRepository;
         private final PromotionRepository promotionRepository;
-
-        @Autowired
-        private ModelMapper modelMapper;
+        private final ModelMapper modelMapper;
 
         public HotelCreateDTO createHotel(HotelCreateDTO hotelCreateDTO) {
+            Optional<Hotel> hotelOp = hotelRepository.findHotelByNameAndCoordinates(hotelCreateDTO.getName(),hotelCreateDTO.getAddress().getLatitude(), hotelCreateDTO.getAddress().getLongitude());
+            if(hotelOp.isPresent()) {
+                throw new DuplicateException("Hotel with name " + hotelCreateDTO.getName() + " And with same latitude and longitude already exists");
+            }
             Hotel hotel = modelMapper.map(hotelCreateDTO, Hotel.class);
             hotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelCreateDTO.getPolicyIds())));
             hotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelCreateDTO.getPromotionIds())));
@@ -44,36 +48,34 @@
         }
 
         public HotelUpdateDTO updateHotel(Long id, HotelUpdateDTO hotelUpdateDTO) {
-            Optional<Hotel> optionalHotel = this.hotelRepository.findById(id);
-            Hotel hotel = modelMapper.map(hotelUpdateDTO, Hotel.class);
-            if(optionalHotel.isPresent()) {
-                Hotel updatedHotel = optionalHotel.get();
-                updatedHotel.setName(hotel.getName());
-                updatedHotel.setPhoneNumber(hotel.getPhoneNumber());
-                updatedHotel.setEmail(hotel.getEmail());
-                updatedHotel.setDescription(hotel.getDescription());
-                updatedHotel.setRating(hotel.getRating());
-                updatedHotel.setHotelType(hotel.getHotelType());
-                updatedHotel.setAddress(hotel.getAddress());
-                updatedHotel.setPropertyDescription(hotel.getPropertyDescription());
-                updatedHotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelUpdateDTO.getPolicyIds())));
-                updatedHotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelUpdateDTO.getPromotionIds())));
-                Hotel savedHotel = this.hotelRepository.save(updatedHotel);
-                return modelMapper.map(savedHotel,HotelUpdateDTO.class);
+            Optional<Hotel> hotelOp = hotelRepository.findHotelByNameAndCoordinates(hotelUpdateDTO.getName(),hotelUpdateDTO.getAddress().getLatitude(), hotelUpdateDTO.getAddress().getLongitude());
+            if(hotelOp.isPresent()) {
+                throw new DuplicateException("Hotel with name " + hotelUpdateDTO.getName() + " And with same latitude and longitude already exists");
             }
-            return null;
+            Hotel optionalHotel = this.hotelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Hotel", "id", id));
+            Hotel hotel = modelMapper.map(hotelUpdateDTO, Hotel.class);
+            optionalHotel.setName(hotel.getName());
+            optionalHotel.setPhoneNumber(hotel.getPhoneNumber());
+            optionalHotel.setEmail(hotel.getEmail());
+            optionalHotel.setDescription(hotel.getDescription());
+            optionalHotel.setRating(hotel.getRating());
+            optionalHotel.setHotelType(hotel.getHotelType());
+            optionalHotel.setAddress(hotel.getAddress());
+            optionalHotel.setPropertyDescription(hotel.getPropertyDescription());
+            optionalHotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelUpdateDTO.getPolicyIds())));
+            optionalHotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelUpdateDTO.getPromotionIds())));
+            Hotel savedHotel = this.hotelRepository.save(optionalHotel);
+            return modelMapper.map(savedHotel,HotelUpdateDTO.class);
         }
 
         public void deleteHotel(Long id) {
-            Optional<Hotel> optionalHotel = hotelRepository.findById(id);
-            if(optionalHotel.isPresent()) {
-                this.hotelRepository.deleteById(id);
-            }
+            Hotel hotel = hotelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Hotel", "id", id));
+            this.hotelRepository.delete(hotel);
         }
 
         public HotelUpdateDTO findHotelById(Long id) {
-            Hotel savedHotel = this.hotelRepository.findById(id).get();
-            HotelUpdateDTO hotelUpdateDTO = modelMapper.map(savedHotel, HotelUpdateDTO.class);
+            Hotel hotel = hotelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Hotel", "id", id));
+            HotelUpdateDTO hotelUpdateDTO = modelMapper.map(hotel, HotelUpdateDTO.class);
             return hotelUpdateDTO;
         }
 

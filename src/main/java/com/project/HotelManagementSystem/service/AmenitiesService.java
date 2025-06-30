@@ -5,6 +5,9 @@ import com.project.HotelManagementSystem.dto.amenities.AmenitiesDTO;
 import com.project.HotelManagementSystem.dto.amenities.AmenitiesResponse;
 import com.project.HotelManagementSystem.dto.amenities.AmenitiesUpdateDTO;
 import com.project.HotelManagementSystem.entity.Amenities;
+import com.project.HotelManagementSystem.exception.ApiException;
+import com.project.HotelManagementSystem.exception.DuplicateException;
+import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.AmenitiesRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -23,38 +26,38 @@ public class AmenitiesService {
 
 
     private final AmenitiesRepository amenitiesRepository;
-
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     public AmenitiesCreateDTO createAmenities(AmenitiesCreateDTO amenitiesCreateDTO) {
+        Optional<Amenities> amenitiesOp = this.amenitiesRepository.findByNameAndDescriptionIgnoreCase(amenitiesCreateDTO.getName(), amenitiesCreateDTO.getDescription());
+        if(amenitiesOp.isPresent()) {
+            throw new DuplicateException("Another Amenities with name " + amenitiesCreateDTO.getName() + " And with same description already exists");
+        }
         Amenities amenities = modelMapper.map(amenitiesCreateDTO, Amenities.class);
         Amenities savedAmenities = amenitiesRepository.save(amenities);
         return modelMapper.map(savedAmenities, AmenitiesCreateDTO.class);
     }
 
     public AmenitiesUpdateDTO updateAmenities(Long id, AmenitiesUpdateDTO amenitiesUpdateDTO) {
-        Optional<Amenities> updatedAmenitiesOp = this.amenitiesRepository.findById(id);
-        Amenities amenities = modelMapper.map(amenitiesUpdateDTO, Amenities.class);
-        if(updatedAmenitiesOp.isPresent()) {
-            Amenities updatedAmenities = updatedAmenitiesOp.get();
-            updatedAmenities.setName(amenities.getName());
-            updatedAmenities.setDescription(amenities.getDescription());
-            amenities = this.amenitiesRepository.save(updatedAmenities);
-            return modelMapper.map(amenities, AmenitiesUpdateDTO.class);
+        Optional<Amenities> amenitiesOp = this.amenitiesRepository.findByNameAndDescriptionIgnoreCase(amenitiesUpdateDTO.getName(), amenitiesUpdateDTO.getDescription());
+        if(amenitiesOp.isPresent() && !amenitiesOp.get().getId().equals(id)) {
+            throw new DuplicateException("Another Amenities with name " + amenitiesUpdateDTO.getName() + " And with same description already exists");
         }
-        return null;
+        Amenities updatedAmenitiesOp = this.amenitiesRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Amenities","id",id));
+        Amenities amenities = modelMapper.map(amenitiesUpdateDTO, Amenities.class);
+        updatedAmenitiesOp.setName(amenities.getName());
+        updatedAmenitiesOp.setDescription(amenities.getDescription());
+        amenities = this.amenitiesRepository.save(updatedAmenitiesOp);
+        return modelMapper.map(amenities, AmenitiesUpdateDTO.class);
     }
 
     public void deleteAmenities(Long id) {
-        Optional<Amenities> amenitiesOp = this.amenitiesRepository.findById(id);
-        if(amenitiesOp.isPresent()) {
-            this.amenitiesRepository.deleteById(id);
-        }
+        Amenities amenities = this.amenitiesRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Amenities","id",id));
+        this.amenitiesRepository.delete(amenities);
     }
 
     public AmenitiesDTO findAmenitiesById(Long id) {
-        Amenities amenities = this.amenitiesRepository.findById(id).get();
+        Amenities amenities = this.amenitiesRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Amenities","id",id));
         return modelMapper.map(amenities, AmenitiesDTO.class);
     }
 
