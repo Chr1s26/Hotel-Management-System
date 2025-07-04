@@ -5,6 +5,7 @@ import com.project.HotelManagementSystem.dto.review.ReviewDTO;
 import com.project.HotelManagementSystem.dto.review.ReviewResponse;
 import com.project.HotelManagementSystem.dto.review.ReviewUpdateDTO;
 import com.project.HotelManagementSystem.entity.Review;
+import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -13,10 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -32,25 +31,23 @@ public class ReviewService {
     }
 
     public ReviewUpdateDTO updateReview(Long id, ReviewUpdateDTO reviewUpdateDTO) {
-        Optional<Review> reviewOp = reviewRepository.findById(id);
+        Review reviewOp = reviewRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Review","id",id));
         Review review = modelMapper.map(reviewUpdateDTO, Review.class);
-        if (reviewOp.isPresent()) {
-            Review updatedReview = reviewOp.get();
-            updatedReview.setDescription(review.getDescription());
-            updatedReview.setRating(review.getRating());
-            updatedReview.setReviewDate(review.getReviewDate());
-            updatedReview.setHotel(review.getHotel());
-            updatedReview.setUser(review.getUser());
-            Review savedReview = reviewRepository.save(updatedReview);
-            return modelMapper.map(savedReview,ReviewUpdateDTO.class);
-        }
-        return null;
+        reviewOp.setDescription(review.getDescription());
+        reviewOp.setRating(review.getRating());
+        reviewOp.setReviewDate(review.getReviewDate());
+        reviewOp.setHotel(review.getHotel());
+        reviewOp.setUser(review.getUser());
+        Review savedReview = reviewRepository.save(reviewOp);
+        return modelMapper.map(savedReview,ReviewUpdateDTO.class);
     }
 
-    public void deleteReview(Long id) { reviewRepository.deleteById(id);}
+    public void deleteReview(Long id) {
+        Review review = reviewRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Review","id",id));
+        reviewRepository.deleteById(id);}
 
     public ReviewDTO findReviewById(Long id) {
-        Review review = this.reviewRepository.findById(id).get();
+        Review review = this.reviewRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Review","id",id));
         return modelMapper.map(review,ReviewDTO.class);
     }
 

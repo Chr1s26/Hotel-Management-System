@@ -1,8 +1,7 @@
 package com.project.HotelManagementSystem.dto.room;
 
-import com.project.HotelManagementSystem.entity.Amenities;
 import com.project.HotelManagementSystem.entity.Hotel;
-import com.project.HotelManagementSystem.entity.Promotion;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,10 +14,14 @@ import java.util.Set;
 @NoArgsConstructor
 public class RoomCreateDTO {
     private Long id;
+
+    @DecimalMin(value = "1.0", inclusive = true, message = "Price cannot be empty.")
     private double price;
     private boolean available;
+    @NotBlank(message = "Description cannot be empty.")
     private String description;
     private String roomType;
+    @Min(value = 1, message = "Max Capacity cannont be less than 1.")
     private int maxCapacity;
     private Hotel hotel;
     private Set<Long> amenityIds = new HashSet<>();

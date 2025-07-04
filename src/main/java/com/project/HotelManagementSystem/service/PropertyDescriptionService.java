@@ -5,6 +5,7 @@ import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescrip
 import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionResponse;
 import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionUpdateDTO;
 import com.project.HotelManagementSystem.entity.PropertyDescription;
+import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.PropertyDescriptionRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,27 +30,31 @@ public class PropertyDescriptionService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public PropertyDescriptionCreateDTO createPropertyDescription(PropertyDescriptionCreateDTO propertyDescriptionCreateDTO) {
+    public PropertyDescriptionCreateDTO createPropertyDescription(PropertyDescriptionCreateDTO propertyDescriptionCreateDTO){
+        Optional<PropertyDescription> propertyDescriptionOptional = propertyDescriptionRepository.findByDescriptionIgnoreCase(propertyDescriptionCreateDTO.getDescription());
+        if(propertyDescriptionOptional.isPresent()){
+            throw new DuplicateException("Description already exists.");
+        }
         PropertyDescription propertyDescription = modelMapper.map(propertyDescriptionCreateDTO, PropertyDescription.class);
         propertyDescriptionRepository.save(propertyDescription);
         return modelMapper.map(propertyDescription, PropertyDescriptionCreateDTO.class);
     }
 
     public PropertyDescriptionUpdateDTO updatePropertyDescription(Long id, PropertyDescriptionUpdateDTO propertyDescriptionUpdateDTO) {
-        Optional<PropertyDescription> optionalPropertyDescription = this.propertyDescriptionRepository.findById(id);
-        PropertyDescription propertyDescription = modelMapper.map(propertyDescriptionUpdateDTO, PropertyDescription.class);
-        if (optionalPropertyDescription.isPresent()) {
-            PropertyDescription updatedPropertyDescription = optionalPropertyDescription.get();
-            updatedPropertyDescription.setDescription(propertyDescription.getDescription());
-            updatedPropertyDescription.setNumberOfRooms(propertyDescription.getNumberOfRooms());
-            updatedPropertyDescription.setOpeningDate(propertyDescription.getOpeningDate());
-            updatedPropertyDescription.setRenovationDate(propertyDescription.getRenovationDate());
-
-            PropertyDescription savedPropertyDescription = propertyDescriptionRepository.save(updatedPropertyDescription);
-
-            return modelMapper.map(savedPropertyDescription, PropertyDescriptionUpdateDTO.class);
+        Optional<PropertyDescription> propertyDescriptionOp = propertyDescriptionRepository.findByDescriptionIgnoreCase(propertyDescriptionUpdateDTO.getDescription());
+        if(propertyDescriptionOp.isPresent() && !propertyDescriptionOp.get().getId().equals(id)){
+            throw new DuplicateException("Propperty description "+ propertyDescriptionUpdateDTO.getDescription() +" already exists.");
         }
-        return null;
+        PropertyDescription propertyDescription = modelMapper.map(propertyDescriptionUpdateDTO, PropertyDescription.class);
+        PropertyDescription updatedPropertyDescription = this.propertyDescriptionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("PropertyDescription", "id", id) );
+        updatedPropertyDescription.setDescription(propertyDescription.getDescription());
+        updatedPropertyDescription.setNumberOfRooms(propertyDescription.getNumberOfRooms());
+        updatedPropertyDescription.setOpeningDate(propertyDescription.getOpeningDate());
+        updatedPropertyDescription.setRenovationDate(propertyDescription.getRenovationDate());
+
+        PropertyDescription savedPropertyDescription = propertyDescriptionRepository.save(updatedPropertyDescription);
+
+        return modelMapper.map(savedPropertyDescription, PropertyDescriptionUpdateDTO.class);
     }
 
     public void deletePropertyDescription(Long id) {
@@ -58,7 +63,7 @@ public class PropertyDescriptionService {
     }
 
     public PropertyDescriptionDTO findPropertyDescriptionById(Long id) {
-        PropertyDescription propertyDescription = this.propertyDescriptionRepository.findById(id).get();
+        PropertyDescription propertyDescription = this.propertyDescriptionRepository.findById(id).orElseThrow(() ->  new ResourceNotFoundException("PropertyDescription", "id", id));
         return modelMapper.map(propertyDescription, PropertyDescriptionDTO.class);
 
     }

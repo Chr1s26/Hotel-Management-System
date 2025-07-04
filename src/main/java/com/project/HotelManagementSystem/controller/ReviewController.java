@@ -10,9 +10,11 @@ import com.project.HotelManagementSystem.entity.Review;
 import com.project.HotelManagementSystem.service.HotelService;
 import com.project.HotelManagementSystem.service.ReviewService;
 import com.project.HotelManagementSystem.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,7 +54,12 @@ public class ReviewController {
     }
 
     @PostMapping("/create")
-    public String createReview(@ModelAttribute ReviewCreateDTO reviewCreateDTO) {
+    public String createReview(@Valid @ModelAttribute("review") ReviewCreateDTO reviewCreateDTO, BindingResult bindingResult,Model model) {
+        if(bindingResult.hasErrors()){
+            model.addAttribute("hotels",hotelService.findAllHotels());
+            model.addAttribute("users",userService.findAllUsers());
+            return "reviews/create";
+        }
         reviewService.createReview(reviewCreateDTO);
         return "redirect:/reviews";
     }
@@ -66,7 +73,12 @@ public class ReviewController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateReview(@PathVariable Long id, @ModelAttribute ReviewUpdateDTO reviewUpdateDTO) {
+    public String updateReview(@PathVariable Long id,@Valid @ModelAttribute("review") ReviewUpdateDTO reviewUpdateDTO,BindingResult bindingResult,Model model) {
+        if(bindingResult.hasErrors()){
+            model.addAttribute("hotels",hotelService.findAllHotels());
+            model.addAttribute("users",userService.findAllUsers());
+            return "reviews/edit";
+        }
         reviewService.updateReview(id, reviewUpdateDTO);
         return "redirect:/reviews";
     }
