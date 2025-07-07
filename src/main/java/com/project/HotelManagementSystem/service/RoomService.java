@@ -5,6 +5,7 @@ import com.project.HotelManagementSystem.dto.room.RoomDTO;
 import com.project.HotelManagementSystem.dto.room.RoomResponse;
 import com.project.HotelManagementSystem.dto.room.RoomUpdateDTO;
 import com.project.HotelManagementSystem.entity.Room;
+import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.AmenitiesRepository;
 import com.project.HotelManagementSystem.repository.PromotionRepository;
 import com.project.HotelManagementSystem.repository.RoomRepository;
@@ -41,33 +42,28 @@ public class RoomService {
     }
 
     public RoomUpdateDTO updateRoom(Long id, RoomUpdateDTO roomUpdateDTO) {
-        Optional<Room> roomOp = roomRepository.findById(id);
+        Room roomOp = roomRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Room", "id", id));
         Room room = modelMapper.map(roomUpdateDTO, Room.class);
-        if (roomOp.isPresent()) {
-            Room updatedRoom = roomOp.get();
-            updatedRoom.setPrice(room.getPrice());
-            updatedRoom.setAvailable(room.isAvailable());
-            updatedRoom.setDescription(room.getDescription());
-            updatedRoom.setRoomType(room.getRoomType());
-            updatedRoom.setMaxCapacity(room.getMaxCapacity());
-            updatedRoom.setHotel(room.getHotel());
-            updatedRoom.setAmenities(new HashSet<>(amenitiesRepository.findAllById(roomUpdateDTO.getAmenityIds())));
-            updatedRoom.setPromotions(new HashSet<>(promotionRepository.findAllById(roomUpdateDTO.getPromotionIds())));
-            Room savedRoom = roomRepository.save(updatedRoom);
-            return modelMapper.map(savedRoom, RoomUpdateDTO.class);
-        }
-        return null;
+
+        roomOp.setPrice(room.getPrice());
+        roomOp.setAvailable(room.isAvailable());
+        roomOp.setDescription(room.getDescription());
+        roomOp.setRoomType(room.getRoomType());
+        roomOp.setMaxCapacity(room.getMaxCapacity());
+        roomOp.setHotel(room.getHotel());
+        roomOp.setAmenities(new HashSet<>(amenitiesRepository.findAllById(roomUpdateDTO.getAmenityIds())));
+        roomOp.setPromotions(new HashSet<>(promotionRepository.findAllById(roomUpdateDTO.getPromotionIds())));
+        Room savedRoom = roomRepository.save(roomOp);
+        return modelMapper.map(savedRoom, RoomUpdateDTO.class);
     }
 
     public void deleteRoom(Long id) {
-        Optional<Room> roomOp = roomRepository.findById(id);
-        if (roomOp.isPresent()) {
-            roomRepository.deleteById(id);
-        }
+        Room roomOp = roomRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Room", "id", id));
+        roomRepository.deleteById(id);
     }
 
     public RoomUpdateDTO findRoomById(Long id) {
-        Room room = roomRepository.findById(id).get();
+        Room room = roomRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Room", "id", id));
         return modelMapper.map(room, RoomUpdateDTO.class);
     }
 

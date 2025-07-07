@@ -7,10 +7,12 @@ import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescrip
 import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionUpdateDTO;
 import com.project.HotelManagementSystem.entity.PropertyDescription;
 import com.project.HotelManagementSystem.service.PropertyDescriptionService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,7 +46,10 @@ public class PropertyDescriptionController {
     }
 
     @PostMapping("/create")
-    public String createPropertyDescription(@ModelAttribute PropertyDescriptionCreateDTO propertyDescriptionCreateDTO) {
+    public String createPropertyDescription(@Valid @ModelAttribute("propertyDescription") PropertyDescriptionCreateDTO propertyDescriptionCreateDTO, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()) {
+            return "propertyDescriptions/create";
+        }
         this.propertyDescriptionService.createPropertyDescription(propertyDescriptionCreateDTO);
         return "redirect:/propertyDescriptions";
     }
@@ -56,7 +61,10 @@ public class PropertyDescriptionController {
     }
 
     @PostMapping("/update/{id}")
-    public String updatePropertyDescription(@PathVariable Long id, @ModelAttribute PropertyDescriptionUpdateDTO propertyDescriptionUpdateDTO) {
+    public String updatePropertyDescription(@PathVariable Long id,@Valid @ModelAttribute("propertyDescription") PropertyDescriptionUpdateDTO propertyDescriptionUpdateDTO,BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            return "propertyDescriptions/edit";
+        }
         this.propertyDescriptionService.updatePropertyDescription(id, propertyDescriptionUpdateDTO);
         return "redirect:/propertyDescriptions";
     }

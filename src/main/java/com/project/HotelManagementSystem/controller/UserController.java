@@ -9,6 +9,7 @@ import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.helper.StringUtil;
 import com.project.HotelManagementSystem.service.PromotionService;
 import com.project.HotelManagementSystem.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -48,31 +49,9 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public String createUser(@ModelAttribute UserCreateDTO userCreateDTO,Model model) {
-        boolean hasError = false;
-        if(StringUtil.isEmpty(userCreateDTO.getName())) {
-            model.addAttribute("nameError", "Please enter your name");
-            hasError = true;
-        }
-        if(StringUtil.isEmpty(userCreateDTO.getPhone())) {
-            model.addAttribute("phoneError", "Please enter your phone");
-            hasError = true;
-        }
-        if(StringUtil.isEmpty(userCreateDTO.getEmail())) {
-            model.addAttribute("emailError", "Please enter your email");
-            hasError = true;
-        }
-        if(StringUtil.isEmpty(userCreateDTO.getPassword())) {
-            model.addAttribute("passwordError", "Please enter your password");
-            hasError = true;
-        }
-        if(StringUtil.isEmpty(userCreateDTO.getNationality())) {
-            model.addAttribute("nationalityError", "Please enter your nationality");
-            hasError = true;
-        }
-
-        if(hasError) {
-            model.addAttribute("user", userCreateDTO);
+    public String createUser(@Valid @ModelAttribute("user") UserCreateDTO userCreateDTO,BindingResult bindingResult, Model model) {
+        if(bindingResult.hasErrors()){
+            model.addAttribute("promotions", promotionService.findAllPromotions());
             return "users/create";
         }
         this.userService.createUser(userCreateDTO);
@@ -87,9 +66,10 @@ public class UserController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateUser(@PathVariable Long id, @ModelAttribute UserUpdateDTO userUpdateDTO, BindingResult bindingResul, Model model) {
-        if(bindingResul.hasErrors()) {
+    public String updateUser(@PathVariable Long id,@Valid @ModelAttribute("user") UserUpdateDTO userUpdateDTO, BindingResult bindingResult, Model model) {
+        if(bindingResult.hasErrors()) {
             model.addAttribute("promotions", promotionService.findAllPromotions());
+            return "users/edit";
         }
         this.userService.updateUser(id,userUpdateDTO);
         return "redirect:/users";

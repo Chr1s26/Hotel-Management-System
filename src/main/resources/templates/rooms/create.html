@@ -123,7 +123,7 @@
     </div>
     <div class="mb-3">
         <label class="form-label">Room Type</label>
-        <select th:field="*{roomType}" class="form-select">
+        <select th:field="*{roomType}" class="form-select" required>
             <option th:each="r : ${T(com.project.HotelManagementSystem.entity.constants.RoomType).values()}"
                     th:value="${r}"
                     th:text="${r.name()}">Role</option>

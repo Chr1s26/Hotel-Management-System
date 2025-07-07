@@ -109,31 +109,40 @@
     <div class="mb-3">
         <label class="form-label">Name</label>
         <input type="text" th:field="*{name}" class="form-control"/>
-        <div class="text-danger" th:if="${nameError}" th:text="${nameError}"></div>
+        <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+<!--        <div class="text-danger" th:if="${nameError}" th:text="${nameError}"></div>-->
     </div>
     <div class="mb-3">
         <label class="form-label">Phone</label>
         <input type="text" th:field="*{phone}" class="form-control"/>
-        <div class="text-danger" th:if="${phoneError}" th:text="${phoneError}"></div>
+        <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+
+<!--        <div class="text-danger" th:if="${phoneError}" th:text="${phoneError}"></div>-->
     </div>
     <div class="mb-3">
         <label class="form-label">Email</label>
         <input type="text" th:field="*{email}" class="form-control"/>
-        <div class="text-danger" th:if="${emailError}" th:text="${emailError}"></div>
+        <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+
+        <!--        <div class="text-danger" th:if="${emailError}" th:text="${emailError}"></div>,-->
     </div>
     <div class="mb-3">
         <label class="form-label">Date Of Birth</label>
         <input type="date" th:field="*{dateOfBirth}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('dateOfBirth')}" th:text="*{dateOfBirth}"></div>
+        <div class="text-danger" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"></div>
+
+        <!--        <div class="text-danger" th:if="${#fields.hasErrors('dateOfBirth')}" th:text="*{dateOfBirth}"></div>-->
     </div>
     <div class="mb-3">
         <label class="form-label">Nationality</label>
         <input type="text" th:field="*{nationality}" class="form-control"/>
-        <div class="text-danger" th:if="${nationalityError}" th:text="${nationalityError}"></div>
+        <div class="text-danger" th:if="${#fields.hasErrors('nationality')}" th:errors="*{nationality}"></div>
+
+        <!--        <div class="text-danger" th:if="${nationalityError}" th:text="${nationalityError}"></div>-->
     </div>
     <div class="mb-3">
         <label class="form-label">Role</label>
-        <select th:field="*{userRole}" class="form-select">
+        <select th:field="*{userRole}" class="form-select" required>
             <option th:each="r : ${T(com.project.HotelManagementSystem.entity.constants.UserRole).values()}"
                     th:value="${r}"
                     th:text="${r.name()}">Role</option>
@@ -143,7 +152,9 @@
     <div class="mb-3">
         <label class="form-label">Password</label>
         <input type="text" th:field="*{password}" class="form-control"/>
-        <div class="text-danger" th:if="${passwordError}" th:text="${passwordError}"></div>
+        <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+
+        <!--        <div class="text-danger" th:if="${passwordError}" th:text="${passwordError}"></div>-->
     </div>
     <div class="mb-3">
         <label class="form-label">Point</label>

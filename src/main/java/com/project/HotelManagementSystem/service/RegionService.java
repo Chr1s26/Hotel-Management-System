@@ -6,6 +6,8 @@ import com.project.HotelManagementSystem.dto.region.RegionDTO;
 import com.project.HotelManagementSystem.dto.region.RegionResponse;
 import com.project.HotelManagementSystem.dto.region.RegionUpdateDTO;
 import com.project.HotelManagementSystem.entity.Region;
+import com.project.HotelManagementSystem.exception.DuplicateException;
+import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.RegionRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -28,33 +30,36 @@ public class RegionService {
     private final ModelMapper modelMapper;
 
     public RegionCreateDTO createRegion(RegionCreateDTO regionCreateDTO) {
+        Optional<Region> regionOp = regionRepository.findByNameIgnoreCase(regionCreateDTO.getName());
+        if(regionOp.isPresent()) {
+            throw new DuplicateException("Region name "+ regionCreateDTO.getName()+" already exists");
+        }
         Region region = modelMapper.map(regionCreateDTO, Region.class);
         this.regionRepository.save(region);
         return modelMapper.map(region, RegionCreateDTO.class);
     }
 
     public RegionUpdateDTO updateRegion(Long id, RegionUpdateDTO regionUpdateDTO) {
-        Optional<Region> regionOp = regionRepository.findById(id);
-        Region region = modelMapper.map(regionUpdateDTO, Region.class);
-        if(regionOp.isPresent()){
-            Region updatedRegion = regionOp.get();
-            updatedRegion.setName(region.getName());
-            updatedRegion.setCountry(region.getCountry());
-            Region savedRegion = regionRepository.save(updatedRegion);
-            return modelMapper.map(savedRegion, RegionUpdateDTO.class);
+        Optional<Region> regionOp = regionRepository.findByNameIgnoreCase(regionUpdateDTO.getName());
+        if(regionOp.isPresent() && !regionOp.get().getId().equals(id)) {
+            throw new DuplicateException("Region name "+ regionUpdateDTO.getName()+" already exists");
         }
-        return null;
+        Region region = modelMapper.map(regionUpdateDTO, Region.class);
+        Region updatedRegionOp = this.regionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Region","id",id));
+        updatedRegionOp.setName(region.getName());
+        updatedRegionOp.setCountry(region.getCountry());
+        Region savedRegion = regionRepository.save(updatedRegionOp);
+        return modelMapper.map(savedRegion, RegionUpdateDTO.class);
+
     }
 
     public void deleteRegion(Long id) {
-        Optional<Region> regionOp = regionRepository.findById(id);
-        if(regionOp.isPresent()){
-            regionRepository.deleteById(id);
-        }
+        Region regionOp = regionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Region","id",id));
+        regionRepository.deleteById(id);
     }
 
     public RegionDTO findRegionById(Long id) {
-        Region region = regionRepository.findById(id).get();
+        Region region = regionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Region","id",id));
         return modelMapper.map(region, RegionDTO.class);
     }
 
