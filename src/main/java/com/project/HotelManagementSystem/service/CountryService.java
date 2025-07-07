@@ -5,6 +5,8 @@ import com.project.HotelManagementSystem.dto.country.CountryDTO;
 import com.project.HotelManagementSystem.dto.country.CountryResponse;
 import com.project.HotelManagementSystem.dto.country.CountryUpdateDTO;
 import com.project.HotelManagementSystem.entity.Country;
+import com.project.HotelManagementSystem.exception.DuplicateException;
+import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -25,36 +27,37 @@ public class CountryService {
 
     private final CountryRepository countryRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
 
     public CountryCreateDTO createCountry(CountryCreateDTO countryCreateDTO) {
+        Optional<Country> countryOptional = this.countryRepository.findByNameIgnoreCase(countryCreateDTO.getName());
+        if(countryOptional.isPresent()){
+            throw new DuplicateException("Country with name " + countryCreateDTO.getName() + " already exists");
+        }
         Country country = modelMapper.map(countryCreateDTO, Country.class);
         Country savedCountry = countryRepository.save(country);
         return modelMapper.map(savedCountry,CountryCreateDTO.class);
     }
 
     public CountryUpdateDTO updateCountry(Long id, CountryUpdateDTO countryUpdateDTO) {
-        Optional<Country> optionalCountry = countryRepository.findById(id);
-        Country country = modelMapper.map(countryUpdateDTO, Country.class);
-        if(optionalCountry.isPresent()) {
-            Country updatedCountry = optionalCountry.get();
-            updatedCountry.setName(country.getName());
-            country = this.countryRepository.save(updatedCountry);
-            return modelMapper.map(country,CountryUpdateDTO.class);
+        Optional<Country> countryOptional = this.countryRepository.findByNameIgnoreCase(countryUpdateDTO.getName());
+        if(countryOptional.isPresent() && !countryOptional.get().getId().equals(id)){
+            throw new DuplicateException("Country with name " + countryUpdateDTO.getName() + " already exists");
         }
-        return null;
+        Country optionalCountry = countryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Country", "id", id));
+        Country country = modelMapper.map(countryUpdateDTO, Country.class);
+        optionalCountry.setName(country.getName());
+        country = this.countryRepository.save(optionalCountry);
+        return modelMapper.map(country,CountryUpdateDTO.class);
     }
 
     public void deleteCountry(Long id) {
-        Optional<Country> optionalCountry = countryRepository.findById(id);
-        if(optionalCountry.isPresent()) {
-            this.countryRepository.deleteById(id);
-        }
+        Country country = countryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Country", "id", id));
+        this.countryRepository.deleteById(id);
     }
 
     public CountryDTO findCountryById(Long id) {
-        Country country = countryRepository.findById(id).get();
+        Country country = countryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Country", "id", id));
         return modelMapper.map(country,CountryDTO.class);
     }
 
@@ -73,6 +76,7 @@ public class CountryService {
         countryResponse.setLastPage(page.isLast());
         return countryResponse;
     }
+
     public List<CountryDTO> findAllCountries() {
         List<Country> countryList = countryRepository.findAll();
         List<CountryDTO> countryDTOList = countryList.stream().map(country -> modelMapper.map(country, CountryDTO.class)).toList();
