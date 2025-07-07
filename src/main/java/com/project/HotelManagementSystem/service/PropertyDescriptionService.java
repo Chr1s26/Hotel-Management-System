@@ -1,25 +1,14 @@
 package com.project.HotelManagementSystem.service;
 
-import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionCreateDTO;
-import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionDTO;
-import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionResponse;
-import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionUpdateDTO;
 import com.project.HotelManagementSystem.entity.PropertyDescription;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.PropertyDescriptionRepository;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -73,19 +62,7 @@ public class PropertyDescriptionService {
         return propertyDescriptions.stream().map(propertyDescription -> modelMapper.map(propertyDescription, PropertyDescriptionDTO.class)).collect(Collectors.toList());
     }
 
-    public PropertyDescriptionResponse findAllPropertyDescriptionsWithPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
-        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
-        Page<PropertyDescription> propertyDescriptionPage = this.propertyDescriptionRepository.findAll(pageable);
-        List<PropertyDescription> propertyDescriptions = propertyDescriptionPage.getContent();
-        List<PropertyDescriptionDTO> propertyDescriptionDTOList = propertyDescriptions.stream().map(propertyDescription -> modelMapper.map(propertyDescription,PropertyDescriptionDTO.class)).toList();
-        PropertyDescriptionResponse propertyDescriptionResponse = new PropertyDescriptionResponse();
-        propertyDescriptionResponse.setPropertyDescriptions(propertyDescriptionDTOList);
-        propertyDescriptionResponse.setPageNumber(propertyDescriptionPage.getNumber());
-        propertyDescriptionResponse.setPageSize(propertyDescriptionPage.getSize());
-        propertyDescriptionResponse.setTotalPages(propertyDescriptionPage.getTotalPages());
-        propertyDescriptionResponse.setTotalElements(propertyDescriptionPage.getTotalElements());
-        propertyDescriptionResponse.setLastPage(propertyDescriptionPage.isLast());
-        return propertyDescriptionResponse;
+    public List<PropertyDescription> findAllPropertyDescriptions() {
+        return this.propertyDescriptionRepository.findAll();
     }
 }
