@@ -33,7 +33,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/register","/static/assets/**").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(form -> form.loginPage("/login")
-                        .loginProcessingUrl("/authenticateTheUser").defaultSuccessUrl("/homePage/home",true)
+                        .loginProcessingUrl("/authenticateTheUser").defaultSuccessUrl("/home",true)
                         .permitAll()).logout(logout -> logout.permitAll())
                 .exceptionHandling(exception -> exception.accessDeniedPage("/access_denied"));
         return http.build();

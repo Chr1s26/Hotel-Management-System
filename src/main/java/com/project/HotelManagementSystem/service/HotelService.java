@@ -68,8 +68,6 @@
             optionalHotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelUpdateDTO.getPolicyIds())));
             optionalHotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelUpdateDTO.getPromotionIds())));
             Hotel savedHotel = this.hotelRepository.save(optionalHotel);
-            System.out.println("***************");
-            System.out.println(hotelUpdateDTO.getFile());
             fileService.handleFileUpload(hotelUpdateDTO.getFile(), FileType.USER,savedHotel.getId(),"s3");
             return modelMapper.map(savedHotel,HotelUpdateDTO.class);
         }

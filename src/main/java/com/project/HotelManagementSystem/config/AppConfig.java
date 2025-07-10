@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.stream.Collectors;
 
 @Configuration
-public class AppConfig {
+public class  AppConfig {
 
     @Bean
     public ModelMapper modelMapper() {
