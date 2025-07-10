@@ -5,6 +5,7 @@
     import com.project.HotelManagementSystem.dto.hotel.HotelResponse;
     import com.project.HotelManagementSystem.dto.hotel.HotelUpdateDTO;
     import com.project.HotelManagementSystem.entity.Hotel;
+    import com.project.HotelManagementSystem.entity.constants.FileType;
     import com.project.HotelManagementSystem.exception.DuplicateException;
     import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
     import com.project.HotelManagementSystem.repository.AmenitiesRepository;
@@ -34,6 +35,7 @@
         private final PolicyRepository policyRepository;
         private final PromotionRepository promotionRepository;
         private final ModelMapper modelMapper;
+        private final FileService fileService;
 
         public HotelCreateDTO createHotel(HotelCreateDTO hotelCreateDTO) {
             Optional<Hotel> hotelOp = hotelRepository.findHotelByNameAndCoordinates(hotelCreateDTO.getName(),hotelCreateDTO.getAddress().getLatitude(), hotelCreateDTO.getAddress().getLongitude());
@@ -44,6 +46,7 @@
             hotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelCreateDTO.getPolicyIds())));
             hotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelCreateDTO.getPromotionIds())));
             Hotel savedHotel = hotelRepository.save(hotel);
+            fileService.handleFileUpload(hotelCreateDTO.getFile(), FileType.USER,savedHotel.getId(),"local");
             return modelMapper.map(savedHotel,HotelCreateDTO.class);
         }
 
@@ -65,6 +68,9 @@
             optionalHotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelUpdateDTO.getPolicyIds())));
             optionalHotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelUpdateDTO.getPromotionIds())));
             Hotel savedHotel = this.hotelRepository.save(optionalHotel);
+            System.out.println("***************");
+            System.out.println(hotelUpdateDTO.getFile());
+            fileService.handleFileUpload(hotelUpdateDTO.getFile(), FileType.USER,savedHotel.getId(),"s3");
             return modelMapper.map(savedHotel,HotelUpdateDTO.class);
         }
 

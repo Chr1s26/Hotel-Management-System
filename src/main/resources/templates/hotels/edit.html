@@ -94,7 +94,7 @@
 
 <h2>Update Hotel</h2>
 
-<form th:action="@{/hotels/update/{id}(id=${hotel.id})}" th:object="${hotel}" method="post" class="needs-validation">
+<form th:action="@{/hotels/update/{id}(id=${hotel.id})}" th:object="${hotel}" method="post" class="needs-validation" enctype="multipart/form-data">
 
     <input type="hidden" th:field="*{id}" />
 
@@ -181,7 +181,10 @@
             </option>
         </select>
     </div>
-
+    <div class="mb-3">
+        <label class="form-label">File Upload</label>
+        <input type="file" th:field="*{file}">
+    </div>
     <button type="submit" class="btn btn-primary">Update Hotel</button>
     <a class="btn btn-secondary" th:href="@{/hotels}">Cancel</a>
 </form>

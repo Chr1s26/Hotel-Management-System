@@ -94,7 +94,7 @@
 
 <h2>Create Hotel</h2>
 
-<form th:action="@{/hotels/create}" th:object="${hotel}" method="post" class="needs-validation">
+<form th:action="@{/hotels/create}" th:object="${hotel}" method="post" class="needs-validation" enctype="multipart/form-data">
 
     <div class="mb-3">
         <label class="form-label">Name</label>
@@ -180,6 +180,11 @@
             </option>
         </select>
         <div class="text-danger" th:if="${#fields.hasErrors('promotionIds')}" th:errors="*{promotionIds}"></div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">File Upload</label>
+        <input type="file" th:field="*{file}">
     </div>
 
     <button type="submit" class="btn btn-primary">Save</button>

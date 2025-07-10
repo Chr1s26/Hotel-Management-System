@@ -2,7 +2,6 @@ package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionCreateDTO;
 import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionDTO;
-import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionResponse;
 import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionUpdateDTO;
 import com.project.HotelManagementSystem.entity.PropertyDescription;
 import com.project.HotelManagementSystem.exception.DuplicateException;

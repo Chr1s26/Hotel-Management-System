@@ -7,6 +7,7 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -40,4 +41,5 @@ public class HotelUpdateDTO {
     private Set<@NotNull(message = "Promotion ID cannot be null") Long> promotionIds = new HashSet<>();
     @Size(min = 1, message = "At least one policy must be selected")
     private Set<@NotNull(message = "Policy ID cannot be null") Long> policyIds = new HashSet<>();
+    private MultipartFile file;
 }

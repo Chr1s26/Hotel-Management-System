@@ -5,10 +5,8 @@ import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescrip
 import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionDTO;
 import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionResponse;
 import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionUpdateDTO;
-import com.project.HotelManagementSystem.entity.PropertyDescription;
 import com.project.HotelManagementSystem.service.PropertyDescriptionService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

@@ -27,4 +27,5 @@ public class HotelDTO {
     private PropertyDescription propertyDescription;
     private Set<Promotion> promotions = new HashSet<>();
     private Set<Policy>  policies = new HashSet<>();
+    private String profileUrl;
 }
