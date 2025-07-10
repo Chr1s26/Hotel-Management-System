@@ -5,6 +5,8 @@ import com.project.HotelManagementSystem.dto.user.UserDTO;
 import com.project.HotelManagementSystem.dto.user.UserResponse;
 import com.project.HotelManagementSystem.dto.user.UserUpdateDTO;
 import com.project.HotelManagementSystem.entity.User;
+import com.project.HotelManagementSystem.exception.DuplicateException;
+import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.PromotionRepository;
 import com.project.HotelManagementSystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,10 @@ public class UserService {
     private final PromotionRepository promotionRepository;
 
     public UserCreateDTO createUser(UserCreateDTO userCreateDTO) {
+        if(userRepository.existsByName(userCreateDTO.getName())) throw new DuplicateException("User name "+userCreateDTO.getName()+" is already used.");
+        if(userRepository.existsByPhone(userCreateDTO.getPhone())) throw new DuplicateException("User's phone number "+userCreateDTO.getPhone()+" is already used.");
+        if(userRepository.existsByEmail(userCreateDTO.getEmail())) throw new DuplicateException("User's  email "+userCreateDTO.getEmail()+" is already used.");
+
         User user = modelMapper.map(userCreateDTO, User.class);
         user.setPromotions(new HashSet<>(promotionRepository.findAllById(userCreateDTO.getPromotionIds())));
         this.userRepository.save(user);
@@ -36,34 +42,32 @@ public class UserService {
     }
 
     public UserUpdateDTO updateUser(Long id, UserUpdateDTO userUpdateDTO) {
-        Optional<User> optionalUser = this.userRepository.findById(id);
+        if(userRepository.existsByName(userUpdateDTO.getName())) throw new DuplicateException("User name "+userUpdateDTO.getName()+" already exists.");
+        if(userRepository.existsByPhone(userUpdateDTO.getPhone())) throw new DuplicateException("User's phone number "+userUpdateDTO.getPhone()+" already exists.");
+        if(userRepository.existsByEmail(userUpdateDTO.getEmail())) throw new DuplicateException("User's  email "+userUpdateDTO.getEmail()+" already exists.");
+
+        User updatedUser = this.userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User","id",id));
         User user = modelMapper.map(userUpdateDTO, User.class);
-        if (optionalUser.isPresent()) {
-            User updatedUser = optionalUser.get();
-            updatedUser.setName(user.getName());
-            updatedUser.setEmail(user.getEmail());
-            updatedUser.setPassword(user.getPassword());
-            updatedUser.setPhone(user.getPhone());
-            updatedUser.setUserRole(user.getUserRole());
-            updatedUser.setDateOfBirth(user.getDateOfBirth());
-            updatedUser.setNationality(user.getNationality());
-            updatedUser.setPoint(user.getPoint());
-            updatedUser.setPromotions(new HashSet<>(promotionRepository.findAllById(userUpdateDTO.getPromotionIds())));
-            User savedUser = userRepository.save(updatedUser);
-            return modelMapper.map(savedUser, UserUpdateDTO.class);
-        }
-        return null;
+        updatedUser.setName(user.getName());
+        updatedUser.setEmail(user.getEmail());
+        updatedUser.setPassword(user.getPassword());
+        updatedUser.setPhone(user.getPhone());
+        updatedUser.setUserRole(user.getUserRole());
+        updatedUser.setDateOfBirth(user.getDateOfBirth());
+        updatedUser.setNationality(user.getNationality());
+        updatedUser.setPoint(user.getPoint());
+        updatedUser.setPromotions(new HashSet<>(promotionRepository.findAllById(userUpdateDTO.getPromotionIds())));
+        User savedUser = userRepository.save(updatedUser);
+        return modelMapper.map(savedUser, UserUpdateDTO.class);
     }
 
     public void deleteUser( Long id) {
-        Optional<User> optionalUser = this.userRepository.findById(id);
-        if (optionalUser.isPresent()) {
-            this.userRepository.deleteById(id);
-        }
+        User optionalUser = this.userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User","id",id));
+        this.userRepository.deleteById(id);
     }
 
     public UserUpdateDTO findUserById(Long id) {
-        User user = this.userRepository.findById(id).get();
+        User user = this.userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User","id",id));
         return modelMapper.map(user, UserUpdateDTO.class);
     }
 

@@ -10,9 +10,11 @@ import com.project.HotelManagementSystem.service.AmenitiesService;
 import com.project.HotelManagementSystem.service.HotelService;
 import com.project.HotelManagementSystem.service.PromotionService;
 import com.project.HotelManagementSystem.service.RoomService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,7 +53,13 @@ public class RoomController {
     }
 
     @PostMapping("/create")
-    public String createRoom(@ModelAttribute RoomCreateDTO roomCreateDTO) {
+    public String createRoom(@Valid @ModelAttribute("room") RoomCreateDTO roomCreateDTO, BindingResult bindingResult,Model model) {
+        if(bindingResult.hasErrors()){
+            model.addAttribute("hotels", hotelService.findAllHotels());
+            model.addAttribute("amenities", amenitiesService.findAllAmenities());
+            model.addAttribute("promotions", promotionService.findAllPromotions());
+            return "rooms/create";
+        }
         roomService.createRoom(roomCreateDTO);
         return "redirect:/rooms";
     }
@@ -66,7 +74,13 @@ public class RoomController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateRoom(@PathVariable Long id, @ModelAttribute RoomUpdateDTO RoomUpdateDTO) {
+    public String updateRoom(@PathVariable Long id,@Valid @ModelAttribute("room") RoomUpdateDTO RoomUpdateDTO,BindingResult bindingResult,Model model) {
+        if(bindingResult.hasErrors()){
+            model.addAttribute("hotels", hotelService.findAllHotels());
+            model.addAttribute("amenities", amenitiesService.findAllAmenities());
+            model.addAttribute("promotions", promotionService.findAllPromotions());
+            return "rooms/edit";
+        }
         roomService.updateRoom(id, RoomUpdateDTO);
         return "redirect:/rooms";
     }

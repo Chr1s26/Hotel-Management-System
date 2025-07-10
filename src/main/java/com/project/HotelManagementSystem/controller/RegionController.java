@@ -8,9 +8,11 @@ import com.project.HotelManagementSystem.dto.region.RegionUpdateDTO;
 import com.project.HotelManagementSystem.entity.Region;
 import com.project.HotelManagementSystem.service.CountryService;
 import com.project.HotelManagementSystem.service.RegionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,7 +48,11 @@ public class RegionController {
     }
 
     @PostMapping("/create")
-    public String createRegion(@ModelAttribute RegionCreateDTO regionCreateDTO){
+    public String createRegion(@Valid @ModelAttribute("region") RegionCreateDTO regionCreateDTO, BindingResult bindingResult,Model model){
+        if(bindingResult.hasErrors()){
+            model.addAttribute("countries", countryService.findAllCountries());
+            return "regions/create";
+        }
         regionService.createRegion(regionCreateDTO);
         return "redirect:/regions";
     }
@@ -59,7 +65,11 @@ public class RegionController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateRegion(@PathVariable Long id, @ModelAttribute RegionUpdateDTO regionUpdateDTO){
+    public String updateRegion(@PathVariable Long id,@Valid @ModelAttribute("region") RegionUpdateDTO regionUpdateDTO,BindingResult bindingResult,Model model){
+        if(bindingResult.hasErrors()){
+            model.addAttribute("countries", countryService.findAllCountries());
+            return "regions/edit";
+        }
         regionService.updateRegion(id, regionUpdateDTO);
         return "redirect:/regions";
     }
