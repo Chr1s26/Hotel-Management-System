@@ -10,10 +10,9 @@
             height: 100%;
             margin: 0;
             padding: 0;
-            overflow: hidden;
         }
 
-        .bg-video {
+        .bg-video, .bg-image {
             position: fixed;
             top: 0;
             left: 0;
@@ -29,7 +28,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(46, 64, 83, 0.7); /* overlay for contrast */
+            background-color: rgba(46, 64, 83, 0.7);
             z-index: 0;
         }
 
@@ -60,24 +59,46 @@
 </head>
 <body>
 
+<div th:if="${url != null}">
+    <video th:if="${type != null and type.startsWith('video')}"
+           autoplay muted loop class="bg-video">
+        <source th:src="${url}" th:type="${type}">
+        Your browser does not support the video tag.
+    </video>
 
-<video autoplay muted loop class="bg-video">
-    <source src="/videos/hotel_intro.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-</video>
+    <img th:if="${type != null and type.startsWith('image')}"
+         th:src="${url}" class="bg-video bg-image" alt="Background wallpaper">
+</div>
+
+<div th:if="${url == null}">
+    <video autoplay muted loop class="bg-video">
+        <source src="/videos/hotel_intro.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</div>
+
 <div class="overlay"></div>
 
-
 <div th:replace="fragments/navbar :: navbar"></div>
-
 
 <div class="container content">
     <h1 class="display-4 fw-bold">Welcome to Hotel Management System</h1>
     <p class="lead">Manage your hotels, rooms, and more with ease.</p>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-        crossorigin="anonymous"></script>
+<!-- Upload wallpaper form -->
+<form th:action="@{/home/upload}" th:object="${home}" method="post" enctype="multipart/form-data">
+    <input type="file" th:field="*{file}" accept="video/*,image/*" hidden id="Upload" onchange="this.form.submit()">
+</form>
+
+<!-- Upload button -->
+<button class="btn btn-secondary position-fixed bottom-0 end-0 m-3"
+        onclick="document.getElementById('Upload').click()">
+    Upload Wallpaper
+</button>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

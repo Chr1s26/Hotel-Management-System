@@ -1,5 +1,7 @@
 package com.project.HotelManagementSystem.controller;
 
+import com.project.HotelManagementSystem.entity.Admin;
+import com.project.HotelManagementSystem.entity.Editor;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.service.AbstractService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,7 @@ public class AuthController {
         return "register";
     }
 
-    @PostMapping("/register")
+    @PostMapping("/registerUser")
     public String showLoginForm(@ModelAttribute User appUser, Model model) {
         try{
             abstractService.registerNewUser(appUser);
@@ -31,4 +33,41 @@ public class AuthController {
         return "redirect:/login?registered";
     }
 
+    @GetMapping("/register/admin")
+    public String showAdminRegisterForm(Model model) {
+        Admin admin = new Admin();
+        admin.setUser(new User());
+        model.addAttribute("admin", admin);
+        return "admin_register";
+    }
+
+    @PostMapping("/register/admin")
+    public String processAdminRegistration(@ModelAttribute("admin") Admin admin, Model model) {
+        try {
+
+            return "redirect:/login?registered";
+        } catch (Exception e) {
+            model.addAttribute("registrationError", e.getMessage());
+            return "admin_register";
+        }
+    }
+
+    @GetMapping("/register/editor")
+    public String showEditorRegisterForm(Model model) {
+        Editor editor = new Editor();
+        editor.setUser(new User());
+        model.addAttribute("editor", editor);
+        return "editor_register";
+    }
+
+    @PostMapping("/register/editor")
+    public String processEditorRegistration(@ModelAttribute("editor") Editor editor, Model model) {
+        try {
+
+            return "redirect:/login?registered";
+        } catch (Exception e) {
+            model.addAttribute("registrationError", e.getMessage());
+            return "editor_register";
+        }
+    }
 }

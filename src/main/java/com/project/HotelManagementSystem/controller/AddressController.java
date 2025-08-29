@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.controller;
 
+import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.address.AddressCreateDTO;
 import com.project.HotelManagementSystem.dto.address.AddressDTO;
@@ -42,6 +43,7 @@ public class AddressController {
     }
 
     @GetMapping("/new")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showCreateForm(Model model) {
         model.addAttribute("address", new AddressCreateDTO());
         model.addAttribute("cities", cityService.findAllCities());
@@ -62,6 +64,7 @@ public class AddressController {
     }
 
     @GetMapping("/edit/{id}")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showUpdateForm(@PathVariable Long id, Model model) {
         model.addAttribute("address", addressService.findAddressById(id));
         model.addAttribute("cities", cityService.findAllCities());
@@ -79,6 +82,7 @@ public class AddressController {
     }
 
     @GetMapping("/delete/{id}")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String deleteAddress(@PathVariable Long id) {
         addressService.deleteAddress(id);
         return "redirect:/addresses";

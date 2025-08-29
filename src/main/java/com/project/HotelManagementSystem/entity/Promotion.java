@@ -15,39 +15,35 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "promotions")
-public class Promotion {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Promotion extends MasterData {
 
     @Column
     private String code;
 
-    @Column(name = "discount_type")
+    @Column(name = "discount_type", nullable = false)
     @Convert(converter = DiscountTypeConverter.class)
     private DiscountType discountType;
 
-    @Column
+    @Column(nullable = false)
     private double discountAmount;
 
-    @Column
+    @Column(nullable = false)
     private LocalDate startDate;
 
-    @Column
+    @Column(nullable = false)
     private LocalDate endDate;
 
-    @Column
+    @Column(nullable = true)
     private int pointAmount;
 
-    @Column
+    @Column(nullable = false)
     private int usageLimit;
 
-    @Column
+    @Column(nullable = true)
     private int timesUsed;
 
     @ManyToMany(mappedBy = "promotions")
-    private Set<User> users = new HashSet<>();
+    private Set<Customer> customers = new HashSet<>();
 
     @ManyToMany(mappedBy = "promotions")
     private Set<Room> rooms = new HashSet<>();

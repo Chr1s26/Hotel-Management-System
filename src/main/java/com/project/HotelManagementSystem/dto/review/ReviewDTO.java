@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.dto.review;
 
+import com.project.HotelManagementSystem.entity.Customer;
 import com.project.HotelManagementSystem.entity.Hotel;
 import com.project.HotelManagementSystem.entity.User;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,6 @@ public class ReviewDTO {
     private double rating;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate reviewDate;
-    private User user;
+    private Customer customer;
     private Hotel hotel;
 }

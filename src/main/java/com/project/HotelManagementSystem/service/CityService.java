@@ -38,7 +38,7 @@ public class CityService {
     }
 
     public CityUpdateDTO updateCity(Long id, CityUpdateDTO cityUpdateDTO) {
-        Optional<City> cityOptional = this.cityRepository.findByNameIgnoreCase(cityUpdateDTO.getName());
+        Optional<City> cityOptional = this.cityRepository.findByNameIgnoreCaseAndIdNot(cityUpdateDTO.getName(),cityUpdateDTO.getId());
         if(cityOptional.isPresent() && !cityOptional.get().getId().equals(id)) {
             throw new DuplicateException("Another City with name " + cityUpdateDTO.getName() + " already exists");
         }

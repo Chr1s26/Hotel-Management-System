@@ -6,7 +6,6 @@ import com.project.HotelManagementSystem.dto.address.AddressDTO;
 import com.project.HotelManagementSystem.dto.address.AddressResponse;
 import com.project.HotelManagementSystem.dto.address.AddressUpdateDTO;
 import com.project.HotelManagementSystem.entity.Address;
-import com.project.HotelManagementSystem.exception.ApiException;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.AddressRepository;
@@ -17,12 +16,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -44,7 +41,7 @@ public class AddressService {
     }
 
     public AddressUpdateDTO updateAddress(Long id, AddressUpdateDTO addressUpdateDTO) {
-        Optional<Address> addressOp = addressRepository.findByLatitudeAndLongitude(addressUpdateDTO.getLatitude(),addressUpdateDTO.getLongitude());
+        Optional<Address> addressOp = addressRepository.findByLatitudeAndLongitudeAndIdNot(addressUpdateDTO.getLatitude(),addressUpdateDTO.getLongitude(),addressUpdateDTO.getId());
         if(addressOp.isPresent() && !addressOp.get().getId().equals(id)){
             throw new DuplicateException("Another address with same latitude and longitude already exists");
         }

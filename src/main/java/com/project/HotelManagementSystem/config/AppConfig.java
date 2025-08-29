@@ -1,16 +1,18 @@
 package com.project.HotelManagementSystem.config;
 
+import com.project.HotelManagementSystem.dto.admin.AdminCreateDTO;
+import com.project.HotelManagementSystem.dto.admin.AdminUpdateDTO;
+import com.project.HotelManagementSystem.dto.editor.EditorCreateDTO;
+import com.project.HotelManagementSystem.dto.editor.EditorUpdateDTO;
 import com.project.HotelManagementSystem.dto.hotel.HotelCreateDTO;
 import com.project.HotelManagementSystem.dto.hotel.HotelDTO;
 import com.project.HotelManagementSystem.dto.hotel.HotelUpdateDTO;
 import com.project.HotelManagementSystem.dto.room.RoomDTO;
 import com.project.HotelManagementSystem.dto.room.RoomUpdateDTO;
-import com.project.HotelManagementSystem.entity.Hotel;
-import com.project.HotelManagementSystem.entity.Policy;
-import com.project.HotelManagementSystem.entity.Promotion;
-import com.project.HotelManagementSystem.entity.Room;
+import com.project.HotelManagementSystem.entity.*;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +31,9 @@ public class  AppConfig {
 
         configureHotelDtoToEntityMappings(mapper);
         configureHotelToUpdateDtoConverter(mapper);
+
+        configureAdminMappings(mapper);
+        configureEditorMappings(mapper);
 
         return mapper;
     }
@@ -116,6 +121,95 @@ public class  AppConfig {
         };
 
         mapper.addConverter(roomToUpdateDtoConverter);
+    }
+
+
+    private void configureAdminMappings(ModelMapper mapper) {
+
+        TypeMap<AdminCreateDTO, Admin> createMap = mapper.createTypeMap(AdminCreateDTO.class, Admin.class);
+        createMap.setPostConverter(ctx -> {
+            return ctx.getDestination();
+        });
+
+        TypeMap<AdminUpdateDTO, Admin> updateMap = mapper.createTypeMap(AdminUpdateDTO.class, Admin.class);
+        updateMap.setPostConverter(ctx -> {
+            return ctx.getDestination();
+        });
+
+        Converter<Admin, AdminCreateDTO> toCreateDto = ctx -> {
+            Admin admin = ctx.getSource();
+            AdminCreateDTO dto = new AdminCreateDTO();
+            dto.setId(admin.getId());
+            dto.setName(admin.getName());
+            if (admin.getUser() != null) {
+                dto.setApp_user_id(admin.getUser().getId());
+            }
+            return dto;
+        };
+        mapper.addConverter(toCreateDto);
+
+        Converter<Admin, AdminUpdateDTO> toUpdateDto = ctx -> {
+            Admin admin = ctx.getSource();
+            AdminUpdateDTO dto = new AdminUpdateDTO();
+            dto.setId(admin.getId());
+            dto.setName(admin.getName());
+            if (admin.getUser() != null) {
+                dto.setApp_user_id(admin.getUser().getId());
+            }
+            return dto;
+        };
+        mapper.addConverter(toUpdateDto);
+    }
+
+    private void configureEditorMappings(ModelMapper mapper) {
+
+        TypeMap<EditorCreateDTO, Editor> createMap = mapper.createTypeMap(EditorCreateDTO.class, Editor.class);
+        createMap.setPostConverter(ctx -> {
+            return ctx.getDestination();
+        });
+
+        TypeMap<EditorUpdateDTO, Editor> updateMap = mapper.createTypeMap(EditorUpdateDTO.class, Editor.class);
+        updateMap.setPostConverter(ctx -> {
+            return ctx.getDestination();
+        });
+
+        Converter<Editor, EditorCreateDTO> toCreateDto = ctx -> {
+            Editor editor = ctx.getSource();
+            EditorCreateDTO dto = new EditorCreateDTO();
+            dto.setId(editor.getId());
+            dto.setName(editor.getName());
+            dto.setPhone(editor.getPhone());
+            dto.setDateOfBirth(editor.getDateOfBirth());
+            dto.setNationality(editor.getNationality());
+            dto.setPassportNumber(editor.getPassportNumber());
+            dto.setNationalIdNumber(editor.getNationalIdNumber());
+            dto.setEditorType(editor.getEditorType());
+
+            if (editor.getUser() != null) {
+                dto.setApp_user_id(editor.getUser().getId());
+            }
+            return dto;
+        };
+        mapper.addConverter(toCreateDto);
+
+        Converter<Editor, EditorUpdateDTO> toUpdateDto = ctx -> {
+            Editor editor = ctx.getSource();
+            EditorUpdateDTO dto = new EditorUpdateDTO();
+            dto.setId(editor.getId());
+            dto.setName(editor.getName());
+            dto.setPhone(editor.getPhone());
+            dto.setDateOfBirth(editor.getDateOfBirth());
+            dto.setNationality(editor.getNationality());
+            dto.setPassportNumber(editor.getPassportNumber());
+            dto.setNationalIdNumber(editor.getNationalIdNumber());
+            dto.setEditorType(editor.getEditorType());
+
+            if (editor.getUser() != null) {
+                dto.setApp_user_id(editor.getUser().getId());
+            }
+            return dto;
+        };
+        mapper.addConverter(toUpdateDto);
     }
 
 }

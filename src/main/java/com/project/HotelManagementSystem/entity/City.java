@@ -12,13 +12,9 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "cities")
-public class City {
+public class City extends MasterData {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column
+    @Column(nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "city")
@@ -27,12 +23,6 @@ public class City {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id")
     private Region region;
-
-    public City(Long id, String name, Region region) {
-        this.id = id;
-        this.name = name;
-        this.region = region;
-    }
 
     @Override
     public String toString() {

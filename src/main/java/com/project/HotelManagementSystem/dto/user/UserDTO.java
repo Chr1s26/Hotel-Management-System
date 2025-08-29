@@ -1,9 +1,9 @@
 package com.project.HotelManagementSystem.dto.user;
 
-import com.project.HotelManagementSystem.converter.UserRoleConverter;
 import com.project.HotelManagementSystem.entity.Promotion;
-import com.project.HotelManagementSystem.entity.constants.UserRole;
-import jakarta.persistence.Column;
+import com.project.HotelManagementSystem.entity.Role;
+import com.project.HotelManagementSystem.entity.User;
+import com.project.HotelManagementSystem.entity.constants.StatusType;
 import jakarta.persistence.Convert;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,15 +22,13 @@ public class UserDTO {
     private Long id;
     private String name;
     private String email;
-    private String password;
-    private String phone;
-    @Convert(converter = UserRoleConverter.class)
-    private UserRole userRole;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate dateOfBirth;
-    private String nationality;
-    private int point;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime confirmedAt;
-    private Set<Promotion> promotions = new HashSet<>();
+    private Set<Role> roles;
+    private StatusType Status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private User createdBy;
+    private User updatedBy;
+//    private String profileUrl;
 }

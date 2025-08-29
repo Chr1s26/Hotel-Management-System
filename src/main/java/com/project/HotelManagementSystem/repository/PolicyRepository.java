@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface PolicyRepository extends JpaRepository<Policy,Long> {
     Optional<Policy> findByTitleAndDescription(String title, String description);
+    Optional<Policy> findByTitleAndDescriptionAndIdNot(String title, String description, Long id);
 }

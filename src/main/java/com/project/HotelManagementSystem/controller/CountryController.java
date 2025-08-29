@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.controller;
 
+import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.country.CountryCreateDTO;
 import com.project.HotelManagementSystem.dto.country.CountryDTO;
@@ -39,6 +40,7 @@ public class CountryController {
     }
 
     @GetMapping("/new")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showCreateForm(Model model) {
         model.addAttribute("country", new CountryCreateDTO());
         return "countries/create";
@@ -54,6 +56,7 @@ public class CountryController {
     }
 
     @GetMapping("/edit/{id}")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showEditForm(@PathVariable Long id, Model model) {
         model.addAttribute("country", countryService.findCountryById(id));
         return "countries/edit";
@@ -69,6 +72,7 @@ public class CountryController {
     }
 
     @GetMapping("/delete/{id}")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String deleteCountry(@PathVariable Long id) {
         this.countryService.deleteCountry(id);
         return "redirect:/countries";

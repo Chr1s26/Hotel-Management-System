@@ -11,11 +11,15 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User,Long> {
     Optional<User> findByNameIgnoreCase(@NotBlank(message = "Name cannot be empty.") String name);
 
+    Optional<User> findByEmail(String email);
+    
     boolean existsByName(String name);
-
-    boolean existsByPhone(String phone);
 
     boolean existsByEmail(String email);
 
     boolean existsByNameIgnoreCase(String name);
+
+    boolean existsByNameAndIdNot(String name, Long id);
+
+    boolean existsByEmailAndIdNot(String email, Long id);
 }

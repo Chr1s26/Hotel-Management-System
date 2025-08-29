@@ -1,6 +1,8 @@
 package com.project.HotelManagementSystem.config;
 
 import com.project.HotelManagementSystem.service.AbstractService;
+import com.project.HotelManagementSystem.service.CustomAuthenticationFailureHandler;
+import com.project.HotelManagementSystem.service.CustomAuthenticationSuccessSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +21,10 @@ public class SecurityConfig {
     private final AbstractService abstractService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private CustomAuthenticationSuccessSuccessHandler customAuthenticationSuccessSuccessHandler;
+    @Autowired
+    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -30,12 +36,20 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/register","/static/assets/**").permitAll()
+        http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/register","/registerUser","/static/assets/**").permitAll()
+                        .requestMatchers("/select-role", "/set-active-role").authenticated()
+                        .requestMatchers("/admins/**").hasRole("ADMIN")
+                        .requestMatchers("/editors/**").hasAnyRole("EDITOR", "ADMIN")
+                        .requestMatchers("/users/**").hasAnyRole("EDITOR", "ADMIN")
                         .anyRequest().authenticated())
-                .formLogin(form -> form.loginPage("/login")
-                        .loginProcessingUrl("/authenticateTheUser").defaultSuccessUrl("/home",true)
-                        .permitAll()).logout(logout -> logout.permitAll())
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/authenticateTheUser")
+                        .successHandler(customAuthenticationSuccessSuccessHandler)
+                        .failureHandler(customAuthenticationFailureHandler)
+                        .permitAll())
                 .exceptionHandling(exception -> exception.accessDeniedPage("/access_denied"));
         return http.build();
     }
+
 }

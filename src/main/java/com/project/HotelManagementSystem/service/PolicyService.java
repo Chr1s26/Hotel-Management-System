@@ -39,7 +39,7 @@ public class PolicyService {
     }
 
     public PolicyUpdateDTO updatePolicy(Long id, PolicyUpdateDTO policyUpdateDTO) {
-        Optional<Policy> optionalPolicy = this.policyRepository.findByTitleAndDescription(policyUpdateDTO.getTitle(), policyUpdateDTO.getDescription());
+        Optional<Policy> optionalPolicy = this.policyRepository.findByTitleAndDescriptionAndIdNot(policyUpdateDTO.getTitle(), policyUpdateDTO.getDescription(),policyUpdateDTO.getId());
         if (optionalPolicy.isPresent()) {
             throw new DuplicateException("Policy with title " + policyUpdateDTO.getTitle() + " And same description already exists");
         }

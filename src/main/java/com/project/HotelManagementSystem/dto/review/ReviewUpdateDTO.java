@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.dto.review;
 
+import com.project.HotelManagementSystem.entity.Customer;
 import com.project.HotelManagementSystem.entity.Hotel;
 import com.project.HotelManagementSystem.entity.User;
 import jakarta.validation.constraints.*;
@@ -27,8 +28,8 @@ public class ReviewUpdateDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate reviewDate;
 
-    @NotNull(message = "User cannot be empty.")
-    private User user;
+    @NotNull(message = "Customer cannot be empty.")
+    private Customer customer;
 
     @NotNull(message = "Hotel cannot be emoty.")
     private Hotel hotel;

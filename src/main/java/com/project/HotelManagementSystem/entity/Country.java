@@ -12,13 +12,9 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "countries")
-public class Country {
+public class Country extends MasterData {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column
+    @Column(nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "country")

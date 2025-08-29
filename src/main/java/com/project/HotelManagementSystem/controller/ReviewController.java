@@ -1,6 +1,7 @@
 package com.project.HotelManagementSystem.controller;
 
 
+import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.review.ReviewCreateDTO;
 import com.project.HotelManagementSystem.dto.review.ReviewDTO;
@@ -46,6 +47,7 @@ public class ReviewController {
     }
 
     @GetMapping("/new")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showCreateForm(Model model) {
         model.addAttribute("review", new ReviewCreateDTO());
         model.addAttribute("hotels",hotelService.findAllHotels());
@@ -65,6 +67,7 @@ public class ReviewController {
     }
 
     @GetMapping("/edit/{id}")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showUpdateForm(@PathVariable Long id, Model model) {
         model.addAttribute("review", reviewService.findReviewById(id));
         model.addAttribute("hotels",hotelService.findAllHotels());
@@ -84,6 +87,7 @@ public class ReviewController {
     }
 
     @GetMapping("/delete/{id}")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String deleteReview(@PathVariable Long id) {
         reviewService.deleteReview(id);
         return "redirect:/reviews";

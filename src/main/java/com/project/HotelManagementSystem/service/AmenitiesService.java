@@ -39,7 +39,7 @@ public class AmenitiesService {
     }
 
     public AmenitiesUpdateDTO updateAmenities(Long id, AmenitiesUpdateDTO amenitiesUpdateDTO) {
-        Optional<Amenities> amenitiesOp = this.amenitiesRepository.findByNameAndDescriptionIgnoreCase(amenitiesUpdateDTO.getName(), amenitiesUpdateDTO.getDescription());
+        Optional<Amenities> amenitiesOp = this.amenitiesRepository.findByNameAndDescriptionIgnoreCaseAndIdNot(amenitiesUpdateDTO.getName(), amenitiesUpdateDTO.getDescription(), amenitiesUpdateDTO.getId());
         if(amenitiesOp.isPresent() && !amenitiesOp.get().getId().equals(id)) {
             throw new DuplicateException("Another Amenities with name " + amenitiesUpdateDTO.getName() + " And with same description already exists");
         }

@@ -11,19 +11,15 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @Table(name = "addresses")
-public class  Address {
+public class Address extends MasterData{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column
+    @Column(nullable = false)
     private double latitude;
 
-    @Column
+    @Column(nullable = false)
     private double longitude;
 
-    @Column
+    @Column(nullable = false)
     private String road;
 
     @OneToOne(mappedBy = "address")
@@ -33,7 +29,7 @@ public class  Address {
     @JoinColumn(name = "city_id")
     private City city;
 
-    @Column
+    @Column(nullable = false)
     private String zipCode;
 
     @Override

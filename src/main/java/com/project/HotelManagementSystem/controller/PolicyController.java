@@ -1,6 +1,7 @@
 package com.project.HotelManagementSystem.controller;
 
 
+import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.policy.PolicyCreateDTO;
 import com.project.HotelManagementSystem.dto.policy.PolicyDTO;
@@ -40,6 +41,7 @@ public class PolicyController {
     }
 
     @GetMapping("/new")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showCreateForm(Model model) {
         model.addAttribute("policy", new PolicyCreateDTO());
         return "policies/create";
@@ -55,6 +57,7 @@ public class PolicyController {
     }
 
     @GetMapping("/edit/{id}")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showUpdateForm(@PathVariable Long id, Model model) {
         model.addAttribute("policy",policyService.findPolicyById(id));
         return "policies/edit";
@@ -70,6 +73,7 @@ public class PolicyController {
     }
 
     @GetMapping("/delete/{id}")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String deletePolicy(@PathVariable Long id) {
         policyService.deletePolicy(id);
         return "redirect:/policies";

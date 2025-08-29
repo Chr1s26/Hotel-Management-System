@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>User List</title>
+    <title>Users</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         body {
@@ -75,18 +75,28 @@
         }
 
         .pagination .page-item.active .page-link {
-            background-color: #ffc107;
-            color: black;
-            border-color: #ffc107;
+            background-color: #6c757d;
+            color: white;
+            border-color: #6c757d;
         }
 
         .pagination .page-link {
-            color: #ffc107;
+            color: #6c757d;
+            background-color: transparent;
+            border: 1px solid transparent;
         }
 
         .pagination .page-link:hover {
-            background-color: #e0a800;
-            color: black;
+            background-color: #5a6268;
+            color: white;
+            border-color: #5a6268;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #adb5bd;
+            pointer-events: none;
+            background-color: transparent;
+            border-color: transparent;
         }
 
         .form-label, .form-select {
@@ -104,44 +114,40 @@
             color: white;
         }
 
-        .pagination .page-item.active .page-link {
-            background-color: #6c757d; /* Bootstrap gray */
+        .role-badge {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            margin: 0.1rem 0;
+            border-radius: 0.25rem;
+            background: #2E4053;
+            border: 1px solid #6c757d;
+            font-size: 0.85rem;
+        }
+
+        .btn-assign {
+            background-color: #17a2b8;
+            border: none;
             color: white;
-            border-color: #6c757d;
         }
+        .btn-assign:hover {
+            background-color: #138496;
+        }
+        .navbar { z-index: 1050 !important; }
 
-        .pagination .page-link {
-            color: #6c757d; /* Bootstrap gray */
-            background-color: transparent;
-            border: 1px solid transparent;
-        }
-
-        .pagination .page-link:hover {
-            background-color: #5a6268; /* darker gray */
-            color: white;
-            border-color: #5a6268;
-        }
-
-        .pagination .page-item.disabled .page-link {
-            color: #adb5bd; /* lighter gray for disabled */
-            pointer-events: none;
-            background-color: transparent;
-            border-color: transparent;
-        }
+        .dropdown-menu { z-index: 2000 !important; }
     </style>
 </head>
 <body class="container mt-4">
 <div th:replace="fragments/navbar :: navbar"></div>
-<div><h2>Users</h2></div>
+
+<h2>Users</h2>
 
 <div class="d-flex justify-content-between align-items-center my-3">
-
     <div>
         Page <span th:text="${response.pageNumber + 1}">1</span> of
         <span th:text="${response.totalPages}">X</span> —
         Total: <span th:text="${response.totalElements}">Y</span> users
     </div>
-
 
     <div>
         <a class="btn btn-primary btn-lg" th:href="@{/users/new}">Add Users</a>
@@ -150,29 +156,46 @@
 
 <table class="table table-bordered">
     <thead>
-    <tr><th>ID</th><th>Name</th><th>Email</th><th>Password</th><th>Phone</th><th>User Role</th><th>Date Of Birth</th><th>Nationality</th><th>Point</th><th>Confirmed At</th><th>Promotions</th></tr>
+    <tr>
+        <th>ID</th>
+        <th>NAME</th>
+        <th>EMAIL</th>
+        <th>CONFIRMED AT</th>
+        <th>ROLES</th>
+        <th>STATUS</th>
+        <th>CREATED AT</th>
+        <th>UPDATED AT</th>
+        <th>CREATED BY</th>
+        <th>UPDATED BY</th>
+    </tr>
     </thead>
     <tbody>
     <tr th:each="user : ${users}">
-        <td th:text="${user.id}"></td>
-        <td th:text="${user.name}"></td>
-        <td th:text="${user.email}"></td>
-        <td th:text="${user.password}"></td>
-        <td th:text="${user.phone}"></td>
-        <td th:text="${user.userRole}"></td>
-        <td th:text="${user.dateOfBirth}"></td>
-        <td th:text="${user.nationality}"></td>
-        <td th:text="${user.point}"></td>
-        <td th:text="${user.confirmedAt}"></td>
+        <td th:text="${user.id}">1</td>
+        <td th:text="${user.name}">John Doe</td>
+        <td th:text="${user.email}">john@example.com</td>
+        <td th:text="${user.confirmedAt != null ? #temporals.format(user.confirmedAt, 'yyyy-MM-dd HH:mm') : '—'}">—</td>
+
         <td>
-            <ul class="list-unstyled mb-0" th:if="${user.promotions != null}">
-                <li th:each="p : ${user.promotions}" th:text="${p.code}"></li>
-            </ul>
+            <div th:if="${user.roles != null}">
+                <div th:each="r : ${user.roles}" class="role-badge" th:text="${r.roleName}">NORMAL_USER</div>
+            </div>
+            <div th:if="${user.roles == null || #lists.isEmpty(user.roles)}">—</div>
         </td>
+
+        <td th:text="${user.status}">ACTIVE</td>
+
+        <td th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm') : '—'}">—</td>
+        <td th:text="${user.updatedAt != null ? #temporals.format(user.updatedAt, 'yyyy-MM-dd HH:mm') : '—'}">—</td>
+
+        <td th:text="${user.createdBy != null ? user.createdBy.name : '—'}">—</td>
+        <td th:text="${user.updatedBy != null ? user.updatedBy.name : '—'}">—</td>
+
         <td>
             <a class="btn btn-sm btn-warning" th:href="@{'/users/edit/' + ${user.id}}">Edit</a>
             <a class="btn btn-sm btn-danger" th:href="@{'/users/delete/' + ${user.id}}">Delete</a>
         </td>
+
     </tr>
     </tbody>
 </table>
@@ -218,5 +241,6 @@
         </nav>
     </div>
 </form>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

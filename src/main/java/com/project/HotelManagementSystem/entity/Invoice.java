@@ -13,22 +13,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "invoices")
-public class Invoice {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Invoice extends MasterData {
 
     @Column
     private String description;
 
-    @Column
+    @Column(nullable = false)
     private String invoiceNumber;
 
-    @Column
+    @Column(nullable = false)
     private LocalDateTime invoiceDate;
 
-    @Column
+    @Column(nullable = false)
     private double totalAmount;
 
     @ManyToOne
@@ -40,8 +36,8 @@ public class Invoice {
     private Booking booking;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
     @OneToOne
     @JoinColumn(name = "payment_id")

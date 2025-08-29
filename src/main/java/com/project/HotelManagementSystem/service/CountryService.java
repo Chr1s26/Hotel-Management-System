@@ -40,7 +40,7 @@ public class CountryService {
     }
 
     public CountryUpdateDTO updateCountry(Long id, CountryUpdateDTO countryUpdateDTO) {
-        Optional<Country> countryOptional = this.countryRepository.findByNameIgnoreCase(countryUpdateDTO.getName());
+        Optional<Country> countryOptional = this.countryRepository.findByNameIgnoreCaseAndIdNot(countryUpdateDTO.getName(),countryUpdateDTO.getId());
         if(countryOptional.isPresent() && !countryOptional.get().getId().equals(id)){
             throw new DuplicateException("Country with name " + countryUpdateDTO.getName() + " already exists");
         }

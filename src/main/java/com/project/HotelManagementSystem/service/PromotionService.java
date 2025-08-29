@@ -41,7 +41,7 @@ public class PromotionService {
     }
 
     public PromotionUpdateDTO updatePromotion(Long id, PromotionUpdateDTO promotionUpdateDTO) {
-        Optional<Promotion> promotionOptional = promotionRepository.findByCode(promotionUpdateDTO.getCode());
+        Optional<Promotion> promotionOptional = promotionRepository.findByCodeAndIdNot(promotionUpdateDTO.getCode(),promotionUpdateDTO.getId());
         if (promotionOptional.isPresent() && !promotionOptional.get().getId().equals(id)) {
             throw new DuplicateException("Promotion with code " + promotionUpdateDTO.getCode() + " already exists");
         }

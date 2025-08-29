@@ -46,12 +46,12 @@
             hotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelCreateDTO.getPolicyIds())));
             hotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelCreateDTO.getPromotionIds())));
             Hotel savedHotel = hotelRepository.save(hotel);
-            fileService.handleFileUpload(hotelCreateDTO.getFile(), FileType.USER,savedHotel.getId(),"local");
+            fileService.handleFileUpload(hotelCreateDTO.getFile(), FileType.ADMIN,savedHotel.getId(),"s3");
             return modelMapper.map(savedHotel,HotelCreateDTO.class);
         }
 
         public HotelUpdateDTO updateHotel(Long id, HotelUpdateDTO hotelUpdateDTO) {
-            Optional<Hotel> hotelOp = hotelRepository.findHotelByNameAndCoordinates(hotelUpdateDTO.getName(),hotelUpdateDTO.getAddress().getLatitude(), hotelUpdateDTO.getAddress().getLongitude());
+            Optional<Hotel> hotelOp = hotelRepository.findHotelByNameAndCoordinatesAndIdNot(hotelUpdateDTO.getName(),hotelUpdateDTO.getAddress().getLatitude(), hotelUpdateDTO.getAddress().getLongitude(),hotelUpdateDTO.getId());
             if(hotelOp.isPresent()) {
                 throw new DuplicateException("Hotel with name " + hotelUpdateDTO.getName() + " And with same latitude and longitude already exists");
             }
@@ -68,7 +68,7 @@
             optionalHotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelUpdateDTO.getPolicyIds())));
             optionalHotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelUpdateDTO.getPromotionIds())));
             Hotel savedHotel = this.hotelRepository.save(optionalHotel);
-            fileService.handleFileUpload(hotelUpdateDTO.getFile(), FileType.USER,savedHotel.getId(),"s3");
+            fileService.handleFileUpload(hotelUpdateDTO.getFile(), FileType.ADMIN,savedHotel.getId(),"s3");
             return modelMapper.map(savedHotel,HotelUpdateDTO.class);
         }
 

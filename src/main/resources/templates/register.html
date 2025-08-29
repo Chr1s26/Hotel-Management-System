@@ -1,44 +1,49 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <!-- ... same head as your original ... -->
+    <meta charset="UTF-8">
+    <title>Register | Hotel Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-<div class="form-container">
-    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Register</h2>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center space-y-6">
 
-    <div th:if="${registrationError}" class="alert alert-error">
+<!-- Page Title -->
+<h2 class="text-3xl font-bold text-gray-800">Hotel Management System</h2>
+
+<!-- Registration Form -->
+<div class="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
+    <h3 class="text-xl text-center font-semibold text-gray-600 mb-4">Register</h3>
+
+    <div th:if="${registrationError}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
         <p th:text="${registrationError}"></p>
     </div>
 
-    <form th:action="@{/register}" th:object="${user}" method="POST" class="space-y-4">
+    <form th:action="@{/registerUser}" th:object="${user}" method="POST" class="space-y-4">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
         <div>
-            <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username:</label>
-            <input type="text" id="username" th:field="*{name}" class="input-field" placeholder="Enter your username" required>
-            <!-- Use th:field="*{name}" because your UserDetailsImpl uses 'name' -->
+            <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+            <input type="text" id="username" th:field="*{name}" class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200" placeholder="Enter your username" required>
         </div>
 
         <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email:</label>
-            <input type="email" id="email" th:field="*{email}" class="input-field" placeholder="Enter your email" required>
+            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+            <input type="email" id="email" th:field="*{email}" class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200" placeholder="Enter your email" required>
         </div>
 
         <div>
-            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone:</label>
-            <input type="text" id="phone" th:field="*{phone}" class="input-field" placeholder="Enter your phone number" required>
+            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+            <input type="password" id="password" th:field="*{password}" class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200" placeholder="Enter your password" required>
         </div>
 
-        <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password:</label>
-            <input type="password" id="password" th:field="*{password}" class="input-field" placeholder="Enter your password" required>
-        </div>
-
-        <button type="submit" class="btn-primary">Register</button>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Register
+        </button>
     </form>
 
     <p class="mt-6 text-center text-sm text-gray-600">
         Already have an account?
-        <a th:href="@{/login}" class="font-medium text-indigo-600 hover:text-indigo-500">Login here</a>
+        <a th:href="@{/login}" class="text-blue-600 hover:underline font-medium">Login here</a>
     </p>
 </div>
 </body>

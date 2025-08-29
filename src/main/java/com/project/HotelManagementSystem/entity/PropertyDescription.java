@@ -11,22 +11,18 @@ import java.time.LocalDate;
 @Entity
 @Data
 @Table(name = "propertyDescriptions")
-public class PropertyDescription {
+public class PropertyDescription extends MasterData {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column
+    @Column(nullable = true)
     private String description;
 
-    @Column
+    @Column(nullable = true)
     private LocalDate openingDate;
 
-    @Column
+    @Column(nullable = true)
     private LocalDate renovationDate;
 
-    @Column
+    @Column(nullable = true)
     private int numberOfRooms;
 
     @OneToOne(mappedBy = "propertyDescription")

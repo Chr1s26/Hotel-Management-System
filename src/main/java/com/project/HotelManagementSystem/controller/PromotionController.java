@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.controller;
 
+import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.promotion.PromotionCreateDTO;
 import com.project.HotelManagementSystem.dto.promotion.PromotionDTO;
@@ -39,6 +40,7 @@ public class PromotionController {
     }
 
     @GetMapping("/new")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showCreateForm(Model model) {
         model.addAttribute("promotion",new PromotionCreateDTO());
         return "promotions/create";
@@ -54,6 +56,7 @@ public class PromotionController {
     }
 
     @GetMapping("/edit/{id}")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showEditForm(@PathVariable Long id, Model model) {
         model.addAttribute("promotion",this.promotionService.findPromotionById(id));
         return "promotions/edit";
@@ -69,6 +72,7 @@ public class PromotionController {
     }
 
     @GetMapping("/delete/{id}")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String deletePromotion(@PathVariable Long id) {
         this.promotionService.deletePromotion(id);
         return "redirect:/promotions";

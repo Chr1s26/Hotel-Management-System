@@ -37,7 +37,7 @@ public class ReviewService {
         reviewOp.setRating(review.getRating());
         reviewOp.setReviewDate(review.getReviewDate());
         reviewOp.setHotel(review.getHotel());
-        reviewOp.setUser(review.getUser());
+        reviewOp.setCustomer(review.getCustomer());
         Review savedReview = reviewRepository.save(reviewOp);
         return modelMapper.map(savedReview,ReviewUpdateDTO.class);
     }

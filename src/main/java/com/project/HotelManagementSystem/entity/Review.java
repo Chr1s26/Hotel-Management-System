@@ -3,28 +3,26 @@ package com.project.HotelManagementSystem.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "reviews")
-public class Review {
+public class Review extends  MasterData {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column
+    @Column(nullable = true)
     private String description;
 
-    @Column
+    @Column(nullable = true)
     private double rating;
 
-    @Column
+    @Column(nullable = true)
     private LocalDate reviewDate;
 
     @ManyToOne
@@ -32,6 +30,6 @@ public class Review {
     private Hotel hotel;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 }

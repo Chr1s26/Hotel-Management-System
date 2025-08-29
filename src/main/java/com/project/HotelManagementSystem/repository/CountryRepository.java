@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface CountryRepository extends JpaRepository<Country,Long> {
     Optional<Country> findByNameIgnoreCase(String name);
+    Optional<Country> findByNameIgnoreCaseAndIdNot(String name, Long id);
 }

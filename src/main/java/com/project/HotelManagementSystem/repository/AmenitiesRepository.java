@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface AmenitiesRepository extends JpaRepository<Amenities,Long> {
     Optional<Amenities> findByNameAndDescriptionIgnoreCase(String name, String description);
+    Optional<Amenities> findByNameAndDescriptionIgnoreCaseAndIdNot(String name, String description, Long id);
 }

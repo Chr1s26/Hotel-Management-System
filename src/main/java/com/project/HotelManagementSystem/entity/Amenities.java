@@ -12,16 +12,12 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "amenities")
-public class Amenities {
+public class Amenities extends MasterData {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column
+    @Column(nullable = false)
     private String name;
 
-    @Column
+    @Column(nullable = false)
     private String description;
 
     @ManyToMany(mappedBy = "amenities")

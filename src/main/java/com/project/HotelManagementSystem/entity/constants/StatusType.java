@@ -1,14 +1,12 @@
 package com.project.HotelManagementSystem.entity.constants;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 @AllArgsConstructor
-public enum UserRole implements BaseEnum<Integer> {
+public enum StatusType implements BaseEnum<Integer>{
 
-    ADMIN(1),
-    EDITOR(2),
-    CUSTOMER(3);
+    ACTIVE(1),
+    DELETED(0);
 
     private final int value;
 
@@ -17,3 +15,4 @@ public enum UserRole implements BaseEnum<Integer> {
         return this.value;
     }
 }
+

@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.controller;
 
+import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionCreateDTO;
 import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionDTO;
@@ -38,6 +39,7 @@ public class PropertyDescriptionController {
     }
 
     @GetMapping("/new")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showCreateForm(Model model) {
         model.addAttribute("propertyDescription", new PropertyDescriptionCreateDTO());
         return "propertyDescriptions/create";
@@ -53,6 +55,7 @@ public class PropertyDescriptionController {
     }
 
     @GetMapping("/edit/{id}")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showEditForm(@PathVariable Long id, Model model) {
         model.addAttribute("propertyDescription", propertyDescriptionService.findPropertyDescriptionById(id));
         return "propertyDescriptions/edit";
@@ -68,6 +71,7 @@ public class PropertyDescriptionController {
     }
 
     @GetMapping("/delete/{id}")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String deletePropertyDescription(@PathVariable Long id) {
         this.propertyDescriptionService.deletePropertyDescription(id);
         return "redirect:/propertyDescriptions";

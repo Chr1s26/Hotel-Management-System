@@ -18,51 +18,47 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "bookings")
-public class Booking {
+public class Booking extends MasterData {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column
+    @Column(nullable = false)
     private LocalDateTime bookingDate;
 
-    @Column
+    @Column(nullable = false)
     private LocalDate checkInDate;
 
-    @Column
+    @Column(nullable = false)
     private LocalDate checkOutDate;
 
-    @Column
+    @Column(nullable = true)
     private String description;
 
-    @Column(name = "booking_status")
+    @Column(name = "booking_status",nullable = false)
     @Convert(converter = BookingStatusConverter.class)
     private BookingStatus bookingStatus;
 //    confirm cancel complete onprogess
 
-    @Column
+    @Column(nullable = false)
     private int numberOfGuests;
 
-    @Column
+    @Column(nullable = false)
     private int numberOfRooms;
 
-    @Column
+    @Column(nullable = false)
     private boolean isPaid;
 
-    @Column
+    @Column(nullable = false)
     private double roomPrice;
 
-    @Column
+    @Column(nullable = true)
     private double tax;
 
-    @Column
+    @Column(nullable = true)
     private double discountPrice;
 
-    @Column
+    @Column(nullable = false)
     private double totalPrice;
 
-    @Column(name = "currency_type")
+    @Column(name = "currency_type",nullable = false)
     @Convert(converter = CurrencyTypeConverter.class)
     private CurrencyType currencyType;
 
@@ -77,8 +73,8 @@ public class Booking {
     private Invoice invoice;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
     @OneToOne(mappedBy = "booking")
     private Payment payment;

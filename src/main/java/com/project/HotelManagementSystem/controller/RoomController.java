@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.controller;
 
+import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.room.RoomCreateDTO;
 import com.project.HotelManagementSystem.dto.room.RoomDTO;
@@ -44,6 +45,7 @@ public class RoomController {
         return "rooms/listing";
     }
     @GetMapping("/new")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showCreateForm(Model model) {
         model.addAttribute("room", new RoomCreateDTO());
         model.addAttribute("hotels", hotelService.findAllHotels());
@@ -65,6 +67,7 @@ public class RoomController {
     }
 
     @GetMapping("/edit/{id}")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showEditForm(@PathVariable Long id, Model model) {
         model.addAttribute("room", roomService.findRoomById(id));
         model.addAttribute("hotels", hotelService.findAllHotels());
@@ -86,6 +89,7 @@ public class RoomController {
     }
 
     @GetMapping("/delete/{id}")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String deleteRoom(@PathVariable Long id) {
         roomService.deleteRoom(id);
         return "redirect:/rooms";

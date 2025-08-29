@@ -17,25 +17,21 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "hotels")
-public class Hotel {
+public class Hotel extends  MasterData {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column
+    @Column(nullable = false)
     private String name;
 
-    @Column
+    @Column(nullable = false)
     private String phoneNumber;
 
-    @Column
+    @Column(nullable = false)
     private String email;
 
-    @Column
+    @Column(nullable = false)
     private String description;
 
-    @Column
+    @Column(nullable = true)
     private double rating;
 
     @Column(name = "hotel_type")
@@ -67,6 +63,9 @@ public class Hotel {
 
     @OneToMany(mappedBy = "hotel",cascade = CascadeType.ALL)
     private List<Invoice> invoices = new ArrayList<>();
+
+    @OneToMany(mappedBy = "hotel",cascade = CascadeType.ALL)
+    private List<Editor> editors = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "hotel_promotion",

@@ -13,19 +13,15 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "policies")
-public class Policy {
+public class Policy extends MasterData {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column
+    @Column(nullable = false)
     private String title;
 
-    @Column
+    @Column(nullable = true)
     private String description;
 
-    @Column
+    @Column(nullable = true)
     private String applicableTo;
 
     @ManyToMany(mappedBy = "policies")

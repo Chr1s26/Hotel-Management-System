@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.controller;
 
+import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.city.CityCreateDTO;
 import com.project.HotelManagementSystem.dto.city.CityDTO;
@@ -42,6 +43,7 @@ public class CityController {
     }
 
     @GetMapping("/new")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showCreateForm(Model model) {
         model.addAttribute("city", new CityCreateDTO());
         model.addAttribute("regions", regionService.findAllRegion());
@@ -59,6 +61,7 @@ public class CityController {
     }
 
     @GetMapping("/edit/{id}")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showUpdateForm(@PathVariable Long id, Model model) {
         model.addAttribute("city",cityService.findCityById(id));
         model.addAttribute("regions", regionService.findAllRegion());
@@ -76,6 +79,7 @@ public class CityController {
     }
 
     @GetMapping("/delete/{id}")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String deleteCity(@PathVariable Long id) {
         cityService.deleteCity(id);
         return "redirect:/cities";

@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.controller;
 
+import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.region.RegionCreateDTO;
 import com.project.HotelManagementSystem.dto.region.RegionDTO;
@@ -41,6 +42,7 @@ public class RegionController {
     }
 
     @GetMapping("/new")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showCreateForm(Model model){
         model.addAttribute("region", new RegionCreateDTO());
         model.addAttribute("countries", countryService.findAllCountries());
@@ -58,6 +60,7 @@ public class RegionController {
     }
 
     @GetMapping("/edit/{id}")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showUpdateForm(@PathVariable("id") Long id, Model model){
         model.addAttribute("region",regionService.findRegionById(id));
         model.addAttribute("countries", countryService.findAllCountries());
@@ -75,6 +78,7 @@ public class RegionController {
     }
 
     @GetMapping("/delete/{id}")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String deleteRegion(@PathVariable Long id){
         regionService.deleteRegion(id);
         return "redirect:/regions";

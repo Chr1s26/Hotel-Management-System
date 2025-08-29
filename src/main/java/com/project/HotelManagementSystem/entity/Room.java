@@ -14,26 +14,22 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "rooms")
-public class Room {
+public class Room extends MasterData {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column
+    @Column(nullable = false)
     private double price;
 
-    @Column(name = "is_available")
+    @Column(name = "is_available", nullable = false)
     private boolean available;
 
-    @Column
+    @Column(nullable = true)
     private String description;
 
-    @Column(name = "room_type")
+    @Column(name = "room_type", nullable = false)
     @Convert(converter = RoomTypeConverter.class)
     private RoomType roomType;
 
-    @Column
+    @Column(nullable = false)
     private int maxCapacity;
 
     @ManyToOne(fetch = FetchType.LAZY)

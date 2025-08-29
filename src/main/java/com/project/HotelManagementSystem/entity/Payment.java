@@ -18,16 +18,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "payments")
-public class Payment {
+public class Payment extends MasterData {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column
+    @Column(nullable = false)
     private String payment_method;
 
-    @Column
+    @Column(nullable = false)
     private LocalDateTime payment_date;
 
     @Column(name = "payment_status")
@@ -39,8 +35,8 @@ public class Payment {
     private CurrencyType currencyType;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
     @OneToOne(mappedBy = "payment")
     private Invoice invoice;

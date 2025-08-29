@@ -4,19 +4,29 @@ import com.project.HotelManagementSystem.dto.user.UserCreateDTO;
 import com.project.HotelManagementSystem.dto.user.UserDTO;
 import com.project.HotelManagementSystem.dto.user.UserResponse;
 import com.project.HotelManagementSystem.dto.user.UserUpdateDTO;
+import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.User;
+import com.project.HotelManagementSystem.entity.constants.FileType;
+import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.DuplicateException;
+import com.project.HotelManagementSystem.exception.InvalidRoleException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.PromotionRepository;
+import com.project.HotelManagementSystem.repository.RoleRepository;
 import com.project.HotelManagementSystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -28,36 +38,55 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
-    private final PromotionRepository promotionRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AuthService authService;
+    @Autowired
+    private RoleRepository roleRepository;
 
     public UserCreateDTO createUser(UserCreateDTO userCreateDTO) {
         if(userRepository.existsByName(userCreateDTO.getName())) throw new DuplicateException("User name "+userCreateDTO.getName()+" is already used.");
-        if(userRepository.existsByPhone(userCreateDTO.getPhone())) throw new DuplicateException("User's phone number "+userCreateDTO.getPhone()+" is already used.");
         if(userRepository.existsByEmail(userCreateDTO.getEmail())) throw new DuplicateException("User's  email "+userCreateDTO.getEmail()+" is already used.");
 
         User user = modelMapper.map(userCreateDTO, User.class);
-        user.setPromotions(new HashSet<>(promotionRepository.findAllById(userCreateDTO.getPromotionIds())));
+        user.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
+        user.setConfirmedAt(LocalDateTime.now());
+        user.setCreatedAt(LocalDateTime.now());
+        user.setStatus(StatusType.ACTIVE);
+        user.setCreatedBy(authService.getCurrentUser());
+        Role userRole = roleRepository.findByRoleName("NORMAL_USER").orElseThrow(() -> new InvalidRoleException("Role not found"));
+        user.setRoles(Collections.singleton(userRole));
+
+//        List<Role> roles = roleRepository.findAllById(userCreateDTO.getRolesId());
+//        user.setRoles(new HashSet<>(roles));
+
         this.userRepository.save(user);
+//        fileService.handleFileUpload(userCreateDTO.getFile(), FileType.USER,user.getId(),"s3");
         return modelMapper.map(user, UserCreateDTO.class);
     }
 
     public UserUpdateDTO updateUser(Long id, UserUpdateDTO userUpdateDTO) {
-        if(userRepository.existsByName(userUpdateDTO.getName())) throw new DuplicateException("User name "+userUpdateDTO.getName()+" already exists.");
-        if(userRepository.existsByPhone(userUpdateDTO.getPhone())) throw new DuplicateException("User's phone number "+userUpdateDTO.getPhone()+" already exists.");
-        if(userRepository.existsByEmail(userUpdateDTO.getEmail())) throw new DuplicateException("User's  email "+userUpdateDTO.getEmail()+" already exists.");
+        if(userRepository.existsByNameAndIdNot(userUpdateDTO.getName(), userUpdateDTO.getId())) throw new DuplicateException("User name "+userUpdateDTO.getName()+" already exists.");
+        if(userRepository.existsByEmailAndIdNot(userUpdateDTO.getEmail(),userUpdateDTO.getId())) throw new DuplicateException("User's  email "+userUpdateDTO.getEmail()+" already exists.");
 
         User updatedUser = this.userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User","id",id));
         User user = modelMapper.map(userUpdateDTO, User.class);
         updatedUser.setName(user.getName());
         updatedUser.setEmail(user.getEmail());
-        updatedUser.setPassword(user.getPassword());
-        updatedUser.setPhone(user.getPhone());
-        updatedUser.setUserRole(user.getUserRole());
-        updatedUser.setDateOfBirth(user.getDateOfBirth());
-        updatedUser.setNationality(user.getNationality());
-        updatedUser.setPoint(user.getPoint());
-        updatedUser.setPromotions(new HashSet<>(promotionRepository.findAllById(userUpdateDTO.getPromotionIds())));
+        updatedUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        updatedUser.setRoles(user.getRoles());
+        updatedUser.setConfirmedAt(LocalDateTime.now());
+        updatedUser.setUpdatedAt(LocalDateTime.now());
+        updatedUser.setStatus(StatusType.ACTIVE);
+        updatedUser.setUpdatedBy(authService.getCurrentUser());
+        Role userRole = roleRepository.findByRoleName("NORMAL_USER").orElseThrow(() -> new InvalidRoleException("Role not found"));
+        updatedUser.setRoles(Collections.singleton(userRole));
+//        List<Role> roles = roleRepository.findAllById(userUpdateDTO.getRolesId());
+//        updatedUser.setRoles(new HashSet<>(roles));
+
         User savedUser = userRepository.save(updatedUser);
+//        fileService.handleFileUpload(userUpdateDTO.getFile(), FileType.USER,user.getId(),"s3");
         return modelMapper.map(savedUser, UserUpdateDTO.class);
     }
 
@@ -69,6 +98,11 @@ public class UserService {
     public UserUpdateDTO findUserById(Long id) {
         User user = this.userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User","id",id));
         return modelMapper.map(user, UserUpdateDTO.class);
+    }
+
+    public User findById(Long id) {
+        User user = this.userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User","id",id));
+        return user;
     }
 
     public List<UserDTO> findAllUsers() {
@@ -91,4 +125,5 @@ public class UserService {
         userResponse.setLastPage(userPage.isLast());
         return userResponse;
     }
+
 }

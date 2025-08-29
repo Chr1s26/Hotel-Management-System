@@ -1,16 +1,10 @@
 package com.project.HotelManagementSystem.entity;
 
-import com.project.HotelManagementSystem.converter.UserRoleConverter;
-import com.project.HotelManagementSystem.entity.constants.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -18,69 +12,45 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends MasterData{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
-    @Column
+    @Column(nullable = false)
     private String name;
 
-    @Column
+    @Column(nullable = false,unique = true)
     private String email;
 
-    @Column
+    @Column(nullable = false)
     private String password;
 
-    @Column
-    private String phone;
-
-    @Column(name = "user_role")
-    @Convert(converter = UserRoleConverter.class)
-    private UserRole userRole;
-
-    @Column
-    private LocalDate dateOfBirth;
-
-    @Column
-    private String nationality;
-
-    @Column
-    private int point;
-
-    @Column
+    @Column(nullable = true)
     private LocalDateTime confirmedAt;
 
-    @OneToMany(mappedBy = "user")
-    private List<Payment> payments = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns=@JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
 
-    @OneToMany(mappedBy = "user")
-    private List<Invoice> invoices = new ArrayList<>();
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+    private Customer customer;
 
-    @OneToMany(mappedBy = "user")
-    private List<Review> reviews = new ArrayList<>();
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+    private Editor editor;
 
-    @OneToMany(mappedBy = "user")
-    private List<Cart> carts = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user")
-    private List<Booking> bookings = new ArrayList<>();
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_promotion",
-    joinColumns = @JoinColumn(name = "user_id"),
-    inverseJoinColumns = @JoinColumn(name = "promotion_id"))
-    private Set<Promotion> promotions = new HashSet<>();
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+    private Admin admin;
 
     @Override
     public String toString() {
         return name;
     }
 
-
     @Override
     public int hashCode() {
         return getClass().hashCode();
     }
+
 }

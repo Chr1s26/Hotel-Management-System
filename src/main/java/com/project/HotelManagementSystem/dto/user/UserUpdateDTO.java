@@ -1,8 +1,5 @@
 package com.project.HotelManagementSystem.dto.user;
 
-import com.project.HotelManagementSystem.converter.UserRoleConverter;
-import com.project.HotelManagementSystem.entity.Promotion;
-import com.project.HotelManagementSystem.entity.constants.UserRole;
 import com.project.HotelManagementSystem.validator.NumericString;
 import jakarta.persistence.Convert;
 import jakarta.validation.constraints.NotBlank;
@@ -12,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,21 +26,18 @@ public class UserUpdateDTO {
     @NotBlank(message = "Email cannot be empty.")
     private String email;
     @NotBlank(message = "Password cannot be empty.")
-    @Size(min = 5 , message = "Password must include at least 5 characters.")
+    @Size(min = 3 , message = "Password must include at least 3 characters.")
     private String password;
-    @NotBlank(message = "Phone number cannot be empty.")
-    @Size(min = 8, message = "Phone number must include at least 8 characters.")
-    @NumericString(message = "Phone number cannot be string")
-    private String phone;
-    @Convert(converter = UserRoleConverter.class)
-    private UserRole userRole;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @NotNull(message = "Date of Birth cannot be empty.")
-    private LocalDate dateOfBirth;
-    @NotBlank(message = "Nationality cannot be empty.")
-    private String nationality;
-    private int point;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime confirmedAt;
-    private Set<Long> promotionIds = new HashSet<>();
+    //    @NotBlank(message = "Phone number cannot be empty.")
+//    @Size(min = 8, message = "Phone number must include at least 8 characters.")
+//    @NumericString(message = "Phone number cannot be string")
+//    private String phone;
+//    @DateTimeFormat(pattern = "yyyy-MM-dd")
+//    @NotNull(message = "Date of Birth cannot be empty.")
+//    private LocalDate dateOfBirth;
+//    @NotBlank(message = "Nationality cannot be empty.")
+//    private String nationality;
+//    private int point;
+//    private Set<Long> rolesId = new HashSet<>();
+//    private MultipartFile file;
 }
