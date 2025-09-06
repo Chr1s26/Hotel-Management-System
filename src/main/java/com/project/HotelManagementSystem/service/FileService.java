@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,7 +40,7 @@ public class FileService {
     public String getFileName(FileType fileType,Long fileId) {
         List<FileStorage> fileStorageList = fileStorageRepository.findByFileTypeAndFileId(fileType, fileId);
         if (fileStorageList.isEmpty()) {
-            return null;
+            return "/images/default-profile.png";
         }
         FileStorage fileStorage = fileStorageList.get(0);
         return getFileUrl(fileStorageList.get(0).getKey(),fileStorage.getServiceName());
@@ -88,8 +89,11 @@ public class FileService {
             fileStorage.setFileType(fileType);
             fileStorage.setFileId(id);
             fileStorage.setContentType(file.getContentType());
+            fileStorage.setCreatedAt(LocalDateTime.now());
 
-            fileStorageRepository.save(fileStorage);
+            FileStorage fileStorage1 = fileStorageRepository.save(fileStorage);
+            System.out.println(fileStorage1.getFileId());
+            System.out.println(fileStorage1.getFileType());
         } catch (IOException e) {
             throw new RuntimeException("Filed to upload file : "+e.getMessage());
         }

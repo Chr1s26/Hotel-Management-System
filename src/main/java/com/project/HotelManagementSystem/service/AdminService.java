@@ -151,20 +151,4 @@ public class AdminService {
         return adminDTO;
     }
 
-    public AdminDTO getProfile(Long id) {
-        User user = userService.findById(id);
-        Admin admin = adminRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("User","id",user.getId()));
-        AdminDTO adminDTO = new AdminDTO();
-        adminDTO.setId(admin.getId());
-        adminDTO.setName(admin.getName());
-        adminDTO.setPhone(admin.getPhone());
-        adminDTO.setDateOfBirth(admin.getDateOfBirth());
-        adminDTO.setNationality(admin.getNationality());
-        adminDTO.setPassportNumber(admin.getPassportNumber());
-        adminDTO.setNationalIdNumber(admin.getNationalIdNumber());
-        adminDTO.setAdminType(admin.getAdminType());
-        adminDTO.setUser(admin.getUser());
-        AdminDTO dto = getUrl(adminDTO);
-        return dto;
-    }
 }

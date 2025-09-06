@@ -22,18 +22,27 @@ public class HomeService {
 
     public HomeDTO upload(MultipartFile file){
         multipartFile = file;
-        fileService.handleFileUpload(multipartFile,FileType.ADMIN,1L,"s3");
+        fileService.handleFileUpload(multipartFile,FileType.HOME,1L,"s3");
         HomeDTO homeDTO = new HomeDTO();
-        homeDTO.setProfileUrl(fileService.getFileName(FileType.ADMIN, 1L));
+        homeDTO.setProfileUrl(fileService.getFileName(FileType.HOME, 1L));
         homeDTO.setContentType(multipartFile.getContentType());
         return homeDTO;
     }
 
     public HomeDTO getUrl(){
         HomeDTO homeDTO = new HomeDTO();
-        if(multipartFile == null){
-            homeDTO.setProfileUrl(fileService.getFileName(FileType.ADMIN, 1L));
-            homeDTO.setContentType(multipartFile.getContentType());
+
+        List<FileStorage> fileList = fileStorageRepository.findByFileTypeAndFileId(FileType.HOME, 1L);
+        String url = fileService.getFileName(FileType.ADMIN,1L);
+        System.out.println("*****");
+        System.out.println(url);
+        if (!fileList.isEmpty()) {
+            FileStorage storedFile = fileList.get(0);
+            homeDTO.setProfileUrl(fileService.getFileName(FileType.HOME,1L));
+            homeDTO.setContentType(storedFile.getContentType());
+        } else {
+            homeDTO.setProfileUrl("/images/default-profile.png");
+            homeDTO.setContentType("image/png");
         }
         return homeDTO;
     }

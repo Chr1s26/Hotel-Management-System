@@ -86,11 +86,4 @@ public class AdminController {
         adminService.deleteAdmin(id);
         return "redirect:/admins";
     }
-
-    @PostMapping("/profile/{id}")
-    public String getProfile(@PathVariable Long id,Model model) {
-        model.addAttribute("admin",adminService.getProfile(id));
-        model.addAttribute("user",authService.getCurrentUser());
-        return "admins/profile";
-    }
 }

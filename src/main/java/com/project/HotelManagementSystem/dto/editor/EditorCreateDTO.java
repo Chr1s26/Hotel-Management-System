@@ -4,6 +4,7 @@ import com.project.HotelManagementSystem.entity.constants.EditorType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -20,4 +21,5 @@ public class EditorCreateDTO {
     private String nationalIdNumber;
     private EditorType editorType;
     private Long app_user_id;
+    private MultipartFile file;
 }

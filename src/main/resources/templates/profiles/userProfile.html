@@ -1,0 +1,107 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <title>User Profile</title>-->
+<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">-->
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">-->
+<!--    <style>-->
+<!--        body {-->
+<!--            background-color: #2E4053;-->
+<!--            color: white;-->
+<!--            padding-top: 70px;-->
+<!--        }-->
+<!--        .profile-card {-->
+<!--            background-color: #6E6E6E;-->
+<!--            padding: 30px;-->
+<!--            border-radius: 12px;-->
+<!--            max-width: 600px;-->
+<!--            margin: 0 auto;-->
+<!--            text-align: center;-->
+<!--        }-->
+<!--        .profile-pic {-->
+<!--            width: 150px;-->
+<!--            height: 150px;-->
+<!--            border-radius: 50%;-->
+<!--            object-fit: cover;-->
+<!--            border: 4px solid #fff;-->
+<!--            margin-bottom: 20px;-->
+<!--        }-->
+<!--        .info-section {-->
+<!--            text-align: left;-->
+<!--            margin-top: 20px;-->
+<!--        }-->
+<!--        .info-section h5 {-->
+<!--            margin-top: 15px;-->
+<!--            border-bottom: 1px solid #999;-->
+<!--            padding-bottom: 5px;-->
+<!--        }-->
+<!--        .btn-primary {-->
+<!--            background-color: #555555;-->
+<!--            border-color: #555555;-->
+<!--            color: white;-->
+<!--        }-->
+<!--        .btn-primary:hover {-->
+<!--            background-color: #777777;-->
+<!--            border-color: #777777;-->
+<!--        }-->
+<!--        .btn-secondary {-->
+<!--            background-color: #333333;-->
+<!--            border-color: #333333;-->
+<!--            color: white;-->
+<!--        }-->
+<!--        .btn-secondary:hover {-->
+<!--            background-color: #555555;-->
+<!--            border-color: #555555;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body class="container mt-4">-->
+<!--<div th:replace="~{fragments/navbar :: navbar}"></div>-->
+
+<!--<div class="profile-card">-->
+<!--    &lt;!&ndash; Profile Picture &ndash;&gt;-->
+<!--    <img th:src="${userType.object?.profileUrl != null ? userType.object.profileUrl : '/images/default-profile.png'}"-->
+<!--         alt="Profile Picture" class="profile-pic"/>-->
+
+<!--    <h3 th:text="${user.name}"></h3>-->
+<!--    <p th:text="${user.email}"></p>-->
+
+<!--    <div class="info-section">-->
+<!--        <h5>User Information</h5>-->
+<!--        <p><strong>Name:</strong> <span th:text="${user.name}"></span></p>-->
+<!--        <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>-->
+<!--        <p><strong>Roles:</strong> <span th:text="${user.roles}"></span></p>-->
+<!--    </div>-->
+
+<!--    <div class="info-section" th:if="${userType.object instanceof T(com.project.HotelManagementSystem.dto.admin.AdminDTO)}">-->
+<!--        <h5>Admin Information</h5>-->
+<!--        <p><strong>Admin Type:</strong> <span th:text="${userType.object.adminType}"></span></p>-->
+<!--        <p><strong>Admin Name:</strong> <span th:text="${userType.object.name}"></span></p>-->
+<!--        <p><strong>Phone:</strong> <span th:text="${userType.object.phone}"></span></p>-->
+<!--        <p><strong>Date Of Birth:</strong> <span th:text="${userType.object.dateOfBirth}"></span></p>-->
+<!--        <p><strong>Nationality:</strong> <span th:text="${userType.object.nationality}"></span></p>-->
+<!--        <p><strong>Passport Number:</strong> <span th:text="${userType.object.passportNumber}"></span></p>-->
+<!--        <p><strong>National ID:</strong> <span th:text="${userType.object.nationalIdNumber}"></span></p>-->
+<!--    </div>-->
+
+
+<!--    <div class="info-section" th:if="${userType.object instanceof T(com.project.HotelManagementSystem.dto.editor.EditorDTO)}">-->
+<!--        <h5>Editor Information</h5>-->
+<!--        <p><strong>Editor Type:</strong> <span th:text="${userType.object.editorType}"></span></p>-->
+<!--        <p><strong>Editor Name:</strong> <span th:text="${userType.object.name}"></span></p>-->
+<!--        <p><strong>Phone:</strong> <span th:text="${userType.object.phone}"></span></p>-->
+<!--        <p><strong>Date Of Birth:</strong> <span th:text="${userType.object.dateOfBirth}"></span></p>-->
+<!--        <p><strong>Nationality:</strong> <span th:text="${userType.object.nationality}"></span></p>-->
+<!--        <p><strong>Passport Number:</strong> <span th:text="${userType.object.passportNumber}"></span></p>-->
+<!--        <p><strong>National ID:</strong> <span th:text="${userType.object.nationalIdNumber}"></span></p>-->
+<!--    </div>-->
+
+<!--    <div class="mt-4">-->
+<!--        <button type="button" class="btn btn-primary">Set Profile</button>-->
+<!--        <a th:href="@{/}" class="btn btn-secondary">Cancel</a>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>-->
+<!--</body>-->
+<!--</html>-->
