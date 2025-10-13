@@ -141,6 +141,33 @@
 <div th:replace="fragments/navbar :: navbar"></div>
 
 <h2>Users</h2>
+<form th:action="@{/users}" method="get" class="row g-3 align-items-center mb-4">
+    <div class="col-md-3">
+        <label for="searchName" class="form-label">Name</label>
+        <input type="text" id="searchName" name="name" class="form-control"
+               th:value="${param.name}" placeholder="Search by name">
+    </div>
+
+    <div class="col-md-3">
+        <label for="searchEmail" class="form-label">Email</label>
+        <input type="text" id="searchEmail" name="email" class="form-control"
+               th:value="${param.email}" placeholder="Search by email">
+    </div>
+
+    <div class="col-md-3">
+        <label for="searchStatus" class="form-label">Status</label>
+        <select id="searchStatus" name="statusType" class="form-select">
+            <option value="">All</option>
+            <option value=1 th:selected="ACTIVE">ACTIVE</option>
+            <option value=0 th:selected="INACTIVE">INACTIVE</option>
+        </select>
+    </div>
+
+    <div class="col-md-3 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary me-2">Search</button>
+        <a th:href="@{/users}" class="btn btn-secondary">Reset</a>
+    </div>
+</form>
 
 <div class="d-flex justify-content-between align-items-center my-3">
     <div>

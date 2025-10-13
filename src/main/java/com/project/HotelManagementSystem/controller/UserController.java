@@ -2,11 +2,9 @@ package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.config.AppConstants;
-import com.project.HotelManagementSystem.dto.user.UserCreateDTO;
-import com.project.HotelManagementSystem.dto.user.UserDTO;
-import com.project.HotelManagementSystem.dto.user.UserResponse;
-import com.project.HotelManagementSystem.dto.user.UserUpdateDTO;
+import com.project.HotelManagementSystem.dto.user.*;
 import com.project.HotelManagementSystem.entity.User;
+import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.helper.StringUtil;
 import com.project.HotelManagementSystem.service.PromotionService;
 import com.project.HotelManagementSystem.service.RoleService;
@@ -31,11 +29,25 @@ public class UserController {
 
     @GetMapping
     public String getAllUsers(Model model,
+                              @RequestParam(required = false) String name,
+                              @RequestParam(required = false) String email,
+                              @RequestParam(required = false) StatusType statusType,
                               @RequestParam(defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
                               @RequestParam(defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
                               @RequestParam(defaultValue = AppConstants.SORT_BY_Id) String sortBy,
                               @RequestParam(defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
-        UserResponse userResponse = this.userService.findAllUsersWithPagination(pageNumber,pageSize,sortBy,sortOrder);
+
+        UserSearchCriteria userSearchCriteria = new UserSearchCriteria();
+        userSearchCriteria.setName(name);
+        userSearchCriteria.setEmail(email);
+        userSearchCriteria.setStatusType(statusType);
+        userSearchCriteria.setPageNumber(pageNumber);
+        userSearchCriteria.setPageSize(pageSize);
+        userSearchCriteria.setSortyBy(sortBy);
+        userSearchCriteria.setSortyOrder(sortOrder);
+
+        UserResponse userResponse = this.userService.search(userSearchCriteria);
+
         List<UserDTO> userDTOList = userResponse.getUsers();
         model.addAttribute("users", userDTOList);
         model.addAttribute("response",userResponse);

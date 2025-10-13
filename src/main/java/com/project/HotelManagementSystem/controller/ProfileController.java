@@ -30,8 +30,8 @@ public class ProfileController {
         return "profiles/userProfile";
     }
 
-    @PostMapping("/upload")
-    public String uploadProfile(MultipartFile file, Model model) {
-
-    }
+//    @PostMapping("/upload")
+//    public String uploadProfile(MultipartFile file, Model model) {
+//
+//    }
 }

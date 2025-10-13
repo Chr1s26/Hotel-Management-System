@@ -1,13 +1,11 @@
 package com.project.HotelManagementSystem.service;
 
-import com.project.HotelManagementSystem.dto.user.UserCreateDTO;
-import com.project.HotelManagementSystem.dto.user.UserDTO;
-import com.project.HotelManagementSystem.dto.user.UserResponse;
-import com.project.HotelManagementSystem.dto.user.UserUpdateDTO;
+import com.project.HotelManagementSystem.dto.user.*;
 import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
+import com.project.HotelManagementSystem.entity.spectification.UserSpecifications;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.InvalidRoleException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
@@ -21,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -126,4 +125,32 @@ public class UserService {
         return userResponse;
     }
 
+    public UserResponse search(UserSearchCriteria c) {
+        String sortOrder = c.getSortyOrder();
+        String sortBy = c.getSortyBy();
+        Integer pageNumber = c.getPageNumber();
+        Integer pageSize = c.getPageSize();
+
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNumber,pageSize,sortByAndOrder);
+
+        Specification<User> spec =
+                Specification.where(UserSpecifications.findByName(c.getName()))
+                        .and(UserSpecifications.findByEmail(c.getEmail()))
+                        .and(UserSpecifications.findByStatus(c.getStatusType()));
+
+        Page<User> userPage = userRepository.findAll(spec, pageable);
+
+        List<User> users = userPage.getContent();
+        List<UserDTO> userDTOList = users.stream().map(user -> modelMapper.map(user,UserDTO.class)).toList();
+        UserResponse userResponse = new UserResponse();
+        userResponse.setUsers(userDTOList);
+        userResponse.setPageNumber(userPage.getNumber());
+        userResponse.setPageSize(userPage.getSize());
+        userResponse.setTotalPages(userPage.getTotalPages());
+        userResponse.setTotalElements(userPage.getTotalElements());
+        userResponse.setLastPage(userPage.isLast());
+
+        return userResponse;
+    }
 }
