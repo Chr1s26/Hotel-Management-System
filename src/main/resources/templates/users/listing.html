@@ -135,13 +135,26 @@
         .navbar { z-index: 1050 !important; }
 
         .dropdown-menu { z-index: 2000 !important; }
+
+        #searchStatus {
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+        }
+
+        #searchStatus option {
+            background-color: red;
+            color: black;
+        }
+
     </style>
 </head>
 <body class="container mt-4">
 <div th:replace="fragments/navbar :: navbar"></div>
 
 <h2>Users</h2>
-<form th:action="@{/users}" method="get" class="row g-3 align-items-center mb-4">
+<form th:action="@{/users}" method="get" class="row g-3 align-items-end mb-4">
+
     <div class="col-md-3">
         <label for="searchName" class="form-label">Name</label>
         <input type="text" id="searchName" name="name" class="form-control"
@@ -159,7 +172,7 @@
         <select id="searchStatus" name="statusType" class="form-select">
             <option value="">All</option>
             <option value="ACTIVE" th:selected="${param.statusType == 'ACTIVE'}">ACTIVE</option>
-            <option value="DELETED" th:selected="${param.statusType == 'DELETED'}">INACTIVE</option>
+            <option value="DELETED" th:selected="${param.statusType == 'DELETED'}">DELETED</option>
         </select>
     </div>
 
@@ -168,6 +181,7 @@
         <a th:href="@{/users}" class="btn btn-secondary">Reset</a>
     </div>
 </form>
+
 <div class="d-flex justify-content-between align-items-center my-3">
     <div>
         Page <span th:text="${response.pageNumber + 1}">1</span> of
