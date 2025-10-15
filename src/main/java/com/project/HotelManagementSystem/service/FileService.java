@@ -3,12 +3,14 @@ package com.project.HotelManagementSystem.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.project.HotelManagementSystem.entity.FileStorage;
+import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.FileStorageRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,6 +38,8 @@ public class FileService {
 
     private final FileStorageRepository fileStorageRepository;
     private final AmazonS3 amazonS3;
+    @Autowired
+    private AuthService authService;
 
     public String getFileName(FileType fileType,Long fileId) {
         List<FileStorage> fileStorageList = fileStorageRepository.findByFileTypeAndFileId(fileType, fileId);
@@ -81,6 +85,8 @@ public class FileService {
                 log.info("File Uploaded Successfully to S3 : {}",storedFileName);
             }
 
+            User user  = authService.getCurrentUser();
+
             FileStorage fileStorage = new FileStorage();
             fileStorage.setFileName(file.getOriginalFilename());
             fileStorage.setKey(storedFileName);
@@ -90,7 +96,8 @@ public class FileService {
             fileStorage.setFileId(id);
             fileStorage.setContentType(file.getContentType());
             fileStorage.setCreatedAt(LocalDateTime.now());
-
+            fileStorage.setCreatedBy(user);
+            fileStorage.setUpdatedBy(user);
             FileStorage fileStorage1 = fileStorageRepository.save(fileStorage);
             System.out.println(fileStorage1.getFileId());
             System.out.println(fileStorage1.getFileType());

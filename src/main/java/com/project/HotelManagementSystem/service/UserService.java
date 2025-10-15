@@ -5,7 +5,7 @@ import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
-import com.project.HotelManagementSystem.entity.spectification.UserSpecifications;
+import com.project.HotelManagementSystem.entity.specification.UserSpecification;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.InvalidRoleException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
@@ -125,22 +125,16 @@ public class UserService {
         return userResponse;
     }
 
-    public UserResponse search(UserSearchCriteria c) {
-        String sortOrder = c.getSortyOrder();
-        String sortBy = c.getSortyBy();
-        Integer pageNumber = c.getPageNumber();
-        Integer pageSize = c.getPageSize();
+    public UserResponse search(UserSearchCriteria criteria) {
 
-        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        Pageable pageable = PageRequest.of(pageNumber,pageSize,sortByAndOrder);
+        Sort sortByAndOrder = criteria.getSortOrder().equalsIgnoreCase("asc") ? Sort.by(criteria.getSortBy()).ascending() : Sort.by(criteria.getSortBy()).descending();
+        Pageable pageable = PageRequest.of(criteria.getPageNumber(),criteria.getPageSize(),sortByAndOrder);
 
-        Specification<User> spec =
-                Specification.where(UserSpecifications.findByName(c.getName()))
-                        .and(UserSpecifications.findByEmail(c.getEmail()))
-                        .and(UserSpecifications.findByStatus(c.getStatusType()));
+        Specification<User> spec = Specification.where(UserSpecification.findByName(criteria.getName()))
+                .and(UserSpecification.findByEmail(criteria.getEmail()))
+                .and(UserSpecification.findByStatus(criteria.getStatusType()));
 
-        Page<User> userPage = userRepository.findAll(spec, pageable);
-
+        Page<User> userPage = userRepository.findAll(spec,pageable);
         List<User> users = userPage.getContent();
         List<UserDTO> userDTOList = users.stream().map(user -> modelMapper.map(user,UserDTO.class)).toList();
         UserResponse userResponse = new UserResponse();
@@ -150,7 +144,6 @@ public class UserService {
         userResponse.setTotalPages(userPage.getTotalPages());
         userResponse.setTotalElements(userPage.getTotalElements());
         userResponse.setLastPage(userPage.isLast());
-
         return userResponse;
     }
 }

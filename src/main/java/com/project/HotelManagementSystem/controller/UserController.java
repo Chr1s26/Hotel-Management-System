@@ -37,17 +37,17 @@ public class UserController {
                               @RequestParam(defaultValue = AppConstants.SORT_BY_Id) String sortBy,
                               @RequestParam(defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
 
-        UserSearchCriteria userSearchCriteria = new UserSearchCriteria();
-        userSearchCriteria.setName(name);
-        userSearchCriteria.setEmail(email);
-        userSearchCriteria.setStatusType(statusType);
-        userSearchCriteria.setPageNumber(pageNumber);
-        userSearchCriteria.setPageSize(pageSize);
-        userSearchCriteria.setSortyBy(sortBy);
-        userSearchCriteria.setSortyOrder(sortOrder);
+//        UserResponse userResponse = this.userService.findAllUsersWithPagination(pageNumber,pageSize,sortBy,sortOrder);
 
-        UserResponse userResponse = this.userService.search(userSearchCriteria);
-
+        UserSearchCriteria criteria = new UserSearchCriteria();
+        criteria.setName(name);
+        criteria.setEmail(email);
+        criteria.setStatusType(statusType);
+        criteria.setPageNumber(pageNumber);
+        criteria.setPageSize(pageSize);
+        criteria.setSortBy(sortBy);
+        criteria.setSortOrder(sortOrder);
+        UserResponse userResponse = this.userService.search(criteria);
         List<UserDTO> userDTOList = userResponse.getUsers();
         model.addAttribute("users", userDTOList);
         model.addAttribute("response",userResponse);

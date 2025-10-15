@@ -158,8 +158,8 @@
         <label for="searchStatus" class="form-label">Status</label>
         <select id="searchStatus" name="statusType" class="form-select">
             <option value="">All</option>
-            <option value=1 th:selected="ACTIVE">ACTIVE</option>
-            <option value=0 th:selected="INACTIVE">INACTIVE</option>
+            <option value="ACTIVE" th:selected="${param.statusType == 'ACTIVE'}">ACTIVE</option>
+            <option value="DELETED" th:selected="${param.statusType == 'DELETED'}">INACTIVE</option>
         </select>
     </div>
 
@@ -168,7 +168,6 @@
         <a th:href="@{/users}" class="btn btn-secondary">Reset</a>
     </div>
 </form>
-
 <div class="d-flex justify-content-between align-items-center my-3">
     <div>
         Page <span th:text="${response.pageNumber + 1}">1</span> of
