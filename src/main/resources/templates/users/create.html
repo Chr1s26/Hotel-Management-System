@@ -112,52 +112,19 @@
         <label class="form-label">Name</label>
         <input type="text" th:field="*{name}" class="form-control"/>
         <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
-<!--        <div class="text-danger" th:if="${nameError}" th:text="${nameError}"></div>-->
     </div>
 
     <div class="mb-3">
         <label class="form-label">Email</label>
         <input type="text" th:field="*{email}" class="form-control"/>
         <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-
-        <!--        <div class="text-danger" th:if="${emailError}" th:text="${emailError}"></div>,-->
     </div>
-<!--    <div class="mb-3">-->
-<!--        <label class="form-label">Date Of Birth</label>-->
-<!--        <input type="date" th:field="*{dateOfBirth}" class="form-control"/>-->
-<!--        <div class="text-danger" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"></div>-->
 
-<!--        &lt;!&ndash;        <div class="text-danger" th:if="${#fields.hasErrors('dateOfBirth')}" th:text="*{dateOfBirth}"></div>&ndash;&gt;-->
-<!--    </div>-->
-<!--    <div class="mb-3">-->
-<!--        <label class="form-label">Nationality</label>-->
-<!--        <input type="text" th:field="*{nationality}" class="form-control"/>-->
-<!--        <div class="text-danger" th:if="${#fields.hasErrors('nationality')}" th:errors="*{nationality}"></div>-->
-
-<!--        &lt;!&ndash;        <div class="text-danger" th:if="${nationalityError}" th:text="${nationalityError}"></div>&ndash;&gt;-->
-<!--    </div>-->
-
-<!--    <div class="mb-3">-->
-<!--        <label class="form-label">Roles</label>-->
-<!--        <select class="form-select" id="roles-select" th:field="*{rolesId}" multiple>-->
-<!--            <option th:each="role : ${roles}"-->
-<!--                    th:value="${role.id}"-->
-<!--                    th:text="${role.roleName}">-->
-<!--            </option>-->
-<!--        </select>-->
-<!--    </div>-->
     <div class="mb-3">
         <label class="form-label">Password</label>
         <input type="text" th:field="*{password}" class="form-control"/>
         <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
-
-        <!--        <div class="text-danger" th:if="${passwordError}" th:text="${passwordError}"></div>-->
     </div>
-
-<!--    <div class="mb-3">-->
-<!--        <label class="form-label">File Upload</label>-->
-<!--        <input type="file" th:field="*{file}">-->
-<!--    </div>-->
 
     <button type="submit" class="btn btn-primary">Save</button>
     <a class="btn btn-secondary" th:href="@{/users}">Cancel</a>

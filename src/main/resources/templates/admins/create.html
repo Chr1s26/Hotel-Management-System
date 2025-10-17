@@ -146,6 +146,7 @@
                     <div class="mb-3">
                         <label class="form-label">Admin Type</label>
                         <select th:field="*{adminType}" class="form-select">
+                            <option value="">-- Select Admin Type --</option>
                             <option th:each="type : ${T(com.project.HotelManagementSystem.entity.constants.AdminType).values()}"
                                     th:value="${type}"
                                     th:text="${type}"></option>
