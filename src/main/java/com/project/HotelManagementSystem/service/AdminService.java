@@ -1,13 +1,12 @@
 package com.project.HotelManagementSystem.service;
 
-import com.project.HotelManagementSystem.dto.admin.AdminCreateDTO;
-import com.project.HotelManagementSystem.dto.admin.AdminDTO;
-import com.project.HotelManagementSystem.dto.admin.AdminResponse;
-import com.project.HotelManagementSystem.dto.admin.AdminUpdateDTO;
+import com.project.HotelManagementSystem.dto.admin.*;
 import com.project.HotelManagementSystem.entity.Admin;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
+import com.project.HotelManagementSystem.entity.specification.AdminSpecification;
+import com.project.HotelManagementSystem.entity.specification.UserSpecification;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.AdminRepository;
@@ -19,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -149,6 +149,32 @@ public class AdminService {
         adminDTO.setProfileUrl(fileService.getFileName(FileType.ADMIN,admin.getId()));
         adminDTO.setContentType(multipartFile.getContentType());
         return adminDTO;
+    }
+
+    public AdminResponse search(AdminSearchCriteria adminSearchCriteria) {
+        Sort sortByAndSortOrder = adminSearchCriteria.getSortOrder().equalsIgnoreCase("asc") ? Sort.by(adminSearchCriteria.getSortBy()).ascending() : Sort.by(adminSearchCriteria.getSortBy()).descending();
+        Pageable pageable = PageRequest.of(adminSearchCriteria.getPageNumber(), adminSearchCriteria.getPageSize(), sortByAndSortOrder);
+
+        Specification<Admin> spec = Specification.where(AdminSpecification.findByName(adminSearchCriteria.getName()))
+                .and(AdminSpecification.findByPhone(adminSearchCriteria.getPhone()))
+                        .and(AdminSpecification.findByNationality(adminSearchCriteria.getNationality()))
+                                .and(AdminSpecification.findByDateOfBirth(adminSearchCriteria.getDateOfBirth()))
+                                        .and(AdminSpecification.findByPassport(adminSearchCriteria.getPassportNumber()))
+                                        .and(AdminSpecification.findByNationalId(adminSearchCriteria.getNationalIdNumber()))
+                                        .and(AdminSpecification.findByAdminType(adminSearchCriteria.getAdminType()))
+                                        .and(AdminSpecification.findByStatusType(adminSearchCriteria.getStatusType()));
+
+        Page<Admin> adminPage = adminRepository.findAll(spec,pageable);
+        List<Admin> adminList = adminPage.getContent();
+        List<AdminDTO> adminDTOList = adminList.stream().map(admin -> modelMapper.map(admin, AdminDTO.class)).toList();
+        AdminResponse adminResponse = new AdminResponse();
+        adminResponse.setAdmins(adminDTOList);
+        adminResponse.setPageNumber(adminPage.getNumber());
+        adminResponse.setPageSize(adminPage.getSize());
+        adminResponse.setTotalPages(adminPage.getTotalPages());
+        adminResponse.setTotalElements(adminPage.getTotalElements());
+        adminResponse.setLastPage(adminResponse.isLastPage());
+        return adminResponse;
     }
 
 }

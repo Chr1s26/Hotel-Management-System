@@ -2,10 +2,9 @@ package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.config.AppConstants;
-import com.project.HotelManagementSystem.dto.admin.AdminCreateDTO;
-import com.project.HotelManagementSystem.dto.admin.AdminDTO;
-import com.project.HotelManagementSystem.dto.admin.AdminResponse;
-import com.project.HotelManagementSystem.dto.admin.AdminUpdateDTO;
+import com.project.HotelManagementSystem.dto.admin.*;
+import com.project.HotelManagementSystem.entity.constants.AdminType;
+import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.service.AdminService;
 import com.project.HotelManagementSystem.service.AuthService;
 import com.project.HotelManagementSystem.service.UserService;
@@ -17,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -33,11 +33,33 @@ public class AdminController {
     @GetMapping
     @ActiveRole("ADMIN")
     public String getAllAdmins(Model model,
+                               @RequestParam(required = false) String name,
+                               @RequestParam(required = false) String phone,
+                               @RequestParam(required = false) LocalDate dateOfBirth,
+                               @RequestParam(required = false) String nationality,
+                               @RequestParam(required = false) String passportNumber,
+                               @RequestParam(required = false) String nationalIdNumber,
+                               @RequestParam(required = false) AdminType adminType,
+                               @RequestParam(required = false) StatusType statusType,
                                @RequestParam(defaultValue = AppConstants.PAGE_NUMBER,required = false) Integer pageNumber,
                                @RequestParam(defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
                                @RequestParam(defaultValue = AppConstants.SORT_BY_Id,required = false) String sortBy,
                                @RequestParam(defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
-        AdminResponse adminResponse = adminService.findAllAdminWithPagination(pageNumber, pageSize, sortBy, sortOrder);
+
+        AdminSearchCriteria adminSearchCriteria = new AdminSearchCriteria();
+        adminSearchCriteria.setName(name);
+        adminSearchCriteria.setPhone(phone);
+        adminSearchCriteria.setDateOfBirth(dateOfBirth);
+        adminSearchCriteria.setNationality(nationality);
+        adminSearchCriteria.setPassportNumber(passportNumber);
+        adminSearchCriteria.setNationalIdNumber(nationalIdNumber);
+        adminSearchCriteria.setAdminType(adminType);
+        adminSearchCriteria.setStatusType(statusType);
+        adminSearchCriteria.setPageNumber(pageNumber);
+        adminSearchCriteria.setPageSize(pageSize);
+        adminSearchCriteria.setSortBy(sortBy);
+        adminSearchCriteria.setSortOrder(sortOrder);
+        AdminResponse adminResponse = adminService.search(adminSearchCriteria);
         List<AdminDTO> admins = adminResponse.getAdmins();
         model.addAttribute("admins", admins);
         model.addAttribute("response", adminResponse);

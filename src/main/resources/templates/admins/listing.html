@@ -127,12 +127,85 @@
         .navbar { z-index: 1050 !important; }
 
         .dropdown-menu { z-index: 2000 !important; }
+
+        #searchStatus {
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+        }
+
+        #searchStatus option {
+            background-color: red;
+            color: black;
+        }
+
+        #adminSearchStatus {
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+        }
+
+        #adminSearchStatus option {
+            background-color: red;
+            color: black;
+        }
+
+
     </style>
 </head>
 <body class="container mt-4">
 <div th:replace="fragments/navbar :: navbar"></div>
 
 <h2>Admins</h2>
+
+<form th:action="@{/admins}" method="get" class="row g-3 align-items-end mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Name</label>
+        <input name="name" th:value="${param.name}" class="form-control" placeholder="Name">
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Phone</label>
+        <input name="phone" th:value="${param.phone}" class="form-control" placeholder="Phone">
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Nationality</label>
+        <input name="nationality" th:value="${param.nationality}" class="form-control" placeholder="Nationality">
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">PassportNumber</label>
+        <input name="passportNumber" th:value="${param.passportNumber}" class="form-control" placeholder="ID / Passport">
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">NationalId Number</label>
+        <input name="nationalIdNumber" th:value="${param.nationalIdNumber}" class="form-control" placeholder="ID / National">
+    </div>
+    <div class="col-md-3">
+        <label for="searchDoB" class="form-label">Date Of Birth</label>
+        <input type="date" id="searchDoB" name="dateOfBirth" class="form-control"
+               th:value="${param.dateOfBirth}" placeholder="Search by Date Of Birth">
+    </div>
+    <div class="col-md-3">
+        <label for="adminSearchStatus" class="form-label">Admin Type</label>
+        <select id="adminSearchStatus" name="adminType" class="form-select">
+            <option value="">All</option>
+            <option value="SUPER_ADMIN" th:selected="${param.adminType == 'SUPER_ADMIN'}">SUPER_ADMIN</option>
+            <option value="HOTEL_MANAGER" th:selected="${param.adminType == 'HOTEL_MANAGER'}">HOTEL_MANAGER</option>
+            <option value="CUSTOMER_SUPPORT" th:selected="${param.adminType == 'CUSTOMER_SUPPORT'}">CUSTOMER_SUPPORT</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label for="searchStatus" class="form-label">Status</label>
+        <select id="searchStatus" name="statusType" class="form-select">
+            <option value="">All</option>
+            <option value="ACTIVE" th:selected="${param.statusType == 'ACTIVE'}">ACTIVE</option>
+            <option value="DELETED" th:selected="${param.statusType == 'DELETED'}">DELETED</option>
+        </select>
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+        <button class="btn btn-primary me-2">Search</button>
+        <a th:href="@{/admins}" class="btn btn-secondary">Reset</a>
+    </div>
+</form>
 
 <div class="d-flex justify-content-between align-items-center my-3">
     <div>
