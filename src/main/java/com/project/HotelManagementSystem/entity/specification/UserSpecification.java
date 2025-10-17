@@ -63,7 +63,6 @@ public class UserSpecification {
                 case CONTAINS -> cb.like(cb.lower(root.get(attr)), "%"+lv+"%");
                 case START_WTITH -> cb.like(cb.lower(root.get(attr)), lv+"%");
                 case ENDS_WITH -> cb.like(cb.lower(root.get(attr)), "%"+lv);
-
             };
         };
     }
