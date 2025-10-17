@@ -1,12 +1,10 @@
 package com.project.HotelManagementSystem.service;
 
-import com.project.HotelManagementSystem.dto.editor.EditorCreateDTO;
-import com.project.HotelManagementSystem.dto.editor.EditorDTO;
-import com.project.HotelManagementSystem.dto.editor.EditorResponse;
-import com.project.HotelManagementSystem.dto.editor.EditorUpdateDTO;
+import com.project.HotelManagementSystem.dto.editor.*;
 import com.project.HotelManagementSystem.entity.Editor;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
+import com.project.HotelManagementSystem.entity.specification.EditorSpecification;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.EditorRepository;
@@ -19,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -122,5 +121,31 @@ public class EditorService {
     public List<EditorDTO> findAllEditor(){
         List<Editor> editorList = editorRepository.findAll();
         return editorList.stream().map(editor -> modelMapper.map(editor, EditorDTO.class)).toList();
+    }
+
+    public EditorResponse search(EditorSeearchCriteria criteria) {
+        Sort sortByAndOrder = criteria.getSortOrder().equalsIgnoreCase("asc") ? Sort.by(criteria.getSortBy()).ascending() : Sort.by(criteria.getSortBy()).descending();
+        Pageable pageable = PageRequest.of(criteria.getPageNumber(),criteria.getPageSize(),sortByAndOrder);
+
+        Specification<Editor> spec = Specification.where(EditorSpecification.findByName(criteria.getName()))
+                .and(EditorSpecification.findByPhone(criteria.getPhone()))
+                .and(EditorSpecification.findByDOB(criteria.getDateOfBirth()))
+                .and(EditorSpecification.findByNationality(criteria.getNationality()))
+                .and(EditorSpecification.findByPassportNumber(criteria.getPassportNumber()))
+                .and(EditorSpecification.findByNationalIdNumber(criteria.getNationalIdNumber()))
+                .and(EditorSpecification.findByEditorType(criteria.getEditorType()))
+                .and(EditorSpecification.findByStatus(criteria.getStatus()));
+
+        Page<Editor> editorPage = editorRepository.findAll(spec,pageable);
+        List<Editor> editors = editorPage.getContent();
+        List<EditorDTO> editorDTOList = editors.stream().map(editor -> modelMapper.map(editor, EditorDTO.class)).toList();
+        EditorResponse editorResponse = new EditorResponse();
+        editorResponse.setEditors(editorDTOList);
+        editorResponse.setPageNumber(editorPage.getNumber());
+        editorResponse.setPageSize(editorPage.getSize());
+        editorResponse.setTotalPages(editorPage.getTotalPages());
+        editorResponse.setTotalElements(editorPage.getTotalElements());
+        editorResponse.setLastPage(editorPage.isLast());
+        return editorResponse;
     }
 }

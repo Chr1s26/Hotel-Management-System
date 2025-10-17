@@ -1,11 +1,9 @@
 package com.project.HotelManagementSystem.service;
 
 
-import com.project.HotelManagementSystem.dto.region.RegionCreateDTO;
-import com.project.HotelManagementSystem.dto.region.RegionDTO;
-import com.project.HotelManagementSystem.dto.region.RegionResponse;
-import com.project.HotelManagementSystem.dto.region.RegionUpdateDTO;
+import com.project.HotelManagementSystem.dto.region.*;
 import com.project.HotelManagementSystem.entity.Region;
+import com.project.HotelManagementSystem.entity.specification.RegionSpecification;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.RegionRepository;
@@ -15,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -72,6 +71,26 @@ public class RegionService {
         Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNumber,pageSize,sortByAndOrder);
         Page<Region> regionPage = regionRepository.findAll(pageable);
+        List<Region> regions = regionPage.getContent();
+        List<RegionDTO> regionDTOList = regions.stream().map(region -> modelMapper.map(region,RegionDTO.class)).toList();
+        RegionResponse regionResponse = new RegionResponse();
+        regionResponse.setRegions(regionDTOList);
+        regionResponse.setPageNumber(regionPage.getNumber());
+        regionResponse.setPageSize(regionPage.getSize());
+        regionResponse.setTotalElements(regionPage.getTotalElements());
+        regionResponse.setTotalPages(regionPage.getTotalPages());
+        regionResponse.setLastPage(regionPage.isLast());
+        return regionResponse;
+    }
+
+    public RegionResponse search(RegionSearchCriteria criteria) {
+        Sort sortByAndOrder = criteria.getSortOrder().equalsIgnoreCase("asc") ? Sort.by(criteria.getSortBy()).ascending() : Sort.by(criteria.getSortBy()).descending();
+        Pageable pageable = PageRequest.of(criteria.getPageNumber(),criteria.getPageSize(),sortByAndOrder);
+
+        Specification<Region> spec = Specification.where(RegionSpecification.findByName(criteria.getName()))
+                .and(RegionSpecification.findByCountry(criteria.getCountryName()));
+
+        Page<Region> regionPage = regionRepository.findAll(spec,pageable);
         List<Region> regions = regionPage.getContent();
         List<RegionDTO> regionDTOList = regions.stream().map(region -> modelMapper.map(region,RegionDTO.class)).toList();
         RegionResponse regionResponse = new RegionResponse();

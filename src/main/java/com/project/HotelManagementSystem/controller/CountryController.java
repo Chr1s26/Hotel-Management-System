@@ -2,10 +2,7 @@ package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.config.AppConstants;
-import com.project.HotelManagementSystem.dto.country.CountryCreateDTO;
-import com.project.HotelManagementSystem.dto.country.CountryDTO;
-import com.project.HotelManagementSystem.dto.country.CountryResponse;
-import com.project.HotelManagementSystem.dto.country.CountryUpdateDTO;
+import com.project.HotelManagementSystem.dto.country.*;
 import com.project.HotelManagementSystem.entity.Country;
 import com.project.HotelManagementSystem.service.CountryService;
 import jakarta.validation.Valid;
@@ -26,14 +23,23 @@ public class CountryController {
 
     @GetMapping
     public String getAllCountries(Model model,
+                                  @RequestParam(required = false) String name,
                                   @RequestParam(defaultValue = AppConstants.PAGE_NUMBER,required = false) Integer pageNumber,
                                   @RequestParam(defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
                                   @RequestParam(defaultValue = AppConstants.SORT_BY_Id,required = false) String sortBy,
                                   @RequestParam(defaultValue = AppConstants.SORT_ORDER,required = false) String sortOrder) {
-        CountryResponse response = countryService.findAllCountriesWithPagination(pageNumber,pageSize,sortBy,sortOrder);
-        List<CountryDTO> countryDTOList = response.getCountries();
+//        CountryResponse response = countryService.findAllCountriesWithPagination(pageNumber,pageSize,sortBy,sortOrder);
+
+        CountrySearchCriteria criteria = new CountrySearchCriteria();
+        criteria.setName(name);
+        criteria.setPageNumber(pageNumber);
+        criteria.setPageSize(pageSize);
+        criteria.setSortBy(sortBy);
+        criteria.setSortOrder(sortOrder);
+        CountryResponse countryResponse = this.countryService.search(criteria);
+        List<CountryDTO> countryDTOList = countryResponse.getCountries();
         model.addAttribute("countries", countryDTOList);
-        model.addAttribute("response",response);
+        model.addAttribute("response",countryResponse);
         model.addAttribute("sortBy",sortBy);
         model.addAttribute("sortOrder",sortOrder);
         return "countries/listing";

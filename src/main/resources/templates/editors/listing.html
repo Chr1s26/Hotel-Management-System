@@ -143,12 +143,98 @@
 
         .dropdown-menu { z-index: 2000 !important; }
 
+        #searchStatus {
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+        }
+
+        #searchStatus option {
+            background-color: red;
+            color: black;
+        }
+
+        #searchEditortype {
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+        }
+
+        #searchEditortype option {
+            background-color: red;
+            color: black;
+        }
+
     </style>
 </head>
 <body class="container mt-4">
 <div th:replace="fragments/navbar :: navbar"></div>
 
 <h2>Editors</h2>
+<form th:action="@{/editors}" method="get" class="row g-3 align-items-end mb-4">
+
+    <div class="col-md-3">
+        <label for="searchName" class="form-label">Name</label>
+        <input type="text" id="searchName" name="name" class="form-control"
+               th:value="${param.name}" placeholder="Search by name">
+    </div>
+
+    <div class="col-md-3">
+        <label for="searchPhone" class="form-label">Phone</label>
+        <input type="number" id="searchPhone" name="phone" class="form-control"
+               th:value="${param.phone}" placeholder="Search by Phone Number">
+    </div>
+
+    <div class="col-md-3">
+        <label for="searchNationality" class="form-label">Nationality</label>
+        <input type="text" id="searchNationality" name="nationality" class="form-control"
+               th:value="${param.nationality}" placeholder="Search by Nationality">
+    </div>
+
+    <div class="col-md-3">
+        <label for="searchPassportNumber" class="form-label">Passport Number</label>
+        <input type="text" id="searchPassportNumber" name="passportNumber" class="form-control"
+               th:value="${param.passportNumber}" placeholder="Search by PassportNumber">
+    </div>
+
+    <div class="col-md-3">
+        <label for="searchNationalId" class="form-label">National Id Number</label>
+        <input type="text" id="searchNationalId" name="nationalityIdNumber" class="form-control"
+               th:value="${param.nationalityIdNumber}" placeholder="Search by National Id Number">
+    </div>
+
+    <div class="col-md-3">
+        <label for="searchDoB" class="form-label">Date Of Birth</label>
+        <input type="date" id="searchDoB" name="dateOfBirth" class="form-control"
+               th:value="${param.dateOfBirth}" placeholder="Search by Date Of Birth">
+    </div>
+
+    <div class="col-md-3">
+        <label for="searchEditortype" class="form-label">Editor Type</label>
+        <select id="searchEditortype" name="editorType" class="form-select">
+            <option value="">All</option>
+            <option value="ImageEditor" th:selected="${param.editorType == 'ImageEditor'}">ImageEditor</option>
+            <option value="RoomEditor" th:selected="${param.editorType == 'RoomEditor'}">RoomEditor</option>
+            <option value="HotelEditor" th:selected="${param.editorType == 'HotelEditor'}">HotelEditor</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label for="searchStatus" class="form-label">Status</label>
+        <select id="searchStatus" name="statusType" class="form-select">
+            <option value="">All</option>
+            <option value="ACTIVE" th:selected="${param.statusType == 'ACTIVE'}">ACTIVE</option>
+            <option value="DELETED" th:selected="${param.statusType == 'DELETED'}">DELETED</option>
+        </select>
+    </div>
+
+
+    <div class="col-md-3 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary me-2">Search</button>
+        <a th:href="@{/editors}" class="btn btn-secondary">Reset</a>
+    </div>
+</form>
+
 
 <div class="d-flex justify-content-between align-items-center my-3">
     <div>
@@ -249,7 +335,7 @@
     </div>
 </form>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!--<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

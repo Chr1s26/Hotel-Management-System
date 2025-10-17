@@ -1,10 +1,8 @@
 package com.project.HotelManagementSystem.service;
 
-import com.project.HotelManagementSystem.dto.city.CityCreateDTO;
-import com.project.HotelManagementSystem.dto.city.CityDTO;
-import com.project.HotelManagementSystem.dto.city.CityResponse;
-import com.project.HotelManagementSystem.dto.city.CityUpdateDTO;
+import com.project.HotelManagementSystem.dto.city.*;
 import com.project.HotelManagementSystem.entity.City;
+import com.project.HotelManagementSystem.entity.specification.CitySpecification;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CityRepository;
@@ -15,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -82,4 +81,25 @@ public class CityService {
         return cityDTOS;
     }
 
+    public CityResponse search(CitySearchCriteria criteria) {
+        Sort sortByAndOrder = criteria.getSortOrder().equalsIgnoreCase("asc") ? Sort.by(criteria.getSortBy()).ascending() : Sort.by(criteria.getSortBy()).descending();
+        Pageable pageable = PageRequest.of(criteria.getPageNumber(),criteria.getPageSize(),sortByAndOrder);
+
+        Specification<City> spec = Specification.where(CitySpecification.findByName(criteria.getName()))
+                .and(CitySpecification.findByRegion(criteria.getRegionName()));
+
+
+        Page<City> cityPage = cityRepository.findAll(spec,pageable);
+        List<City> cities = cityPage.getContent();
+        List<CityDTO> cityDTOList =  cities.stream().map(c -> modelMapper.map(c,CityDTO.class)).toList();
+        CityResponse cityResponse = new CityResponse();
+        cityResponse.setCities(cityDTOList);
+        cityResponse.setPageNumber(cityPage.getNumber());
+        cityResponse.setPageSize(cityPage.getSize());
+        cityResponse.setTotalPages(cityPage.getTotalPages());
+        cityResponse.setTotalElements(cityPage.getTotalElements());
+        cityResponse.setLastPage(cityPage.isLast());
+        return cityResponse;
+
+    }
 }

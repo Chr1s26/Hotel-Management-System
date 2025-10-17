@@ -2,10 +2,7 @@ package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.config.AppConstants;
-import com.project.HotelManagementSystem.dto.city.CityCreateDTO;
-import com.project.HotelManagementSystem.dto.city.CityDTO;
-import com.project.HotelManagementSystem.dto.city.CityResponse;
-import com.project.HotelManagementSystem.dto.city.CityUpdateDTO;
+import com.project.HotelManagementSystem.dto.city.*;
 import com.project.HotelManagementSystem.entity.City;
 import com.project.HotelManagementSystem.service.CityService;
 import com.project.HotelManagementSystem.service.RegionService;
@@ -29,16 +26,28 @@ public class CityController {
 
     @GetMapping
     public String getAllCities(Model model,
+                               @RequestParam(required = false) String name,
+                               @RequestParam(required = false,name = "regionName") String regionName,
                                @RequestParam(defaultValue = AppConstants.PAGE_NUMBER,required = false) Integer pageNumber,
                                @RequestParam(defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
                                @RequestParam(defaultValue = AppConstants.SORT_BY_Id,required = false) String sortBy,
                                @RequestParam(defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
-        CityResponse response = cityService.findAllCitiesWithPagination(pageNumber,pageSize,sortBy,sortOrder);
+//        CityResponse response = cityService.findAllCitiesWithPagination(pageNumber,pageSize,sortBy,sortOrder);
+
+        CitySearchCriteria criteria = new CitySearchCriteria();
+        criteria.setName(name);
+        criteria.setRegionName(regionName);
+        criteria.setPageNumber(pageNumber);
+        criteria.setPageSize(pageSize);
+        criteria.setSortBy(sortBy);
+        criteria.setSortOrder(sortOrder);
+        CityResponse response = cityService.search(criteria);
         List<CityDTO> cities = response.getCities();
         model.addAttribute("cities", cities);
         model.addAttribute("response", response);
         model.addAttribute("sortOrder", sortOrder);
         model.addAttribute("sortBy", sortBy);
+        model.addAttribute("regionName", regionName);
         return "cities/listing";
     }
 
