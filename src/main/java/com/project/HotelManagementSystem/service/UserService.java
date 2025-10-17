@@ -1,15 +1,17 @@
 package com.project.HotelManagementSystem.service;
 
+import com.project.HotelManagementSystem.dto.searchFilter.user.SortDirection;
+import com.project.HotelManagementSystem.dto.searchFilter.user.UserSearchField;
+import com.project.HotelManagementSystem.dto.searchFilter.user.UserSearchFilter;
+import com.project.HotelManagementSystem.dto.searchFilter.user.UserSearchQuery;
 import com.project.HotelManagementSystem.dto.user.*;
 import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.User;
-import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.entity.specification.UserSpecification;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.InvalidRoleException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
-import com.project.HotelManagementSystem.repository.PromotionRepository;
 import com.project.HotelManagementSystem.repository.RoleRepository;
 import com.project.HotelManagementSystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,13 +24,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -145,5 +143,22 @@ public class UserService {
         userResponse.setTotalElements(userPage.getTotalElements());
         userResponse.setLastPage(userPage.isLast());
         return userResponse;
+    }
+
+    public Page<User> searchByQuery(UserSearchQuery query) {
+        int page = (query.getPageNumber() == null || query.getPageNumber() < 0) ? 0 : query.getPageNumber();
+        int size = (query.getPageSize() == null || query.getPageSize() < 1) ? 10 : query.getPageSize();
+        String sortBy = (query.getSortBy() == null || query.getSortBy().isBlank()) ? "createdAt" : query.getSortBy();
+        Sort.Direction dir = (query.getSortDirection() == null || query.getSortDirection() == SortDirection.DESC) ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(page,size, Sort.by(dir, sortBy));
+
+        Specification<User> spec = Specification.where(null);
+        if(query.getFilterList() != null){
+            for(UserSearchFilter f : query.getFilterList()){
+                spec = spec.and(UserSpecification.fromFilter(f));
+            }
+        }
+        return userRepository.findAll(spec, pageable);
     }
 }

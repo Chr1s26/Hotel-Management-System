@@ -2,6 +2,7 @@ package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.config.AppConstants;
+import com.project.HotelManagementSystem.dto.searchFilter.user.UserSearchQuery;
 import com.project.HotelManagementSystem.dto.user.*;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
@@ -11,6 +12,7 @@ import com.project.HotelManagementSystem.service.RoleService;
 import com.project.HotelManagementSystem.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,32 +29,9 @@ public class UserController {
     private final PromotionService promotionService;
     private final RoleService roleService;
 
-    @GetMapping
-    public String getAllUsers(Model model,
-                              @RequestParam(required = false) String name,
-                              @RequestParam(required = false) String email,
-                              @RequestParam(required = false) StatusType statusType,
-                              @RequestParam(defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
-                              @RequestParam(defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
-                              @RequestParam(defaultValue = AppConstants.SORT_BY_Id) String sortBy,
-                              @RequestParam(defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
-
-//        UserResponse userResponse = this.userService.findAllUsersWithPagination(pageNumber,pageSize,sortBy,sortOrder);
-
-        UserSearchCriteria criteria = new UserSearchCriteria();
-        criteria.setName(name);
-        criteria.setEmail(email);
-        criteria.setStatusType(statusType);
-        criteria.setPageNumber(pageNumber);
-        criteria.setPageSize(pageSize);
-        criteria.setSortBy(sortBy);
-        criteria.setSortOrder(sortOrder);
-        UserResponse userResponse = this.userService.search(criteria);
-        List<UserDTO> userDTOList = userResponse.getUsers();
-        model.addAttribute("users", userDTOList);
-        model.addAttribute("response",userResponse);
-        model.addAttribute("sortBy", sortBy);
-        model.addAttribute("sortOrder", sortOrder);
+    @PostMapping
+    public String getAllUsers(Model model, @ModelAttribute("query")UserSearchQuery query) {
+        Page<User> users = userService.searchByQuery(query);
         return "users/listing";
     }
 
