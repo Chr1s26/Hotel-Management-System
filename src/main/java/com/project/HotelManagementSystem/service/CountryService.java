@@ -1,10 +1,8 @@
 package com.project.HotelManagementSystem.service;
 
-import com.project.HotelManagementSystem.dto.country.CountryCreateDTO;
-import com.project.HotelManagementSystem.dto.country.CountryDTO;
-import com.project.HotelManagementSystem.dto.country.CountryResponse;
-import com.project.HotelManagementSystem.dto.country.CountryUpdateDTO;
+import com.project.HotelManagementSystem.dto.country.*;
 import com.project.HotelManagementSystem.entity.Country;
+import com.project.HotelManagementSystem.entity.specification.CountrySpecification;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CountryRepository;
@@ -15,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -81,6 +80,27 @@ public class CountryService {
         List<Country> countryList = countryRepository.findAll();
         List<CountryDTO> countryDTOList = countryList.stream().map(country -> modelMapper.map(country, CountryDTO.class)).toList();
         return countryDTOList;
+    }
+
+    public CountryResponse search(CountrySearchCriteria criteria) {
+        Sort sortByAndOrder = criteria.getSortOrder().equalsIgnoreCase("asc") ? Sort.by(criteria.getSortBy()).ascending() : Sort.by(criteria.getSortBy()).descending();
+        Pageable pageable = PageRequest.of(criteria.getPageNumber(),criteria.getPageSize(),sortByAndOrder);
+
+        Specification<Country> spec = Specification.where(CountrySpecification.findByName(criteria.getName()));
+
+        Page<Country> countryPage = countryRepository.findAll(spec,pageable);
+        List<Country> countries = countryPage.getContent();
+        List<CountryDTO> countryDTOList = countries.stream().map(c -> modelMapper.map(c,CountryDTO.class)).toList();
+        CountryResponse countryResponse = new CountryResponse();
+        countryResponse.setCountries(countryDTOList);
+        countryResponse.setPageNumber(criteria.getPageNumber());
+        countryResponse.setPageSize(criteria.getPageSize());
+        countryResponse.setTotalElements(countryPage.getTotalElements());
+        countryResponse.setTotalPages(countryPage.getTotalPages());
+        countryResponse.setLastPage(countryPage.isLast());
+        return countryResponse;
+
+
     }
 }
 
