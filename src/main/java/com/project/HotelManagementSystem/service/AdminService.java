@@ -5,6 +5,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
 import com.project.HotelManagementSystem.dto.searchFilter.admin.AdminSearchFilter;
 import com.project.HotelManagementSystem.dto.searchFilter.admin.AdminSearchQuery;
 import com.project.HotelManagementSystem.entity.Admin;
+import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -62,7 +64,12 @@ public class AdminService {
         admin.setStatus(StatusType.ACTIVE);
         User user = userRepository.findById(adminCreateDTO.getApp_user_id())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", adminCreateDTO.getApp_user_id()));
-        user.setRoles(Set.of(roleRepository.findByRoleName("ADMIN").orElseThrow(() -> new ResourceNotFoundException("User", "id", adminCreateDTO.getApp_user_id()))));
+        Role adminRole = roleRepository.findByRoleName("ADMIN").orElseThrow(() -> new ResourceNotFoundException("Role", "id", adminCreateDTO.getApp_user_id()));
+//        user.setRoles(Set.of(roleRepository.findByRoleName("ADMIN").orElseThrow(() -> new ResourceNotFoundException("User", "id", adminCreateDTO.getApp_user_id()))));
+        if(user.getRoles() == null) {
+            user.setRoles(new HashSet<>());
+        }
+        user.getRoles().add(adminRole);
         admin.setUser(user);
         adminRepository.save(admin);
         AdminCreateDTO dto = modelMapper.map(admin, AdminCreateDTO.class);

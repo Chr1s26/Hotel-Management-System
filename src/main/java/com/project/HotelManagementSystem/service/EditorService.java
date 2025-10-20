@@ -5,6 +5,7 @@ import com.project.HotelManagementSystem.dto.editor.*;
 import com.project.HotelManagementSystem.dto.searchFilter.editor.EditorSearchFilter;
 import com.project.HotelManagementSystem.dto.searchFilter.editor.EditorSearchQuery;
 import com.project.HotelManagementSystem.entity.Editor;
+import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.entity.specification.EditorSpecification;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -50,8 +52,13 @@ public class EditorService {
         Editor editor = modelMapper.map(editorCreateDTO, Editor.class);
         User user = userRepository.findById(editorCreateDTO.getApp_user_id())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", editorCreateDTO.getApp_user_id()));
+        Role editorRole = roleRepository.findByRoleName("EDITOR").orElseThrow(() -> new ResourceNotFoundException("User", "id",editorCreateDTO.getApp_user_id()));
+        if(user.getRoles() == null) {
+            user.setRoles(new HashSet<>());
+        }
+        user.getRoles().add(editorRole);
+//        user.setRoles(Set.of(roleRepository.findByRoleName("EDITOR").orElseThrow(() -> new ResourceNotFoundException("User", "id", editorCreateDTO.getApp_user_id()))));
         editor.setUser(user);
-        user.setRoles(Set.of(roleRepository.findByRoleName("EDITOR").orElseThrow(() -> new ResourceNotFoundException("User", "id", editorCreateDTO.getApp_user_id()))));
         editor.setStatus(StatusType.ACTIVE);
         editor.setCreatedAt(LocalDateTime.now());
         editor.setCreatedBy(authService.getCurrentUser());
