@@ -1,5 +1,5 @@
 package com.project.HotelManagementSystem.dto.searchFilter.editor;
-import com.project.HotelManagementSystem.dto.SortDirection;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,6 +1,6 @@
 package com.project.HotelManagementSystem.service;
 
-import com.project.HotelManagementSystem.dto.SortDirection;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
 import com.project.HotelManagementSystem.dto.searchFilter.user.UserSearchFilter;
 import com.project.HotelManagementSystem.dto.searchFilter.user.UserSearchQuery;
 import com.project.HotelManagementSystem.dto.user.*;

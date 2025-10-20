@@ -1,15 +1,12 @@
 package com.project.HotelManagementSystem.controller;
 
-import com.project.HotelManagementSystem.config.AppConstants;
-import com.project.HotelManagementSystem.dto.MatchType;
-import com.project.HotelManagementSystem.dto.SortDirection;
+import com.project.HotelManagementSystem.dto.searchFilter.MatchType;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
 import com.project.HotelManagementSystem.dto.editor.*;
 import com.project.HotelManagementSystem.dto.searchFilter.editor.EditorSearchField;
 import com.project.HotelManagementSystem.dto.searchFilter.editor.EditorSearchFilter;
 import com.project.HotelManagementSystem.dto.searchFilter.editor.EditorSearchQuery;
 import com.project.HotelManagementSystem.entity.Editor;
-import com.project.HotelManagementSystem.entity.constants.EditorType;
-import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.service.EditorService;
 import com.project.HotelManagementSystem.service.UserService;
 import jakarta.validation.Valid;
@@ -21,7 +18,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Controller
