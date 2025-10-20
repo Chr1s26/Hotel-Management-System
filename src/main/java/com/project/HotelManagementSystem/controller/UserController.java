@@ -1,6 +1,8 @@
 package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.annotation.ActiveRole;
+import com.project.HotelManagementSystem.dto.searchFilter.MatchType;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
 import com.project.HotelManagementSystem.dto.searchFilter.user.*;
 import com.project.HotelManagementSystem.dto.user.*;
 import com.project.HotelManagementSystem.entity.User;
@@ -38,7 +40,7 @@ public class UserController {
     }
 
     @GetMapping
-    public String usersPage(Model model, @ModelAttribute("query") UserSearchQuery query) {
+    public String getAllUsers(Model model, @ModelAttribute("query") UserSearchQuery query) {
         Page<User> page = userService.searchByQuery(query);
         model.addAttribute("users", page.getContent());
         model.addAttribute("totalPages", page.getTotalPages());
@@ -47,7 +49,7 @@ public class UserController {
     }
 
     @PostMapping
-    public String getAllUsers(Model model, @ModelAttribute("query") UserSearchQuery query) {
+    public String searchUsers(Model model, @ModelAttribute("query") UserSearchQuery query) {
         Page<User> users = userService.searchByQuery(query);
         model.addAttribute("users", users.getContent());
         model.addAttribute("totalPages", users.getTotalPages());

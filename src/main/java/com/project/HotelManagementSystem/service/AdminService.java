@@ -1,6 +1,9 @@
 package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.dto.admin.*;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
+import com.project.HotelManagementSystem.dto.searchFilter.admin.AdminSearchFilter;
+import com.project.HotelManagementSystem.dto.searchFilter.admin.AdminSearchQuery;
 import com.project.HotelManagementSystem.entity.Admin;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.FileType;
@@ -177,4 +180,20 @@ public class AdminService {
         return adminResponse;
     }
 
+    public Page<Admin> searchByQuery(AdminSearchQuery query) {
+        int page = (query.getPageNumber() == null || query.getPageNumber() < 0) ? 0 : query.getPageNumber();
+        int size = (query.getPageSize() == null || query.getPageSize() < 1) ? 10 : query.getPageSize();
+        String sortBy = (query.getSortBy() == null || query.getSortBy().isBlank()) ? "createdAt" : query.getSortBy();
+        Sort.Direction dir = (query.getSortDirection() == null || query.getSortDirection() == SortDirection.DESC) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page,size, Sort.by(dir, sortBy));
+
+        Specification<Admin> spec = Specification.where(null);
+        if(query.getFilterList() != null){
+            for(AdminSearchFilter f : query.getFilterList()){
+                Specification<Admin> s = AdminSpecification.fromFilter(f);
+                if (s != null) spec = (spec == null) ? Specification.where(s) : spec.and(s);
+            }
+        }
+        return adminRepository.findAll(spec,pageable);
+    }
 }
