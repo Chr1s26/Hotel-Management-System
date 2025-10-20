@@ -36,8 +36,7 @@ public class HomePageController {
     @PostMapping("/upload")
     @ActiveRole("ADMIN")
     public String uploadWallpaper(@ModelAttribute("home") HomeRequestDTO requestDTO, Model model) {
-        HomeDTO homeDTO = homeService.upload(requestDTO.getFile());
-        model.addAttribute("home", homeDTO);
+        homeService.upload(requestDTO.getFile());
         return "redirect:/home";
     }
 }
