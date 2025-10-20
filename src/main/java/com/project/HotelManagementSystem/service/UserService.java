@@ -156,7 +156,8 @@ public class UserService {
         Specification<User> spec = Specification.where(null);
         if(query.getFilterList() != null){
             for(UserSearchFilter f : query.getFilterList()){
-                spec = spec.and(UserSpecification.fromFilter(f));
+                Specification<User> s = UserSpecification.fromFilter(f);
+                if (s != null) spec = (spec == null) ? Specification.where(s) : spec.and(s);
             }
         }
         return userRepository.findAll(spec, pageable);

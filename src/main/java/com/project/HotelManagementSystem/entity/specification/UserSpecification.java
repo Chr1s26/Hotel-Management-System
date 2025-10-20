@@ -47,7 +47,7 @@ public class UserSpecification {
                     }catch (Exception e){
                         return null;
                     }
-                        return cb.equal(root.get("statusType"), statusType);
+                        return cb.equal(root.get("status"), statusType);
                     };
                 };
     }
@@ -56,12 +56,12 @@ public class UserSpecification {
     private static Specification<User> stringSpec(String attr, UserSearchFilter f){
         return (root, q, cb) -> {
             String v = f.getValue();
-            String lv = v.toLowerCase();
             if(v == null || v.isBlank()) return null;
+            String lv = v.toLowerCase();
             return switch (f.getMatchType()){
                 case EXACT -> cb.equal(cb.lower(root.get(attr)), lv);
                 case CONTAINS -> cb.like(cb.lower(root.get(attr)), "%"+lv+"%");
-                case START_WTITH -> cb.like(cb.lower(root.get(attr)), lv+"%");
+                case START_WITH -> cb.like(cb.lower(root.get(attr)), lv+"%");
                 case ENDS_WITH -> cb.like(cb.lower(root.get(attr)), "%"+lv);
             };
         };

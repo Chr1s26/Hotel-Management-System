@@ -1,14 +1,9 @@
 package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.annotation.ActiveRole;
-import com.project.HotelManagementSystem.config.AppConstants;
-import com.project.HotelManagementSystem.dto.searchFilter.user.UserSearchQuery;
+import com.project.HotelManagementSystem.dto.searchFilter.user.*;
 import com.project.HotelManagementSystem.dto.user.*;
 import com.project.HotelManagementSystem.entity.User;
-import com.project.HotelManagementSystem.entity.constants.StatusType;
-import com.project.HotelManagementSystem.helper.StringUtil;
-import com.project.HotelManagementSystem.service.PromotionService;
-import com.project.HotelManagementSystem.service.RoleService;
 import com.project.HotelManagementSystem.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +21,37 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final PromotionService promotionService;
-    private final RoleService roleService;
+
+    @ModelAttribute("query")
+    public UserSearchQuery initQuery() {
+        UserSearchQuery query = new UserSearchQuery();
+        query.setPageNumber(0);
+        query.setPageSize(6);
+        query.setSortBy("createdAt");
+        query.setSortDirection(SortDirection.DESC);
+        query.setFilterList(List.of(
+                new UserSearchFilter(UserSearchField.NAME, MatchType.CONTAINS, ""),
+                new UserSearchFilter(UserSearchField.EMAIL, MatchType.CONTAINS, ""),
+                new UserSearchFilter(UserSearchField.STATUS, MatchType.EXACT, "")
+        ));
+        return query;
+    }
+
+    @GetMapping
+    public String usersPage(Model model, @ModelAttribute("query") UserSearchQuery query) {
+        Page<User> page = userService.searchByQuery(query);
+        model.addAttribute("users", page.getContent());
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("totalElements", page.getTotalElements());
+        return "users/listing";
+    }
 
     @PostMapping
-    public String getAllUsers(Model model, @ModelAttribute("query")UserSearchQuery query) {
+    public String getAllUsers(Model model, @ModelAttribute("query") UserSearchQuery query) {
         Page<User> users = userService.searchByQuery(query);
+        model.addAttribute("users", users.getContent());
+        model.addAttribute("totalPages", users.getTotalPages());
+        model.addAttribute("totalElements", users.getTotalElements());
         return "users/listing";
     }
 
