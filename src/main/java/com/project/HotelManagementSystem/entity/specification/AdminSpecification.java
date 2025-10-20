@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.entity.specification;
 
+import com.project.HotelManagementSystem.dto.searchFilter.admin.AdminSearchFilter;
 import com.project.HotelManagementSystem.entity.Admin;
 import com.project.HotelManagementSystem.entity.constants.AdminType;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
@@ -79,4 +80,62 @@ public class AdminSpecification {
             return cb.equal(root.get("status"), statusType);
         };
     }
+
+    public static Specification<Admin> fromFilter(AdminSearchFilter f){
+        if(f == null || f.getField() == null) return null;
+
+        return switch (f.getField()){
+            case NAME -> stringSpec("name", f);
+            case PHONE -> stringSpec("phone", f);
+            case NATIONALITY -> stringSpec("nationality", f);
+            case PASSPORT_NUMBER -> stringSpec("passportNumber",f);
+            case NATIONAL_ID_NUMBER -> stringSpec("nationalIdNumber",f);
+            case DATE_OF_BIRTH -> (root, q, cb) -> {
+                if(f.getValue() == null || f.getValue().isBlank()) return null;
+                String dobString;
+                try{
+                    dobString = f.getValue().trim();
+                }catch (Exception e){
+                    return null;
+                }
+                return cb.equal(root.get("dateOfBirth"),LocalDate.parse(dobString));
+            };
+            case ADMIN_TYPE -> (root, q, cb) -> {
+                if(f.getValue() == null && !f.getValue().isBlank()) return null;
+                AdminType adminType;
+                try{
+                    adminType = AdminType.valueOf(f.getValue());
+                }catch (Exception e){
+                    return null;
+                }
+                return cb.equal(root.get("adminType"), adminType);
+            };
+            case STATUS -> (root, q, cb) -> {
+                if(f.getValue() == null && f.getValue().isBlank())return null;
+                StatusType statusType;
+                try{
+                    statusType = StatusType.valueOf(f.getValue());
+                }catch (Exception e){
+                    return null;
+                }
+                return cb.equal(root.get("status"), statusType);
+            };
+        };
+    }
+
+
+    private static Specification<Admin> stringSpec(String attr, AdminSearchFilter f){
+        return (root, q, cb) -> {
+            String v = f.getValue();
+            if(v == null || v.isBlank()) return null;
+            String lv = v.toLowerCase();
+            return switch (f.getMatchType()){
+                case EXACT -> cb.equal(cb.lower(root.get(attr)), lv);
+                case CONTAINS -> cb.like(cb.lower(root.get(attr)), "%"+lv+"%");
+                case START_WITH -> cb.like(cb.lower(root.get(attr)), lv+"%");
+                case ENDS_WITH ->  cb.like(cb.lower(root.get(attr)), "%"+lv);
+            };
+        };
+    }
+
 }
