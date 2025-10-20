@@ -1,20 +1,23 @@
 package com.project.HotelManagementSystem.controller;
 
-import com.project.HotelManagementSystem.config.AppConstants;
+import com.project.HotelManagementSystem.dto.searchFilter.MatchType;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
 import com.project.HotelManagementSystem.dto.editor.*;
-import com.project.HotelManagementSystem.entity.constants.EditorType;
-import com.project.HotelManagementSystem.entity.constants.StatusType;
+import com.project.HotelManagementSystem.dto.searchFilter.editor.EditorSearchField;
+import com.project.HotelManagementSystem.dto.searchFilter.editor.EditorSearchFilter;
+import com.project.HotelManagementSystem.dto.searchFilter.editor.EditorSearchQuery;
+import com.project.HotelManagementSystem.entity.Editor;
 import com.project.HotelManagementSystem.service.EditorService;
 import com.project.HotelManagementSystem.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -26,41 +29,41 @@ public class EditorController {
     @Autowired
     private UserService userService;
 
-    @GetMapping
-    public String getAllEditors(Model model,
-                                @RequestParam(required = false) String name,
-                                @RequestParam(required = false) String phone,
-                                @RequestParam(required = false) LocalDate dateOfBirth,
-                                @RequestParam(required = false) String nationality,
-                                @RequestParam(required = false) String passportNumber,
-                                @RequestParam(required = false) String nationalIdNumber,
-                                @RequestParam(required = false) EditorType editorType,
-                                @RequestParam(required = false) StatusType statusType,
-                                @RequestParam(defaultValue = AppConstants.PAGE_NUMBER,required = false) Integer pageNumber,
-                                @RequestParam(defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
-                                @RequestParam(defaultValue = AppConstants.SORT_BY_Id,required = false) String sortBy,
-                                @RequestParam(defaultValue = AppConstants.SORT_ORDER,required = false) String sortOrder) {
-//        EditorResponse editorResponse = editorService.findAllEditorWithPagination(pageNumber, pageSize, sortBy, sortOrder);
+    @ModelAttribute("query")
+    public EditorSearchQuery initQuery() {
+        EditorSearchQuery query = new EditorSearchQuery();
+        query.setPageNumber(0);
+        query.setPageSize(6);
+        query.setSortBy("createdAt");
+        query.setSortDirection(SortDirection.DESC);
+        query.setFilterList(List.of(
+                new EditorSearchFilter(EditorSearchField.NAME, MatchType.CONTAINS,""),
+                new EditorSearchFilter(EditorSearchField.PHONE,MatchType.CONTAINS,""),
+                new EditorSearchFilter(EditorSearchField.DATE_OF_BIRTH,MatchType.EXACT,""),
+                new EditorSearchFilter(EditorSearchField.NATIONALITY,MatchType.CONTAINS,""),
+                new EditorSearchFilter(EditorSearchField.PASSPORT_NUMBER,MatchType.CONTAINS,""),
+                new EditorSearchFilter(EditorSearchField.NATIONAL_ID_NUMBER,MatchType.CONTAINS,""),
+                new EditorSearchFilter(EditorSearchField.EDITOR_TYPE,MatchType.EXACT,""),
+                new EditorSearchFilter(EditorSearchField.STATUS,MatchType.EXACT,"")
+        ));
+        return query;
+    }
 
-        EditorSeearchCriteria criteria = new EditorSeearchCriteria();
-        criteria.setName(name);
-        criteria.setPhone(phone);
-        criteria.setDateOfBirth(dateOfBirth);
-        criteria.setNationality(nationality);
-        criteria.setPassportNumber(passportNumber);
-        criteria.setNationalIdNumber(nationalIdNumber);
-        criteria.setEditorType(editorType);
-        criteria.setStatus(statusType);
-        criteria.setPageNumber(pageNumber);
-        criteria.setPageSize(pageSize);
-        criteria.setSortBy(sortBy);
-        criteria.setSortOrder(sortOrder);
-        EditorResponse editorResponse = this.editorService.search(criteria);
-        List<EditorDTO> editorDTOList = editorResponse.getEditors();
-        model.addAttribute("editors", editorDTOList);
-        model.addAttribute("response", editorResponse);
-        model.addAttribute("sortOrder", sortOrder);
-        model.addAttribute("sortBy", sortBy);
+    @GetMapping
+    public String getAllEditors(Model model,@ModelAttribute("query") EditorSearchQuery query) {
+        Page<Editor> page = editorService.searchByQuery(query);
+        model.addAttribute("editors", page.getContent());
+        model.addAttribute("totalPages",page.getTotalPages());
+        model.addAttribute("totalElements",page.getTotalElements());
+        return "editors/listing";
+    }
+
+    @PostMapping
+    public String searchEditors(@ModelAttribute("query") EditorSearchQuery query,Model model){
+        Page<Editor> editors = editorService.searchByQuery(query);
+        model.addAttribute("editors", editors.getContent());
+        model.addAttribute("totalPages",editors.getTotalPages());
+        model.addAttribute("totalElements",editors.getTotalElements());
         return "editors/listing";
     }
 
