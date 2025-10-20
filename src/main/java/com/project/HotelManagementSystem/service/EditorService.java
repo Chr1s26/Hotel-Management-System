@@ -1,6 +1,9 @@
 package com.project.HotelManagementSystem.service;
 
+import com.project.HotelManagementSystem.dto.SortDirection;
 import com.project.HotelManagementSystem.dto.editor.*;
+import com.project.HotelManagementSystem.dto.searchFilter.editor.EditorSearchFilter;
+import com.project.HotelManagementSystem.dto.searchFilter.editor.EditorSearchQuery;
 import com.project.HotelManagementSystem.entity.Editor;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
@@ -147,5 +150,23 @@ public class EditorService {
         editorResponse.setTotalElements(editorPage.getTotalElements());
         editorResponse.setLastPage(editorPage.isLast());
         return editorResponse;
+    }
+
+    public Page<Editor> searchByQuery(EditorSearchQuery query) {
+        int page = (query.getPageNumber() == null || query.getPageNumber() < 0) ? 0 : query.getPageNumber();
+        int size = (query.getPageSize() == null || query.getPageSize() < 1) ? 10 : query.getPageSize();
+        String sortBy = (query.getSortBy() == null || query.getSortBy().isBlank()) ? "createdAt" : query.getSortBy();
+        Sort.Direction dir = (query.getSortDirection() == null || query.getSortDirection() == SortDirection.DESC) ? Sort.Direction.ASC : Sort.Direction.DESC;
+
+        Pageable pageable = PageRequest.of(page, size,Sort.by(dir,sortBy));
+
+        Specification<Editor> spec = Specification.where(null);
+        if(query.getFilterList() != null){
+            for(EditorSearchFilter f : query.getFilterList()){
+                Specification<Editor> s = EditorSpecification.fromFilter(f);
+                if(s!=null) spec = (spec == null) ? Specification.where(s) : spec.and(s);
+            }
+        }
+        return editorRepository.findAll(spec,pageable);
     }
 }

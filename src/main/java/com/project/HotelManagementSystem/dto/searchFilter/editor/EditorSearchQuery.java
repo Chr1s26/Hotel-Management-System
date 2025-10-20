@@ -1,5 +1,4 @@
-package com.project.HotelManagementSystem.dto.searchFilter.user;
-
+package com.project.HotelManagementSystem.dto.searchFilter.editor;
 import com.project.HotelManagementSystem.dto.SortDirection;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,12 +7,14 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class UserSearchQuery {
-    private List<UserSearchFilter> filterList;
+@NoArgsConstructor
+public class EditorSearchQuery {
+    private List<EditorSearchFilter> filterList;
     private Integer pageNumber;
     private Integer pageSize;
     private String sortBy;
     private SortDirection sortDirection;
+
+
 }
