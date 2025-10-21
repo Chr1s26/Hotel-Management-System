@@ -5,6 +5,7 @@ import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescrip
 import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionResponse;
 import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionUpdateDTO;
 import com.project.HotelManagementSystem.entity.PropertyDescription;
+import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.PropertyDescriptionRepository;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,9 +28,10 @@ import java.util.stream.Collectors;
 public class PropertyDescriptionService {
 
     public final PropertyDescriptionRepository propertyDescriptionRepository;
-
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private AuthService authService;
 
     public PropertyDescriptionCreateDTO createPropertyDescription(PropertyDescriptionCreateDTO propertyDescriptionCreateDTO){
         Optional<PropertyDescription> propertyDescriptionOptional = propertyDescriptionRepository.findByDescriptionIgnoreCase(propertyDescriptionCreateDTO.getDescription());
@@ -36,6 +39,9 @@ public class PropertyDescriptionService {
             throw new DuplicateException("Description already exists.");
         }
         PropertyDescription propertyDescription = modelMapper.map(propertyDescriptionCreateDTO, PropertyDescription.class);
+        propertyDescription.setCreatedAt(LocalDateTime.now());
+        propertyDescription.setCreatedBy(authService.getCurrentUser());
+        propertyDescription.setStatus(StatusType.ACTIVE);
         propertyDescriptionRepository.save(propertyDescription);
         return modelMapper.map(propertyDescription, PropertyDescriptionCreateDTO.class);
     }
@@ -51,7 +57,9 @@ public class PropertyDescriptionService {
         updatedPropertyDescription.setNumberOfRooms(propertyDescription.getNumberOfRooms());
         updatedPropertyDescription.setOpeningDate(propertyDescription.getOpeningDate());
         updatedPropertyDescription.setRenovationDate(propertyDescription.getRenovationDate());
-
+        updatedPropertyDescription.setStatus(StatusType.ACTIVE);
+        updatedPropertyDescription.setUpdatedAt(LocalDateTime.now());
+        updatedPropertyDescription.setUpdatedBy(authService.getCurrentUser());
         PropertyDescription savedPropertyDescription = propertyDescriptionRepository.save(updatedPropertyDescription);
 
         return modelMapper.map(savedPropertyDescription, PropertyDescriptionUpdateDTO.class);

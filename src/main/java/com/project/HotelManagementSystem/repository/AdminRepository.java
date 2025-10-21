@@ -16,4 +16,5 @@ public interface AdminRepository extends JpaRepository<Admin,Long> {
     Optional<Admin> findByNameIgnoreCaseAndIdNot(String name, Long id);
     Optional<Admin> findByUser(User user);
     Page<Admin> findAll(Specification<Admin> spec, Pageable pageable);
+    boolean existsByUser_Id(Long userId);
 }

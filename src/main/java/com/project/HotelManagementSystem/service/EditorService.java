@@ -27,7 +27,6 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -50,19 +49,21 @@ public class EditorService {
             throw new DuplicateException("Editor with name " + editorCreateDTO.getName() + " already exists");
         }
         Editor editor = modelMapper.map(editorCreateDTO, Editor.class);
+
         User user = userRepository.findById(editorCreateDTO.getApp_user_id())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", editorCreateDTO.getApp_user_id()));
-        Role editorRole = roleRepository.findByRoleName("EDITOR").orElseThrow(() -> new ResourceNotFoundException("User", "id",editorCreateDTO.getApp_user_id()));
+        Role editorRole = roleRepository.findByRoleName("EDITOR")
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id",editorCreateDTO.getApp_user_id()));
+
         if(user.getRoles() == null) {
             user.setRoles(new HashSet<>());
         }
         user.getRoles().add(editorRole);
-//        user.setRoles(Set.of(roleRepository.findByRoleName("EDITOR").orElseThrow(() -> new ResourceNotFoundException("User", "id", editorCreateDTO.getApp_user_id()))));
         editor.setUser(user);
         editor.setStatus(StatusType.ACTIVE);
         editor.setCreatedAt(LocalDateTime.now());
         editor.setCreatedBy(authService.getCurrentUser());
-        Editor savedEditor = editorRepository.save(editor);
+        editor = editorRepository.save(editor);
         EditorCreateDTO dto = modelMapper.map(editor, EditorCreateDTO.class);
         dto.setApp_user_id(editor.getUser().getId());
         return dto;

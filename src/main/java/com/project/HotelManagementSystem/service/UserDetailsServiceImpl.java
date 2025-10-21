@@ -3,6 +3,7 @@ package com.project.HotelManagementSystem.service;
 import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
+import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.InvalidRoleException;
 import com.project.HotelManagementSystem.repository.RoleRepository;
 import com.project.HotelManagementSystem.repository.UserRepository;
@@ -43,12 +44,11 @@ public class UserDetailsServiceImpl implements AbstractService{
     @Override
     public User registerNewUser(User user) {
         if(userRepository.existsByNameIgnoreCase(user.getName())){
-            throw new RuntimeException("Username already exists");
+            throw new DuplicateException("Username already exists");
         }
         if(userRepository.existsByEmail(user.getEmail())){
-            throw new RuntimeException("Email already exists");
+            throw new DuplicateException("Email already exists");
         }
-
         user.setCreatedAt(LocalDateTime.now());
         user.setStatus(StatusType.ACTIVE);
         Role userRole = roleRepository.findByRoleName("NORMAL_USER").orElseThrow(() -> new InvalidRoleException("Role not found"));

@@ -5,19 +5,19 @@ import com.project.HotelManagementSystem.dto.promotion.PromotionDTO;
 import com.project.HotelManagementSystem.dto.promotion.PromotionResponse;
 import com.project.HotelManagementSystem.dto.promotion.PromotionUpdateDTO;
 import com.project.HotelManagementSystem.entity.Promotion;
+import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.PromotionRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class PromotionService {
 
     private final PromotionRepository promotionRepository;
-
+    private final AuthService authService;
     private final ModelMapper modelMapper;
 
     public PromotionCreateDTO createPromotion(PromotionCreateDTO promotionCreateDTO) {
@@ -36,6 +36,9 @@ public class PromotionService {
             throw new DuplicateException("Promotion with code " + promotionCreateDTO.getCode() + " already exists");
         }
         Promotion promotion = modelMapper.map(promotionCreateDTO, Promotion.class);
+        promotion.setStatus(StatusType.ACTIVE);
+        promotion.setCreatedAt(LocalDateTime.now());
+        promotion.setCreatedBy(authService.getCurrentUser());
         Promotion savedPromotion = this.promotionRepository.save(promotion);
         return modelMapper.map(savedPromotion,PromotionCreateDTO.class);
     }
@@ -58,6 +61,9 @@ public class PromotionService {
         promotionOp.setPointAmount(promotion.getPointAmount());
         promotionOp.setUsageLimit(promotion.getUsageLimit());
         promotionOp.setTimesUsed(promotion.getTimesUsed());
+        promotionOp.setUpdatedAt(LocalDateTime.now());
+        promotionOp.setUpdatedBy(authService.getCurrentUser());
+        promotionOp.setStatus(StatusType.ACTIVE);
         Promotion savedPromotion = this.promotionRepository.save(promotionOp);
         return modelMapper.map(savedPromotion,PromotionUpdateDTO.class);
 

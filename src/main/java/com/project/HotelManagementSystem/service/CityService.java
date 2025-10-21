@@ -2,13 +2,13 @@ package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.dto.city.*;
 import com.project.HotelManagementSystem.entity.City;
+import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.entity.specification.CitySpecification;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CityRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,7 @@ public class CityService {
 
     private final CityRepository cityRepository;
     private final ModelMapper modelMapper;
+    private final AuthService authService;
 
     public CityCreateDTO createCity(CityCreateDTO cityCreateDTO) {
         Optional<City> cityOp = this.cityRepository.findByNameIgnoreCase(cityCreateDTO.getName());
@@ -32,6 +34,9 @@ public class CityService {
             throw new DuplicateException("Another City with name " + cityCreateDTO.getName() + " already exists");
         }
         City city = modelMapper.map(cityCreateDTO, City.class);
+        city.setStatus(StatusType.ACTIVE);
+        city.setCreatedAt(LocalDateTime.now());
+        city.setCreatedBy(authService.getCurrentUser());
         City savedCity = cityRepository.save(city);
         return modelMapper.map(savedCity,CityCreateDTO.class);
     }
@@ -45,6 +50,9 @@ public class CityService {
         City city = modelMapper.map(cityUpdateDTO, City.class);
         cityOp.setName(city.getName());
         cityOp.setRegion(city.getRegion());
+        cityOp.setUpdatedAt(LocalDateTime.now());
+        cityOp.setUpdatedBy(authService.getCurrentUser());
+        cityOp.setStatus(StatusType.ACTIVE);
         City savedCity = cityRepository.save(cityOp);
         return modelMapper.map(savedCity,CityUpdateDTO.class);
     }

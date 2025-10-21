@@ -6,8 +6,6 @@ import com.project.HotelManagementSystem.dto.address.AddressCreateDTO;
 import com.project.HotelManagementSystem.dto.address.AddressDTO;
 import com.project.HotelManagementSystem.dto.address.AddressResponse;
 import com.project.HotelManagementSystem.dto.address.AddressUpdateDTO;
-import com.project.HotelManagementSystem.entity.Address;
-import com.project.HotelManagementSystem.entity.City;
 import com.project.HotelManagementSystem.service.AddressService;
 import com.project.HotelManagementSystem.service.CityService;
 import jakarta.validation.Valid;

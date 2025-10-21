@@ -6,7 +6,6 @@ import com.project.HotelManagementSystem.dto.room.RoomCreateDTO;
 import com.project.HotelManagementSystem.dto.room.RoomDTO;
 import com.project.HotelManagementSystem.dto.room.RoomResponse;
 import com.project.HotelManagementSystem.dto.room.RoomUpdateDTO;
-import com.project.HotelManagementSystem.entity.Room;
 import com.project.HotelManagementSystem.service.AmenitiesService;
 import com.project.HotelManagementSystem.service.HotelService;
 import com.project.HotelManagementSystem.service.PromotionService;

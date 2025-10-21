@@ -6,26 +6,24 @@
     import com.project.HotelManagementSystem.dto.hotel.HotelUpdateDTO;
     import com.project.HotelManagementSystem.entity.Hotel;
     import com.project.HotelManagementSystem.entity.constants.FileType;
+    import com.project.HotelManagementSystem.entity.constants.StatusType;
     import com.project.HotelManagementSystem.exception.DuplicateException;
     import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
-    import com.project.HotelManagementSystem.repository.AmenitiesRepository;
     import com.project.HotelManagementSystem.repository.HotelRepository;
     import com.project.HotelManagementSystem.repository.PolicyRepository;
     import com.project.HotelManagementSystem.repository.PromotionRepository;
     import lombok.RequiredArgsConstructor;
     import org.modelmapper.ModelMapper;
-    import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.data.domain.Page;
     import org.springframework.data.domain.PageRequest;
     import org.springframework.data.domain.Pageable;
     import org.springframework.data.domain.Sort;
     import org.springframework.stereotype.Service;
 
-    import java.util.ArrayList;
+    import java.time.LocalDateTime;
     import java.util.HashSet;
     import java.util.List;
     import java.util.Optional;
-    import java.util.stream.Collectors;
 
     @Service
     @RequiredArgsConstructor
@@ -36,6 +34,7 @@
         private final PromotionRepository promotionRepository;
         private final ModelMapper modelMapper;
         private final FileService fileService;
+        private final AuthService authService;
 
         public HotelCreateDTO createHotel(HotelCreateDTO hotelCreateDTO) {
             Optional<Hotel> hotelOp = hotelRepository.findHotelByNameAndCoordinates(hotelCreateDTO.getName(),hotelCreateDTO.getAddress().getLatitude(), hotelCreateDTO.getAddress().getLongitude());
@@ -45,6 +44,9 @@
             Hotel hotel = modelMapper.map(hotelCreateDTO, Hotel.class);
             hotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelCreateDTO.getPolicyIds())));
             hotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelCreateDTO.getPromotionIds())));
+            hotel.setCreatedAt(LocalDateTime.now());
+            hotel.setCreatedBy(authService.getCurrentUser());
+            hotel.setStatus(StatusType.ACTIVE);
             Hotel savedHotel = hotelRepository.save(hotel);
             fileService.handleFileUpload(hotelCreateDTO.getFile(), FileType.ADMIN,savedHotel.getId(),"s3");
             return modelMapper.map(savedHotel,HotelCreateDTO.class);
@@ -67,6 +69,9 @@
             optionalHotel.setPropertyDescription(hotel.getPropertyDescription());
             optionalHotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelUpdateDTO.getPolicyIds())));
             optionalHotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelUpdateDTO.getPromotionIds())));
+            optionalHotel.setUpdatedAt(LocalDateTime.now());
+            optionalHotel.setUpdatedBy(authService.getCurrentUser());
+            optionalHotel.setStatus(StatusType.ACTIVE);
             Hotel savedHotel = this.hotelRepository.save(optionalHotel);
             fileService.handleFileUpload(hotelUpdateDTO.getFile(), FileType.ADMIN,savedHotel.getId(),"s3");
             return modelMapper.map(savedHotel,HotelUpdateDTO.class);

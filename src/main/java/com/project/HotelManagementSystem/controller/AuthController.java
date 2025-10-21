@@ -1,7 +1,5 @@
 package com.project.HotelManagementSystem.controller;
 
-import com.project.HotelManagementSystem.entity.Admin;
-import com.project.HotelManagementSystem.entity.Editor;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.service.AbstractService;
 import lombok.RequiredArgsConstructor;

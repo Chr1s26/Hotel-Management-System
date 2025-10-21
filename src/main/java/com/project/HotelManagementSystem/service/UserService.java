@@ -53,12 +53,7 @@ public class UserService {
         user.setCreatedBy(authService.getCurrentUser());
         Role userRole = roleRepository.findByRoleName("NORMAL_USER").orElseThrow(() -> new InvalidRoleException("Role not found"));
         user.setRoles(Collections.singleton(userRole));
-
-//        List<Role> roles = roleRepository.findAllById(userCreateDTO.getRolesId());
-//        user.setRoles(new HashSet<>(roles));
-
         this.userRepository.save(user);
-//        fileService.handleFileUpload(userCreateDTO.getFile(), FileType.USER,user.getId(),"s3");
         return modelMapper.map(user, UserCreateDTO.class);
     }
 
@@ -78,11 +73,8 @@ public class UserService {
         updatedUser.setUpdatedBy(authService.getCurrentUser());
         Role userRole = roleRepository.findByRoleName("NORMAL_USER").orElseThrow(() -> new InvalidRoleException("Role not found"));
         updatedUser.setRoles(Collections.singleton(userRole));
-//        List<Role> roles = roleRepository.findAllById(userUpdateDTO.getRolesId());
-//        updatedUser.setRoles(new HashSet<>(roles));
-
         User savedUser = userRepository.save(updatedUser);
-//        fileService.handleFileUpload(userUpdateDTO.getFile(), FileType.USER,user.getId(),"s3");
+
         return modelMapper.map(savedUser, UserUpdateDTO.class);
     }
 

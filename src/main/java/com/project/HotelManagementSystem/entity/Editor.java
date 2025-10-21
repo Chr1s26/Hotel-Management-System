@@ -32,6 +32,6 @@ public class Editor extends UserMasterData{
     private Hotel hotel;
 
     @OneToOne
-    @JoinColumn(name = "app_user_id")
+    @JoinColumn(name = "app_user_id", unique = true)
     private User user;
 }

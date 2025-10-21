@@ -1,11 +1,11 @@
 package com.project.HotelManagementSystem.service;
 
-
 import com.project.HotelManagementSystem.dto.address.AddressCreateDTO;
 import com.project.HotelManagementSystem.dto.address.AddressDTO;
 import com.project.HotelManagementSystem.dto.address.AddressResponse;
 import com.project.HotelManagementSystem.dto.address.AddressUpdateDTO;
 import com.project.HotelManagementSystem.entity.Address;
+import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.AddressRepository;
@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +27,8 @@ import java.util.Optional;
 public class AddressService {
 
     private final AddressRepository addressRepository;
-
+    @Autowired
+    private AuthService authService;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -36,6 +38,9 @@ public class AddressService {
             throw new DuplicateException("Another address already with same latitude and longitude already exists");
         }
         Address address = modelMapper.map(addressCreateDTO, Address.class);
+        address.setStatus(StatusType.ACTIVE);
+        address.setCreatedAt(LocalDateTime.now());
+        address.setCreatedBy(authService.getCurrentUser());
         Address savedAddress = addressRepository.save(address);
         return modelMapper.map(savedAddress,AddressCreateDTO.class);
     }
@@ -54,6 +59,9 @@ public class AddressService {
         updatedAddressOp.setLongitude(address.getLongitude());
         updatedAddressOp.setZipCode(address.getZipCode());
         updatedAddressOp.setCity(address.getCity());
+        updatedAddressOp.setStatus(StatusType.ACTIVE);
+        updatedAddressOp.setUpdatedAt(LocalDateTime.now());
+        updatedAddressOp.setUpdatedBy(authService.getCurrentUser());
         Address savedAddress = addressRepository.save(updatedAddressOp);
         return modelMapper.map(savedAddress,AddressUpdateDTO.class);
     }

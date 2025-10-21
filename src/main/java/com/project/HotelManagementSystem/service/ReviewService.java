@@ -5,6 +5,7 @@ import com.project.HotelManagementSystem.dto.review.ReviewDTO;
 import com.project.HotelManagementSystem.dto.review.ReviewResponse;
 import com.project.HotelManagementSystem.dto.review.ReviewUpdateDTO;
 import com.project.HotelManagementSystem.entity.Review;
+import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +15,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,9 +25,13 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final ModelMapper modelMapper;
+    private final AuthService authService;
 
     public ReviewCreateDTO createReview(ReviewCreateDTO reviewCreateDTO) {
         Review review = modelMapper.map(reviewCreateDTO, Review.class);
+        review.setStatus(StatusType.ACTIVE);
+        review.setCreatedAt(LocalDateTime.now());
+        review.setCreatedBy(authService.getCurrentUser());
         reviewRepository.save(review);
         return modelMapper.map(review, ReviewCreateDTO.class);
     }
@@ -38,6 +44,9 @@ public class ReviewService {
         reviewOp.setReviewDate(review.getReviewDate());
         reviewOp.setHotel(review.getHotel());
         reviewOp.setCustomer(review.getCustomer());
+        reviewOp.setUpdatedAt(LocalDateTime.now());
+        reviewOp.setUpdatedBy(authService.getCurrentUser());
+        reviewOp.setStatus(StatusType.ACTIVE);
         Review savedReview = reviewRepository.save(reviewOp);
         return modelMapper.map(savedReview,ReviewUpdateDTO.class);
     }

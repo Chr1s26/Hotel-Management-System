@@ -16,6 +16,6 @@ public interface EditorRepository extends JpaRepository<Editor,Long> {
     Optional<Editor> findByNameIgnoreCaseAndIdNot(String name, Long id);
     Optional<Editor> findEditorByUser(User user);
     Editor findByUser(User user);
-
+    boolean existsByUser_Id(Long userId);
     Page<Editor> findAll(Specification<Editor> spec, Pageable pageable);
 }

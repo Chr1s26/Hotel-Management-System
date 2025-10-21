@@ -6,7 +6,6 @@ import com.project.HotelManagementSystem.dto.promotion.PromotionCreateDTO;
 import com.project.HotelManagementSystem.dto.promotion.PromotionDTO;
 import com.project.HotelManagementSystem.dto.promotion.PromotionResponse;
 import com.project.HotelManagementSystem.dto.promotion.PromotionUpdateDTO;
-import com.project.HotelManagementSystem.entity.Promotion;
 import com.project.HotelManagementSystem.service.PromotionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

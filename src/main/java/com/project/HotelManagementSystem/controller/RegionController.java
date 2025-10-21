@@ -3,8 +3,6 @@ package com.project.HotelManagementSystem.controller;
 import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.region.*;
-import com.project.HotelManagementSystem.entity.Country;
-import com.project.HotelManagementSystem.entity.Region;
 import com.project.HotelManagementSystem.service.CountryService;
 import com.project.HotelManagementSystem.service.RegionService;
 import jakarta.validation.Valid;
@@ -32,7 +30,6 @@ public class RegionController {
                                 @RequestParam(defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
                                 @RequestParam(defaultValue = AppConstants.SORT_BY_Id) String sortBy,
                                 @RequestParam(defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
-//        RegionResponse regionResponse = regionService.findAllRegionWithPagination(pageNumber, pageSize, sortBy, sortOrder);
         RegionSearchCriteria criteria = new RegionSearchCriteria();
         criteria.setName(name);
         criteria.setCountryName(countryName);

@@ -5,18 +5,19 @@ import com.project.HotelManagementSystem.dto.policy.PolicyDTO;
 import com.project.HotelManagementSystem.dto.policy.PolicyResponse;
 import com.project.HotelManagementSystem.dto.policy.PolicyUpdateDTO;
 import com.project.HotelManagementSystem.entity.Policy;
+import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.PolicyRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ public class PolicyService {
 
     private final PolicyRepository policyRepository;
     private final ModelMapper modelMapper;
+    private final AuthService authService;
 
     public PolicyCreateDTO createPolicy(PolicyCreateDTO policyCreateDTO) {
         Optional<Policy> optionalPolicy = this.policyRepository.findByTitleAndDescription(policyCreateDTO.getTitle(), policyCreateDTO.getDescription());
@@ -34,6 +36,9 @@ public class PolicyService {
             throw new DuplicateException("Policy with title " + policyCreateDTO.getTitle() + " And same description already exists");
         }
         Policy policy = modelMapper.map(policyCreateDTO, Policy.class);
+        policy.setCreatedAt(LocalDateTime.now());
+        policy.setStatus(StatusType.ACTIVE);
+        policy.setCreatedBy(authService.getCurrentUser());
         Policy savedPolicy = this.policyRepository.save(policy);
         return modelMapper.map(savedPolicy,PolicyCreateDTO.class);
     }
@@ -48,6 +53,9 @@ public class PolicyService {
         policyOp.setTitle(policy.getTitle());
         policyOp.setDescription(policy.getDescription());
         policyOp.setApplicableTo(policy.getApplicableTo());
+        policyOp.setStatus(StatusType.ACTIVE);
+        policyOp.setUpdatedAt(LocalDateTime.now());
+        policyOp.setUpdatedBy(authService.getCurrentUser());
         Policy savedPolicy = policyRepository.save(policyOp);
         return modelMapper.map(savedPolicy,PolicyUpdateDTO.class);
     }
