@@ -41,14 +41,21 @@ public class FileService {
     @Autowired
     private AuthService authService;
 
-    public String getFileName(FileType fileType,Long fileId) {
-        List<FileStorage> fileStorageList = fileStorageRepository.findByFileTypeAndFileId(fileType, fileId);
-        if (fileStorageList.isEmpty()) {
-            return "/images/default-profile.png";
-        }
-        FileStorage fileStorage = fileStorageList.get(0);
-        return getFileUrl(fileStorageList.get(0).getKey(),fileStorage.getServiceName());
+    public String getFileName(FileType fileType, Long fileId) {
+        return fileStorageRepository
+                .findTopByFileTypeAndFileIdOrderByCreatedAtDesc(fileType, fileId)
+                .map(fs -> getFileUrl(fs.getKey(), fs.getServiceName()))
+                .orElse("/images/default-profile.png");
     }
+
+//    public String getFileName(FileType fileType,Long fileId) {
+//        List<FileStorage> fileStorageList = fileStorageRepository.findByFileTypeAndFileId(fileType, fileId);
+//        if (fileStorageList.isEmpty()) {
+//            return "/images/default-profile.png";
+//        }
+//        FileStorage fileStorage = fileStorageList.get(0);
+//        return getFileUrl(fileStorageList.get(0).getKey(),fileStorage.getServiceName());
+//    }
 
     public String getFileUrl(String fileKey,String serviceName){
         if("local".equals(serviceName)){

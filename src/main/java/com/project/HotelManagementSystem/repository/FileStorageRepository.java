@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.repository;
 
+import aj.org.objectweb.asm.commons.Remapper;
 import com.project.HotelManagementSystem.entity.FileStorage;
 import com.project.HotelManagementSystem.entity.constants.FileType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +13,5 @@ import java.util.Optional;
 public interface FileStorageRepository extends JpaRepository<FileStorage, Long> {
     List<FileStorage> findByFileTypeAndFileId(FileType fileType, Long fileId);
 
-//    Optional<FileStorage> findTopByFileTypeAndFileIdOrderByCreatedAtDesc(FileType fileType, Long fileId);
-
+    Optional<FileStorage> findTopByFileTypeAndFileIdOrderByCreatedAtDesc(FileType fileType, Long fileId);
 }
