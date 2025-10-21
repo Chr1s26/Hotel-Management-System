@@ -2,8 +2,8 @@ package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.dto.admin.AdminDTO;
 import com.project.HotelManagementSystem.dto.editor.EditorDTO;
+import com.project.HotelManagementSystem.dto.profile.ProfileRequest;
 import com.project.HotelManagementSystem.dto.profile.ProfileResponse;
-import com.project.HotelManagementSystem.dto.user.UserDTO;
 import com.project.HotelManagementSystem.entity.Admin;
 import com.project.HotelManagementSystem.entity.Editor;
 import com.project.HotelManagementSystem.entity.User;
@@ -14,7 +14,6 @@ import com.project.HotelManagementSystem.repository.EditorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -35,6 +34,7 @@ public class ProfileService {
     public ProfileResponse<Object> getProfile() {
         User user = authService.getCurrentUser();
         String role = activeRoleService.getActiveRole();
+
         ProfileResponse<Object> profileResponse = new ProfileResponse<>();
 
         if(role.equals("ADMIN")) {
@@ -45,12 +45,23 @@ public class ProfileService {
             Editor editor = editorRepository.findEditorByUser(user).orElseThrow(() -> new ResourceNotFoundException("User","id",user.getId()));
             EditorDTO editorDTO = getEditorDTO(editor);
             profileResponse.setObject(editorDTO);
+        }else{
+            return null;
         }
         return profileResponse;
     }
 
-    public void uploadProfile(MultipartFile file) {
-        this.fileService.handleFileUpload(file,FileType.ADMIN,1L, "S3");
+    public void uploadProfile(ProfileRequest profileRequest) {
+        User user = authService.getCurrentUser();
+        MultipartFile file = profileRequest.getFile();
+        String role = activeRoleService.getActiveRole();
+        if(role.equals("ADMIN")) {
+            Admin admin = adminRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("User","id",user.getId()));
+            this.fileService.handleFileUpload(file,FileType.ADMIN,admin.getId(), "S3");
+        }else if(role.equals("EDITOR")) {
+            Editor editor = editorRepository.findEditorByUser(user).orElseThrow(() -> new ResourceNotFoundException("User","id",user.getId()));
+            this.fileService.handleFileUpload(file,FileType.EDITOR,editor.getId(), "S3");
+        }
     }
 
     public AdminDTO getAdminDTO(Admin admin) {
@@ -87,13 +98,4 @@ public class ProfileService {
         editorDTO.setProfileUrl(profileUrl);
         return editorDTO;
     }
-//
-//    public UserDTO getUserDTO(User user) {
-//        UserDTO userDTO = new UserDTO();
-//        userDTO.setId(user.getId());
-//        userDTO.setName(user.getName());
-//        userDTO.setEmail(user.getEmail());
-//        userDTO.setRoles(user.getRoles());
-//        return userDTO;
-//    }
 }

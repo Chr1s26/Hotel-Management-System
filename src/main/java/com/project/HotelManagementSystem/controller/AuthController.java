@@ -33,41 +33,4 @@ public class AuthController {
         return "redirect:/login?registered";
     }
 
-    @GetMapping("/register/admin")
-    public String showAdminRegisterForm(Model model) {
-        Admin admin = new Admin();
-        admin.setUser(new User());
-        model.addAttribute("admin", admin);
-        return "admin_register";
-    }
-
-    @PostMapping("/register/admin")
-    public String processAdminRegistration(@ModelAttribute("admin") Admin admin, Model model) {
-        try {
-
-            return "redirect:/login?registered";
-        } catch (Exception e) {
-            model.addAttribute("registrationError", e.getMessage());
-            return "admin_register";
-        }
-    }
-
-    @GetMapping("/register/editor")
-    public String showEditorRegisterForm(Model model) {
-        Editor editor = new Editor();
-        editor.setUser(new User());
-        model.addAttribute("editor", editor);
-        return "editor_register";
-    }
-
-    @PostMapping("/register/editor")
-    public String processEditorRegistration(@ModelAttribute("editor") Editor editor, Model model) {
-        try {
-
-            return "redirect:/login?registered";
-        } catch (Exception e) {
-            model.addAttribute("registrationError", e.getMessage());
-            return "editor_register";
-        }
-    }
 }

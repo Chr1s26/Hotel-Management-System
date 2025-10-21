@@ -1,19 +1,14 @@
 package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.annotation.ActiveRole;
-import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.admin.*;
 import com.project.HotelManagementSystem.dto.searchFilter.MatchType;
 import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
 import com.project.HotelManagementSystem.dto.searchFilter.admin.AdminSearchField;
 import com.project.HotelManagementSystem.dto.searchFilter.admin.AdminSearchFilter;
 import com.project.HotelManagementSystem.dto.searchFilter.admin.AdminSearchQuery;
-import com.project.HotelManagementSystem.dto.searchFilter.user.UserSearchField;
 import com.project.HotelManagementSystem.entity.Admin;
-import com.project.HotelManagementSystem.entity.constants.AdminType;
-import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.service.AdminService;
-import com.project.HotelManagementSystem.service.AuthService;
 import com.project.HotelManagementSystem.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +18,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
 import java.util.List;
 
 @Controller

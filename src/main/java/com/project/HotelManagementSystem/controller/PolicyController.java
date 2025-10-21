@@ -25,7 +25,7 @@ public class PolicyController {
 
     private final PolicyService policyService;
 
-    @GetMapping()
+    @GetMapping
     public String getAllPolicies(Model model,
                                  @RequestParam(defaultValue = AppConstants.PAGE_NUMBER,required = false) Integer pageNumber,
                                  @RequestParam(defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,

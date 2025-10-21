@@ -1,21 +1,24 @@
 package com.project.HotelManagementSystem.controller;
 
-import com.project.HotelManagementSystem.entity.User;
-import com.project.HotelManagementSystem.service.AdminService;
+import com.project.HotelManagementSystem.annotation.ActiveRole;
+import com.project.HotelManagementSystem.dto.admin.AdminDTO;
+import com.project.HotelManagementSystem.dto.editor.EditorDTO;
+import com.project.HotelManagementSystem.dto.profile.ProfileRequest;
+import com.project.HotelManagementSystem.dto.profile.ProfileResponse;
 import com.project.HotelManagementSystem.service.AuthService;
 import com.project.HotelManagementSystem.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping
+@RequestMapping("/profiles")
 public class ProfileController {
 
     @Autowired
@@ -23,15 +26,37 @@ public class ProfileController {
     @Autowired
     private ProfileService profileService;
 
-    @PostMapping("/profiles")
+    @GetMapping
     public String getProfile(Model model) {
+        ProfileResponse<Object> profileResponse = profileService.getProfile();
+        if(profileResponse != null) {
+            Object profile = profileResponse.getObject();
+            if (profile instanceof AdminDTO adminDTO) {
+                model.addAttribute("userType", "ADMIN");
+                model.addAttribute("profile", adminDTO);
+                if (adminDTO.getProfileUrl() == null) {
+                    adminDTO.setProfileUrl("/images/default-profile.png");
+                }
+            } else if (profile instanceof EditorDTO editorDTO) {
+                model.addAttribute("userType", "EDITOR");
+                model.addAttribute("profile", editorDTO);
+                if (editorDTO.getProfileUrl() == null) {
+                    editorDTO.setProfileUrl("/images/default-profile.png");
+                }
+            }
+        }
         model.addAttribute("user",authService.getCurrentUser());
-        model.addAttribute("userType",profileService.getProfile());
+        model.addAttribute("request", new ProfileRequest());
         return "profiles/userProfile";
     }
 
-//    @PostMapping("/upload")
-//    public String uploadProfile(MultipartFile file, Model model) {
-//
-//    }
+    @PostMapping("/updatePicture")
+    @ActiveRole({"ADMIN","EDITOR"})
+    public String updateProfilePicture(@ModelAttribute("request") ProfileRequest profileRequest) {
+        profileService.uploadProfile(profileRequest);
+        return "redirect:/profiles";
+    }
+
+
+
 }
