@@ -28,7 +28,4 @@ public class AdminDTO {
     private LocalDateTime updatedAt;
     private User createdBy;
     private User updatedBy;
-
-    private String profileUrl;
-    private String contentType;
 }

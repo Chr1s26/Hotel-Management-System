@@ -89,13 +89,13 @@
 <div th:replace="fragments/navbar :: navbar"></div>
 <div class="profile-container">
     <div class="profile-header">
-        <img th:src="@{${profile.profileUrl}}" alt="Profile Picture">
+        <img th:src="@{${profilePhoto.profileUrl}}" alt="Profile Picture">
         <h2 th:text="${profile.name}"></h2>
         <p th:text="${user.email}"></p>
         <p th:text="${userType} + ' Account'"></p>
 
         <form th:action="@{/profiles/updatePicture}" th:object="${request}" method="post" enctype="multipart/form-data" class="upload-form">
-            <input type="file" id="fileInput" th:field="*{file}" accept="image/*">
+            <input type="file" id="fileInput" th:field="*{file}"  accept="image/*">
             <label for="fileInput">Change Profile Picture</label>
             <button type="submit" class="btn-update">Upload</button>
         </form>

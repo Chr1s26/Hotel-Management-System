@@ -137,22 +137,22 @@ public class AdminService {
         return adminList.stream().map(admin -> modelMapper.map(admin, AdminDTO.class)).toList();
     }
 
-    public AdminDTO getUrl(AdminDTO adminDTO) {
-        adminDTO.setProfileUrl(fileService.getFileName(FileType.ADMIN,adminDTO.getId()));
-        adminDTO.setContentType(multipartFile.getContentType());
-        return adminDTO;
-    }
+//    public AdminDTO getUrl(AdminDTO adminDTO) {
+//        adminDTO.setProfileUrl(fileService.getFileName(FileType.ADMIN,adminDTO.getId()));
+//        adminDTO.setContentType(multipartFile.getContentType());
+//        return adminDTO;
+//    }
 
-    public AdminDTO upload(MultipartFile file) {
-        multipartFile = file;
-        User user = userService.findById(authService.getCurrentUser().getId());
-        Admin admin = adminRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("User","id",user.getId()));
-        fileService.handleFileUpload(multipartFile,FileType.ADMIN,admin.getId(),"s3");
-        AdminDTO adminDTO = new AdminDTO();
-        adminDTO.setProfileUrl(fileService.getFileName(FileType.ADMIN,admin.getId()));
-        adminDTO.setContentType(multipartFile.getContentType());
-        return adminDTO;
-    }
+//    public AdminDTO upload(MultipartFile file) {
+//        multipartFile = file;
+//        User user = userService.findById(authService.getCurrentUser().getId());
+//        Admin admin = adminRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("User","id",user.getId()));
+//        fileService.handleFileUpload(multipartFile,FileType.ADMIN,admin.getId(),"s3");
+//        AdminDTO adminDTO = new AdminDTO();
+//        adminDTO.setProfileUrl(fileService.getFileName(FileType.ADMIN,admin.getId()));
+//        adminDTO.setContentType(multipartFile.getContentType());
+//        return adminDTO;
+//    }
 
     public AdminResponse search(AdminSearchCriteria adminSearchCriteria) {
         Sort sortByAndSortOrder = adminSearchCriteria.getSortOrder().equalsIgnoreCase("asc") ? Sort.by(adminSearchCriteria.getSortBy()).ascending() : Sort.by(adminSearchCriteria.getSortBy()).descending();
