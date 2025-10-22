@@ -5,10 +5,14 @@
     import com.project.HotelManagementSystem.dto.hotel.HotelResponse;
     import com.project.HotelManagementSystem.dto.hotel.HotelUpdateDTO;
     import com.project.HotelManagementSystem.entity.Hotel;
+    import com.project.HotelManagementSystem.entity.HotelAttachment;
     import com.project.HotelManagementSystem.entity.constants.FileType;
+    import com.project.HotelManagementSystem.entity.constants.HotelMediaType;
+    import com.project.HotelManagementSystem.entity.constants.StatusType;
     import com.project.HotelManagementSystem.exception.DuplicateException;
     import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
     import com.project.HotelManagementSystem.repository.AmenitiesRepository;
+    import com.project.HotelManagementSystem.repository.HotelAttachmentRepository;
     import com.project.HotelManagementSystem.repository.HotelRepository;
     import com.project.HotelManagementSystem.repository.PolicyRepository;
     import com.project.HotelManagementSystem.repository.PromotionRepository;
@@ -20,7 +24,9 @@
     import org.springframework.data.domain.Pageable;
     import org.springframework.data.domain.Sort;
     import org.springframework.stereotype.Service;
+    import org.springframework.web.multipart.MultipartFile;
 
+    import java.time.LocalDateTime;
     import java.util.ArrayList;
     import java.util.HashSet;
     import java.util.List;
@@ -36,6 +42,8 @@
         private final PromotionRepository promotionRepository;
         private final ModelMapper modelMapper;
         private final FileService fileService;
+        private final AuthService authService;
+        private final HotelAttachmentRepository hotelAttachmentRepository;
 
         public HotelCreateDTO createHotel(HotelCreateDTO hotelCreateDTO) {
             Optional<Hotel> hotelOp = hotelRepository.findHotelByNameAndCoordinates(hotelCreateDTO.getName(),hotelCreateDTO.getAddress().getLatitude(), hotelCreateDTO.getAddress().getLongitude());
@@ -70,6 +78,18 @@
             Hotel savedHotel = this.hotelRepository.save(optionalHotel);
             fileService.handleFileUpload(hotelUpdateDTO.getFile(), FileType.ADMIN,savedHotel.getId(),"s3");
             return modelMapper.map(savedHotel,HotelUpdateDTO.class);
+        }
+
+        public void addAttachment(MultipartFile multipartFile, Long hotelId, HotelMediaType hotelMediaType){
+            Hotel optionalHotel = this.hotelRepository.findById(hotelId).orElseThrow(() -> new ResourceNotFoundException("Hotel", "id", hotelId));
+            HotelAttachment hotelAttachment = new HotelAttachment();
+            hotelAttachment.setHotel(optionalHotel);
+            hotelAttachment.setHotelMediaType(hotelMediaType);
+            hotelAttachment.setStatus(StatusType.ACTIVE);
+            hotelAttachment.setCreatedAt(LocalDateTime.now());
+            hotelAttachment.setCreatedBy(authService.getCurrentUser());
+            hotelAttachment = hotelAttachmentRepository.save(hotelAttachment);
+            fileService.handleFileUpload(multipartFile, FileType.HOTEL_ATTACHMENT, hotelAttachment.getId(), "s3");
         }
 
         public void deleteHotel(Long id) {

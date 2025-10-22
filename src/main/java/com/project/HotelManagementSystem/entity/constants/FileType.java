@@ -4,5 +4,6 @@ public enum FileType {
     USER,
     ADMIN,
     EDITOR,
-    HOME
+    HOME,
+    HOTEL_ATTACHMENT
 }
