@@ -54,7 +54,7 @@
             hotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelCreateDTO.getPolicyIds())));
             hotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelCreateDTO.getPromotionIds())));
             Hotel savedHotel = hotelRepository.save(hotel);
-            fileService.handleFileUpload(hotelCreateDTO.getFile(), FileType.ADMIN,savedHotel.getId(),"s3");
+            this.addAttachment(hotelCreateDTO.getFile(), savedHotel.getId(), hotelCreateDTO.getHotelMediaType());
             return modelMapper.map(savedHotel,HotelCreateDTO.class);
         }
 
@@ -76,7 +76,7 @@
             optionalHotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelUpdateDTO.getPolicyIds())));
             optionalHotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelUpdateDTO.getPromotionIds())));
             Hotel savedHotel = this.hotelRepository.save(optionalHotel);
-            fileService.handleFileUpload(hotelUpdateDTO.getFile(), FileType.ADMIN,savedHotel.getId(),"s3");
+            this.addAttachment(hotelUpdateDTO.getFile(), savedHotel.getId(),hotelUpdateDTO.getHotelMediaType());
             return modelMapper.map(savedHotel,HotelUpdateDTO.class);
         }
 

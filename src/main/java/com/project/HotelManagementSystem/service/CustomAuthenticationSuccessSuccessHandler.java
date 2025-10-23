@@ -39,6 +39,7 @@ public class CustomAuthenticationSuccessSuccessHandler implements Authentication
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
         HttpSession session = request.getSession();
 
+
         if(roles.size() > 1){
             request.getSession().setAttribute("userRoles", new ArrayList<>(roles));
             response.sendRedirect("/select-role");

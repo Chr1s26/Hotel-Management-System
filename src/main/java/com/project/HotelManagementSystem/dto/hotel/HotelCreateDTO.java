@@ -2,6 +2,7 @@ package com.project.HotelManagementSystem.dto.hotel;
 
 import com.project.HotelManagementSystem.entity.Address;
 import com.project.HotelManagementSystem.entity.PropertyDescription;
+import com.project.HotelManagementSystem.entity.constants.HotelMediaType;
 import com.project.HotelManagementSystem.entity.constants.HotelType;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -42,4 +43,6 @@ public class HotelCreateDTO {
     @Size(min = 1, message = "At least one policy must be selected")
     private Set<@NotNull(message = "Policy ID cannot be null") Long> policyIds = new HashSet<>();
     private MultipartFile file;
+    @NotNull(message = "Media type must be selected")
+    private HotelMediaType hotelMediaType;
 }

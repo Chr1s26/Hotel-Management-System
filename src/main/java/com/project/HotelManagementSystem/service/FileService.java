@@ -106,8 +106,6 @@ public class FileService {
             fileStorage.setCreatedBy(user);
             fileStorage.setUpdatedBy(user);
             FileStorage fileStorage1 = fileStorageRepository.save(fileStorage);
-            System.out.println(fileStorage1.getFileId());
-            System.out.println(fileStorage1.getFileType());
         } catch (IOException e) {
             throw new RuntimeException("Filed to upload file : "+e.getMessage());
         }
