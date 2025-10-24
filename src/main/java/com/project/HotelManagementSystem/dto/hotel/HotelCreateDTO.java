@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -42,7 +43,7 @@ public class HotelCreateDTO {
     private Set<@NotNull(message = "Promotion ID cannot be null") Long> promotionIds = new HashSet<>();
     @Size(min = 1, message = "At least one policy must be selected")
     private Set<@NotNull(message = "Policy ID cannot be null") Long> policyIds = new HashSet<>();
-    private MultipartFile file;
+    private List<MultipartFile> files;
     @NotNull(message = "Media type must be selected")
     private HotelMediaType hotelMediaType;
 }

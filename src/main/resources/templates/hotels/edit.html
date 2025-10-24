@@ -198,7 +198,7 @@
     </div>
     <div class="mb-3">
         <label class="form-label">File Upload</label>
-        <input type="file" th:field="*{file}">
+        <input type="file" th:field="*{files}" multiple/>
     </div>
     <button type="submit" class="btn btn-primary">Update Hotel</button>
     <a class="btn btn-secondary" th:href="@{/hotels}">Cancel</a>

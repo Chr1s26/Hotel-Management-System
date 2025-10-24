@@ -54,7 +54,7 @@
             hotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelCreateDTO.getPolicyIds())));
             hotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelCreateDTO.getPromotionIds())));
             Hotel savedHotel = hotelRepository.save(hotel);
-            this.addAttachment(hotelCreateDTO.getFile(), savedHotel.getId(), hotelCreateDTO.getHotelMediaType());
+            this.addAttachment(hotelCreateDTO.getFiles(), savedHotel.getId(), hotelCreateDTO.getHotelMediaType());
             return modelMapper.map(savedHotel,HotelCreateDTO.class);
         }
 
@@ -76,20 +76,25 @@
             optionalHotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelUpdateDTO.getPolicyIds())));
             optionalHotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelUpdateDTO.getPromotionIds())));
             Hotel savedHotel = this.hotelRepository.save(optionalHotel);
-            this.addAttachment(hotelUpdateDTO.getFile(), savedHotel.getId(),hotelUpdateDTO.getHotelMediaType());
+            this.addAttachment(hotelUpdateDTO.getFiles(), savedHotel.getId(),hotelUpdateDTO.getHotelMediaType());
             return modelMapper.map(savedHotel,HotelUpdateDTO.class);
         }
 
-        public void addAttachment(MultipartFile multipartFile, Long hotelId, HotelMediaType hotelMediaType){
+        public void addAttachment(List<MultipartFile> files, Long hotelId, HotelMediaType hotelMediaType){
+            if(files==null || files.isEmpty()) { return;}
+
             Hotel optionalHotel = this.hotelRepository.findById(hotelId).orElseThrow(() -> new ResourceNotFoundException("Hotel", "id", hotelId));
-            HotelAttachment hotelAttachment = new HotelAttachment();
-            hotelAttachment.setHotel(optionalHotel);
-            hotelAttachment.setHotelMediaType(hotelMediaType);
-            hotelAttachment.setStatus(StatusType.ACTIVE);
-            hotelAttachment.setCreatedAt(LocalDateTime.now());
-            hotelAttachment.setCreatedBy(authService.getCurrentUser());
-            hotelAttachment = hotelAttachmentRepository.save(hotelAttachment);
-            fileService.handleFileUpload(multipartFile, FileType.HOTEL_ATTACHMENT, hotelAttachment.getId(), "s3");
+            for(MultipartFile multipartFile : files) {
+                if(multipartFile.isEmpty()) continue;
+                HotelAttachment hotelAttachment = new HotelAttachment();
+                hotelAttachment.setHotel(optionalHotel);
+                hotelAttachment.setHotelMediaType(hotelMediaType);
+                hotelAttachment.setStatus(StatusType.ACTIVE);
+                hotelAttachment.setCreatedAt(LocalDateTime.now());
+                hotelAttachment.setCreatedBy(authService.getCurrentUser());
+                hotelAttachment = hotelAttachmentRepository.save(hotelAttachment);
+                fileService.handleFileUpload(multipartFile, FileType.HOTEL_ATTACHMENT, hotelAttachment.getId(), "s3");
+            }
         }
 
         public void deleteHotel(Long id) {

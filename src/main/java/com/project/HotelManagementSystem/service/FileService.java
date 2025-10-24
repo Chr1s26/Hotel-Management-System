@@ -3,11 +3,14 @@ package com.project.HotelManagementSystem.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.project.HotelManagementSystem.entity.FileStorage;
+import com.project.HotelManagementSystem.entity.HotelAttachment;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.FileType;
+import com.project.HotelManagementSystem.entity.constants.HotelMediaType;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.FileStorageRepository;
+import com.project.HotelManagementSystem.repository.HotelAttachmentRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,6 +45,8 @@ public class FileService {
     private final AmazonS3 amazonS3;
     @Autowired
     private AuthService authService;
+    @Autowired
+    private HotelAttachmentRepository hotelAttachmentRepository;
 
     public String getFileName(FileType fileType, Long fileId) {
         return fileStorageRepository
@@ -111,6 +117,25 @@ public class FileService {
         } catch (IOException e) {
             throw new RuntimeException("Filed to upload file : "+e.getMessage());
         }
+    }
+
+    public List<String> getFileNames(FileType fileType, Long fileId) {
+        List<FileStorage> files = fileStorageRepository.findAllByFileTypeAndFileIdOrderByCreatedAtDesc(fileType,fileId);
+        if(files.isEmpty()){
+            return List.of("/images/default-profile.png");
+        }
+        return files.stream().map(fs -> getFileUrl(fs.getKey(), fs.getServiceName())).toList();
+    }
+
+    public List<String> getHotelFileNames(Long hotelId, HotelMediaType hotelMediaType) {
+        List<HotelAttachment> attachments = hotelAttachmentRepository.findByHotelIdAndHotelMediaType(hotelId, hotelMediaType);
+
+        List<String> urls = new ArrayList<>();
+        for (HotelAttachment attachment : attachments) {
+            List<String> fileUrls = getFileNames(FileType.HOTEL_ATTACHMENT, attachment.getId());
+            urls.addAll(fileUrls);
+        }
+        return urls;
     }
 
 }

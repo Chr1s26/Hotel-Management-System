@@ -14,4 +14,6 @@ public interface FileStorageRepository extends JpaRepository<FileStorage, Long> 
     List<FileStorage> findByFileTypeAndFileId(FileType fileType, Long fileId);
 
     Optional<FileStorage> findTopByFileTypeAndFileIdOrderByCreatedAtDesc(FileType fileType, Long fileId);
+
+    List<FileStorage> findAllByFileTypeAndFileIdOrderByCreatedAtDesc(FileType fileType, Long fileId);
 }
