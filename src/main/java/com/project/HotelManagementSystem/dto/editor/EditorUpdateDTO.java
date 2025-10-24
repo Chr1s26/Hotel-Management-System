@@ -34,6 +34,6 @@ public class EditorUpdateDTO {
     private String passportNumber;
     private String nationalIdNumber;
     private EditorType editorType;
-    @AvailableEditorUser(message = "This user is already assigned to another editor.")
+//    @AvailableEditorUser(message = "This user is already assigned to another editor.")
     private Long user;
 }

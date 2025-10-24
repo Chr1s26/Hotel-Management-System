@@ -11,7 +11,7 @@ public class NumericStringValidator implements ConstraintValidator<NumericString
             return true;
         }
         try{
-            Integer.parseInt(value);
+            Long.parseLong(value);
             return true;
         }catch (NumberFormatException e){
             return false;

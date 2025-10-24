@@ -54,10 +54,10 @@ public class EditorService {
 
         Editor editor = modelMapper.map(editorCreateDTO, Editor.class);
 
-        User user = userRepository.findById(editorCreateDTO.getApp_user_id())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", editorCreateDTO.getApp_user_id()));
+        User user = userRepository.findById(editorCreateDTO.getUser())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", editorCreateDTO.getUser()));
         Role editorRole = roleRepository.findByRoleName("EDITOR")
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id",editorCreateDTO.getApp_user_id()));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id",editorCreateDTO.getUser()));
 
         if(user.getRoles() == null) {
             user.setRoles(new HashSet<>());
@@ -68,8 +68,7 @@ public class EditorService {
         editor.setCreatedAt(LocalDateTime.now());
         editor.setCreatedBy(authService.getCurrentUser());
         editor = editorRepository.save(editor);
-        EditorCreateDTO dto = modelMapper.map(editor, EditorCreateDTO.class);
-        dto.setApp_user_id(editor.getUser().getId());
+        EditorCreateDTO dto = toCreateDTO(editor);
         return dto;
     }
 
@@ -100,8 +99,7 @@ public class EditorService {
         savedEditor.setUpdatedAt(LocalDateTime.now());
         savedEditor.setUpdatedBy(authService.getCurrentUser());
         savedEditor = editorRepository.save(savedEditor);
-        EditorUpdateDTO dto = modelMapper.map(savedEditor, EditorUpdateDTO.class);
-        if (savedEditor.getUser() != null) dto.setUser(savedEditor.getUser().getId());
+        EditorUpdateDTO dto = toUpdateDTO(savedEditor);
         return dto;
     }
 
@@ -210,6 +208,38 @@ public class EditorService {
                 throw new DuplicateException("National ID number is already used by another editor.");
             }
         }
+    }
+
+    public EditorCreateDTO toCreateDTO(Editor editor) {
+        EditorCreateDTO dto = new EditorCreateDTO();
+        dto.setId(editor.getId());
+        dto.setName(editor.getName());
+        dto.setPhone(editor.getPhone());
+        dto.setDateOfBirth(editor.getDateOfBirth());
+        dto.setNationality(editor.getNationality());
+        dto.setPassportNumber(editor.getPassportNumber());
+        dto.setNationalIdNumber(editor.getNationalIdNumber());
+        dto.setEditorType(editor.getEditorType());
+        if(editor.getUser() != null){
+            dto.setUser(editor.getUser().getId());
+        }
+        return dto;
+    }
+
+    public EditorUpdateDTO toUpdateDTO(Editor editor) {
+        EditorUpdateDTO dto = new EditorUpdateDTO();
+        dto.setId(editor.getId());
+        dto.setName(editor.getName());
+        dto.setPhone(editor.getPhone());
+        dto.setDateOfBirth(editor.getDateOfBirth());
+        dto.setNationality(editor.getNationality());
+        dto.setPassportNumber(editor.getPassportNumber());
+        dto.setNationalIdNumber(editor.getNationalIdNumber());
+        dto.setEditorType(editor.getEditorType());
+        if(editor.getUser() != null){
+            dto.setUser(editor.getUser().getId());
+        }
+        return dto;
     }
 
 }
