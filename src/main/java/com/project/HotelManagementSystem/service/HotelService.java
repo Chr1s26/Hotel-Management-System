@@ -54,6 +54,7 @@
             Hotel hotel = modelMapper.map(hotelCreateDTO, Hotel.class);
             hotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelCreateDTO.getPolicyIds())));
             hotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelCreateDTO.getPromotionIds())));
+
             hotel.setCreatedAt(LocalDateTime.now());
             hotel.setCreatedBy(authService.getCurrentUser());
             hotel.setStatus(StatusType.ACTIVE);
