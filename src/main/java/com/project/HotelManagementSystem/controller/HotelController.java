@@ -6,7 +6,6 @@ import com.project.HotelManagementSystem.dto.hotel.HotelCreateDTO;
 import com.project.HotelManagementSystem.dto.hotel.HotelDTO;
 import com.project.HotelManagementSystem.dto.hotel.HotelResponse;
 import com.project.HotelManagementSystem.dto.hotel.HotelUpdateDTO;
-import com.project.HotelManagementSystem.entity.Hotel;
 import com.project.HotelManagementSystem.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

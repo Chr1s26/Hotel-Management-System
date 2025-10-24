@@ -5,5 +5,6 @@ public enum FileType {
     ADMIN,
     EDITOR,
     HOME,
-    HOTEL_ATTACHMENT
+    HOTEL_ATTACHMENT,
+    ROOM_ATTACHMENT
 }

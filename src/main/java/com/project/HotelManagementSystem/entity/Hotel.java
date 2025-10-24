@@ -70,6 +70,9 @@ public class Hotel extends  MasterData {
     @OneToMany(mappedBy = "hotel",cascade = CascadeType.ALL)
     private List<HotelAttachment> hotelAttachments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "hotel",cascade = CascadeType.ALL)
+    private List<RoomAttachment> roomAttachments = new ArrayList<>();
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "hotel_promotion",
             joinColumns = @JoinColumn(name = "hotel_id"),
