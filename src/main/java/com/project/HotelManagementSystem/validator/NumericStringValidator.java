@@ -10,7 +10,6 @@ public class NumericStringValidator implements ConstraintValidator<NumericString
         if(value == null || value.trim().isEmpty()){
             return true;
         }
-
         try{
             Integer.parseInt(value);
             return true;

@@ -18,4 +18,9 @@ public interface EditorRepository extends JpaRepository<Editor,Long> {
     Editor findByUser(User user);
     boolean existsByUser_Id(Long userId);
     Page<Editor> findAll(Specification<Editor> spec, Pageable pageable);
+
+    boolean existsByPassportNumberIgnoreCaseAndIdNot(String passportNumber, Long id);
+    boolean existsByNationalIdNumberIgnoreCaseAndIdNot(String nationalIdNumber, Long id);
+    boolean existsByPassportNumberIgnoreCase(String passportNumber);
+    boolean existsByNationalIdNumberIgnoreCase(String nationalIdNumber);
 }

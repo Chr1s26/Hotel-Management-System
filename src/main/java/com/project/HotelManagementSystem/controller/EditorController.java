@@ -98,6 +98,9 @@ public class EditorController {
             model.addAttribute("users", userService.findAllUsers());
             return "editors/edit";
         }
+        Long test = editorUpdateDTO.getUser();
+        System.out.println("********");
+        System.out.println("test: "+test);
         editorService.updateEditor(id, editorUpdateDTO);
         return "redirect:/editors";
     }

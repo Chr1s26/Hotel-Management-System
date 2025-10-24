@@ -11,12 +11,11 @@ public class NotIntegerStringValidator implements ConstraintValidator<NotInteger
             return true;
         }
         try{
-            Integer.parseInt(value);
+            Long.parseLong(value);
             return false;
         }catch (NumberFormatException e){
             return true;
         }
     }
-
 
 }

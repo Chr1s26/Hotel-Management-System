@@ -33,7 +33,6 @@ public class EditorCreateDTO {
     private String nationalIdNumber;
     @NotNull(message = "Editor type cannot be empty")
     private EditorType editorType;
-    @NotNull(message = "App user is required.")
     @AvailableEditorUser(message = "This user is already assigned to another editor.")
     private Long app_user_id;
 }

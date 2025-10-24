@@ -10,6 +10,7 @@ import lombok.Data;
 public class FileStorage extends MasterData {
 
     @Column(nullable = false)
+    //Jpeg
     private FileType fileType;
     @Column(nullable = false)
     private Long fileId;
