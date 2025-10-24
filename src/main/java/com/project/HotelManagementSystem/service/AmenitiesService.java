@@ -5,18 +5,19 @@ import com.project.HotelManagementSystem.dto.amenities.AmenitiesDTO;
 import com.project.HotelManagementSystem.dto.amenities.AmenitiesResponse;
 import com.project.HotelManagementSystem.dto.amenities.AmenitiesUpdateDTO;
 import com.project.HotelManagementSystem.entity.Amenities;
-import com.project.HotelManagementSystem.exception.ApiException;
+import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.AmenitiesRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,9 +25,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AmenitiesService {
 
-
     private final AmenitiesRepository amenitiesRepository;
     private final ModelMapper modelMapper;
+    private final AuthService authService;
 
     public AmenitiesCreateDTO createAmenities(AmenitiesCreateDTO amenitiesCreateDTO) {
         Optional<Amenities> amenitiesOp = this.amenitiesRepository.findByNameAndDescriptionIgnoreCase(amenitiesCreateDTO.getName(), amenitiesCreateDTO.getDescription());
@@ -34,6 +35,9 @@ public class AmenitiesService {
             throw new DuplicateException("Another Amenities with name " + amenitiesCreateDTO.getName() + " And with same description already exists");
         }
         Amenities amenities = modelMapper.map(amenitiesCreateDTO, Amenities.class);
+        amenities.setStatus(StatusType.ACTIVE);
+        amenities.setCreatedAt(LocalDateTime.now());
+        amenities.setCreatedBy(authService.getCurrentUser());
         Amenities savedAmenities = amenitiesRepository.save(amenities);
         return modelMapper.map(savedAmenities, AmenitiesCreateDTO.class);
     }
@@ -47,6 +51,9 @@ public class AmenitiesService {
         Amenities amenities = modelMapper.map(amenitiesUpdateDTO, Amenities.class);
         updatedAmenitiesOp.setName(amenities.getName());
         updatedAmenitiesOp.setDescription(amenities.getDescription());
+        updatedAmenitiesOp.setStatus(StatusType.ACTIVE);
+        updatedAmenitiesOp.setUpdatedAt(LocalDateTime.now());
+        updatedAmenitiesOp.setUpdatedBy(authService.getCurrentUser());
         amenities = this.amenitiesRepository.save(updatedAmenitiesOp);
         return modelMapper.map(amenities, AmenitiesUpdateDTO.class);
     }

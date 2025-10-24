@@ -28,16 +28,4 @@ public class UserUpdateDTO {
     @NotBlank(message = "Password cannot be empty.")
     @Size(min = 3 , message = "Password must include at least 3 characters.")
     private String password;
-    //    @NotBlank(message = "Phone number cannot be empty.")
-//    @Size(min = 8, message = "Phone number must include at least 8 characters.")
-//    @NumericString(message = "Phone number cannot be string")
-//    private String phone;
-//    @DateTimeFormat(pattern = "yyyy-MM-dd")
-//    @NotNull(message = "Date of Birth cannot be empty.")
-//    private LocalDate dateOfBirth;
-//    @NotBlank(message = "Nationality cannot be empty.")
-//    private String nationality;
-//    private int point;
-//    private Set<Long> rolesId = new HashSet<>();
-//    private MultipartFile file;
 }

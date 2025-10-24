@@ -32,7 +32,6 @@ public class CityController {
                                @RequestParam(defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
                                @RequestParam(defaultValue = AppConstants.SORT_BY_Id,required = false) String sortBy,
                                @RequestParam(defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
-//        CityResponse response = cityService.findAllCitiesWithPagination(pageNumber,pageSize,sortBy,sortOrder);
 
         CitySearchCriteria criteria = new CitySearchCriteria();
         criteria.setName(name);

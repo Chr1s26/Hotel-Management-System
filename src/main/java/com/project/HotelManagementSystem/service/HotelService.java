@@ -7,6 +7,7 @@
     import com.project.HotelManagementSystem.entity.Hotel;
     import com.project.HotelManagementSystem.entity.HotelAttachment;
     import com.project.HotelManagementSystem.entity.constants.FileType;
+    import com.project.HotelManagementSystem.entity.constants.StatusType;
     import com.project.HotelManagementSystem.entity.constants.HotelMediaType;
     import com.project.HotelManagementSystem.entity.constants.StatusType;
     import com.project.HotelManagementSystem.exception.DuplicateException;
@@ -53,6 +54,9 @@
             Hotel hotel = modelMapper.map(hotelCreateDTO, Hotel.class);
             hotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelCreateDTO.getPolicyIds())));
             hotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelCreateDTO.getPromotionIds())));
+            hotel.setCreatedAt(LocalDateTime.now());
+            hotel.setCreatedBy(authService.getCurrentUser());
+            hotel.setStatus(StatusType.ACTIVE);
             Hotel savedHotel = hotelRepository.save(hotel);
             this.addAttachment(hotelCreateDTO.getFiles(), savedHotel.getId(), hotelCreateDTO.getHotelMediaType());
             return modelMapper.map(savedHotel,HotelCreateDTO.class);
@@ -75,6 +79,9 @@
             optionalHotel.setPropertyDescription(hotel.getPropertyDescription());
             optionalHotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelUpdateDTO.getPolicyIds())));
             optionalHotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelUpdateDTO.getPromotionIds())));
+            optionalHotel.setUpdatedAt(LocalDateTime.now());
+            optionalHotel.setUpdatedBy(authService.getCurrentUser());
+            optionalHotel.setStatus(StatusType.ACTIVE);
             Hotel savedHotel = this.hotelRepository.save(optionalHotel);
             this.addAttachment(hotelUpdateDTO.getFiles(), savedHotel.getId(),hotelUpdateDTO.getHotelMediaType());
             return modelMapper.map(savedHotel,HotelUpdateDTO.class);

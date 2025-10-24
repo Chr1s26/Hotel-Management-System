@@ -6,7 +6,6 @@ import com.project.HotelManagementSystem.dto.amenities.AmenitiesCreateDTO;
 import com.project.HotelManagementSystem.dto.amenities.AmenitiesDTO;
 import com.project.HotelManagementSystem.dto.amenities.AmenitiesResponse;
 import com.project.HotelManagementSystem.dto.amenities.AmenitiesUpdateDTO;
-import com.project.HotelManagementSystem.entity.Amenities;
 import com.project.HotelManagementSystem.service.AmenitiesService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

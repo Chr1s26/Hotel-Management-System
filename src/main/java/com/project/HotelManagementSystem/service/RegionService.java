@@ -1,8 +1,8 @@
 package com.project.HotelManagementSystem.service;
 
-
 import com.project.HotelManagementSystem.dto.region.*;
 import com.project.HotelManagementSystem.entity.Region;
+import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.entity.specification.RegionSpecification;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
@@ -16,10 +16,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +26,7 @@ public class RegionService {
 
     private final RegionRepository regionRepository;
     private final ModelMapper modelMapper;
+    private final AuthService authService;
 
     public RegionCreateDTO createRegion(RegionCreateDTO regionCreateDTO) {
         Optional<Region> regionOp = regionRepository.findByNameIgnoreCase(regionCreateDTO.getName());
@@ -34,6 +34,9 @@ public class RegionService {
             throw new DuplicateException("Region name "+ regionCreateDTO.getName()+" already exists");
         }
         Region region = modelMapper.map(regionCreateDTO, Region.class);
+        region.setCreatedAt(LocalDateTime.now());
+        region.setCreatedBy(authService.getCurrentUser());
+        region.setStatus(StatusType.ACTIVE);
         this.regionRepository.save(region);
         return modelMapper.map(region, RegionCreateDTO.class);
     }
@@ -47,6 +50,9 @@ public class RegionService {
         Region updatedRegionOp = this.regionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Region","id",id));
         updatedRegionOp.setName(region.getName());
         updatedRegionOp.setCountry(region.getCountry());
+        updatedRegionOp.setStatus(StatusType.ACTIVE);
+        updatedRegionOp.setUpdatedAt(LocalDateTime.now());
+        updatedRegionOp.setUpdatedBy(authService.getCurrentUser());
         Region savedRegion = regionRepository.save(updatedRegionOp);
         return modelMapper.map(savedRegion, RegionUpdateDTO.class);
 

@@ -5,6 +5,7 @@ import com.project.HotelManagementSystem.dto.editor.*;
 import com.project.HotelManagementSystem.dto.searchFilter.editor.EditorSearchFilter;
 import com.project.HotelManagementSystem.dto.searchFilter.editor.EditorSearchQuery;
 import com.project.HotelManagementSystem.entity.Editor;
+import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.entity.specification.EditorSpecification;
@@ -22,10 +23,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -47,25 +50,37 @@ public class EditorService {
         if (editorOp.isPresent()) {
             throw new DuplicateException("Editor with name " + editorCreateDTO.getName() + " already exists");
         }
+        validateIdsUniqueOrThrow(null, editorCreateDTO.getPassportNumber(), editorCreateDTO.getNationalIdNumber());
+
         Editor editor = modelMapper.map(editorCreateDTO, Editor.class);
+
         User user = userRepository.findById(editorCreateDTO.getApp_user_id())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", editorCreateDTO.getApp_user_id()));
+        Role editorRole = roleRepository.findByRoleName("EDITOR")
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id",editorCreateDTO.getApp_user_id()));
+
+        if(user.getRoles() == null) {
+            user.setRoles(new HashSet<>());
+        }
+        user.getRoles().add(editorRole);
         editor.setUser(user);
-        user.setRoles(Set.of(roleRepository.findByRoleName("EDITOR").orElseThrow(() -> new ResourceNotFoundException("User", "id", editorCreateDTO.getApp_user_id()))));
         editor.setStatus(StatusType.ACTIVE);
         editor.setCreatedAt(LocalDateTime.now());
         editor.setCreatedBy(authService.getCurrentUser());
-        Editor savedEditor = editorRepository.save(editor);
+        editor = editorRepository.save(editor);
         EditorCreateDTO dto = modelMapper.map(editor, EditorCreateDTO.class);
         dto.setApp_user_id(editor.getUser().getId());
         return dto;
     }
 
+    @Transactional
     public EditorUpdateDTO updateEditor(Long id, EditorUpdateDTO editorUpdateDTO) {
         Optional<Editor> editorOp = editorRepository.findByNameIgnoreCaseAndIdNot(editorUpdateDTO.getName(),id);
         if (editorOp.isPresent()) {
             throw new DuplicateException("Editor with name " + editorUpdateDTO.getName() + " already exists");
         }
+        validateIdsUniqueOrThrow(id, editorUpdateDTO.getPassportNumber(), editorUpdateDTO.getNationalIdNumber());
+        Long userId = editorUpdateDTO.getUser();
         Editor savedEditor = editorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Editor","id",id));
         Editor editor = modelMapper.map(editorUpdateDTO, Editor.class);
         savedEditor.setName(editor.getName());
@@ -75,18 +90,18 @@ public class EditorService {
         savedEditor.setPassportNumber(editor.getPassportNumber());
         savedEditor.setNationalIdNumber(editor.getNationalIdNumber());
         savedEditor.setEditorType(editor.getEditorType());
-        if (editorUpdateDTO.getApp_user_id() != null &&
-                (savedEditor.getUser() == null || !savedEditor.getUser().getId().equals(editorUpdateDTO.getApp_user_id()))) {
+        if (editorUpdateDTO.getUser() != null &&
+                (savedEditor.getUser() == null || !savedEditor.getUser().getId().equals(editorUpdateDTO.getUser()))) {
 
-            User newUser = userRepository.findById(editorUpdateDTO.getApp_user_id())
-                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", editorUpdateDTO.getApp_user_id()));
+            User newUser = userRepository.findById(editorUpdateDTO.getUser())
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", editorUpdateDTO.getUser()));
             savedEditor.setUser(newUser);
         }
         savedEditor.setUpdatedAt(LocalDateTime.now());
         savedEditor.setUpdatedBy(authService.getCurrentUser());
         savedEditor = editorRepository.save(savedEditor);
         EditorUpdateDTO dto = modelMapper.map(savedEditor, EditorUpdateDTO.class);
-        if (savedEditor.getUser() != null) dto.setApp_user_id(savedEditor.getUser().getId());
+        if (savedEditor.getUser() != null) dto.setUser(savedEditor.getUser().getId());
         return dto;
     }
 
@@ -169,4 +184,32 @@ public class EditorService {
         }
         return editorRepository.findAll(spec,pageable);
     }
+
+    private void validateIdsUniqueOrThrow(Long currentEditorId, String passport, String nationalId) {
+        String p = (passport == null) ? null : passport.trim();
+        String n = (nationalId == null) ? null : nationalId.trim();
+
+        if ((p == null || p.isEmpty()) && (n == null || n.isEmpty())) {
+            throw new IllegalArgumentException("Either passport number or national ID number must be provided.");
+        }
+
+        if (p != null && !p.isEmpty()) {
+            boolean dup = (currentEditorId == null)
+                    ? editorRepository.existsByPassportNumberIgnoreCase(p)
+                    : editorRepository.existsByPassportNumberIgnoreCaseAndIdNot(p, currentEditorId);
+            if (dup) {
+                throw new DuplicateException("Passport number is already used by another editor.");
+            }
+        }
+
+        if (n != null && !n.isEmpty()) {
+            boolean dup = (currentEditorId == null)
+                    ? editorRepository.existsByNationalIdNumberIgnoreCase(n)
+                    : editorRepository.existsByNationalIdNumberIgnoreCaseAndIdNot(n, currentEditorId);
+            if (dup) {
+                throw new DuplicateException("National ID number is already used by another editor.");
+            }
+        }
+    }
+
 }

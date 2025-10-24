@@ -205,7 +205,7 @@ public class  AppConfig {
             dto.setEditorType(editor.getEditorType());
 
             if (editor.getUser() != null) {
-                dto.setApp_user_id(editor.getUser().getId());
+                dto.setUser(editor.getUser().getId());
             }
             return dto;
         };

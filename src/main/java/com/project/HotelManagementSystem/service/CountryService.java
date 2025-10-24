@@ -2,13 +2,13 @@ package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.dto.country.*;
 import com.project.HotelManagementSystem.entity.Country;
+import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.entity.specification.CountrySpecification;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,17 +16,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
 public class CountryService {
 
     private final CountryRepository countryRepository;
-
     private final ModelMapper modelMapper;
+    private final AuthService authService;
 
     public CountryCreateDTO createCountry(CountryCreateDTO countryCreateDTO) {
         Optional<Country> countryOptional = this.countryRepository.findByNameIgnoreCase(countryCreateDTO.getName());
@@ -34,6 +35,9 @@ public class CountryService {
             throw new DuplicateException("Country with name " + countryCreateDTO.getName() + " already exists");
         }
         Country country = modelMapper.map(countryCreateDTO, Country.class);
+        country.setStatus(StatusType.ACTIVE);
+        country.setCreatedAt(LocalDateTime.now());
+        country.setCreatedBy(authService.getCurrentUser());
         Country savedCountry = countryRepository.save(country);
         return modelMapper.map(savedCountry,CountryCreateDTO.class);
     }
@@ -46,6 +50,9 @@ public class CountryService {
         Country optionalCountry = countryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Country", "id", id));
         Country country = modelMapper.map(countryUpdateDTO, Country.class);
         optionalCountry.setName(country.getName());
+        optionalCountry.setUpdatedAt(LocalDateTime.now());
+        optionalCountry.setUpdatedBy(authService.getCurrentUser());
+        optionalCountry.setStatus(StatusType.ACTIVE);
         country = this.countryRepository.save(optionalCountry);
         return modelMapper.map(country,CountryUpdateDTO.class);
     }

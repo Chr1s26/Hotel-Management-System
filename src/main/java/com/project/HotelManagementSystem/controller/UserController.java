@@ -61,14 +61,12 @@ public class UserController {
     @ActiveRole("ADMIN")
     public String showCreateForm(Model model) {
         model.addAttribute("user", new UserCreateDTO());
-//        model.addAttribute("roles", roleService.getAllRoles());
         return "users/create";
     }
 
     @PostMapping("/create")
     public String createUser(@Valid @ModelAttribute("user") UserCreateDTO userCreateDTO,BindingResult bindingResult, Model model) {
         if(bindingResult.hasErrors()){
-//            model.addAttribute("roles", roleService.getAllRoles());
             return "users/create";
         }
         this.userService.createUser(userCreateDTO);
@@ -79,14 +77,12 @@ public class UserController {
     @ActiveRole({"ADMIN", "EDITOR"})
     public String showEditForm(@PathVariable Long id, Model model) {
         model.addAttribute("user",this.userService.findUserById(id));
-//        model.addAttribute("roles", roleService.getAllRoles());
         return "users/edit";
     }
 
     @PostMapping("/update/{id}")
     public String updateUser(@PathVariable Long id,@Valid @ModelAttribute("user") UserUpdateDTO userUpdateDTO, BindingResult bindingResult, Model model) {
         if(bindingResult.hasErrors()) {
-//            model.addAttribute("roles", roleService.getAllRoles());
             return "users/edit";
         }
         this.userService.updateUser(id,userUpdateDTO);

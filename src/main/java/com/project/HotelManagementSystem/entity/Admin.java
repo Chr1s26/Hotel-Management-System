@@ -27,6 +27,6 @@ public class Admin extends UserMasterData{
     private AdminType adminType;
 
     @OneToOne
-    @JoinColumn(name = "app_user_id")
+    @JoinColumn(name = "app_user_id", unique = true)
     private User user;
 }

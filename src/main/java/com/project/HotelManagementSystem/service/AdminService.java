@@ -5,11 +5,10 @@ import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
 import com.project.HotelManagementSystem.dto.searchFilter.admin.AdminSearchFilter;
 import com.project.HotelManagementSystem.dto.searchFilter.admin.AdminSearchQuery;
 import com.project.HotelManagementSystem.entity.Admin;
+import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.User;
-import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.entity.specification.AdminSpecification;
-import com.project.HotelManagementSystem.entity.specification.UserSpecification;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.AdminRepository;
@@ -23,12 +22,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class AdminService {
@@ -44,27 +42,27 @@ public class AdminService {
     @Autowired
     private RoleRepository roleRepository;
 
-    private MultipartFile multipartFile;
-    @Autowired
-    private FileService fileService;
-    @Autowired
-    private UserService userService;
-
     public AdminCreateDTO createAdmin(AdminCreateDTO adminCreateDTO) {
         Optional<Admin> adminOp = adminRepository.findByNameIgnoreCase(adminCreateDTO.getName());
+
         if (adminOp.isPresent()) {
             throw new DuplicateException("Another admin with the same name already exists");
         }
-        Admin admin = modelMapper.map(adminCreateDTO, Admin.class);
+        validateIdsUniqueOrThrow(null, adminCreateDTO.getPassportNumber(), adminCreateDTO.getNationalIdNumber());
 
+        Admin admin = modelMapper.map(adminCreateDTO, Admin.class);
         admin.setCreatedAt(LocalDateTime.now());
         admin.setCreatedBy(authService.getCurrentUser());
         admin.setStatus(StatusType.ACTIVE);
         User user = userRepository.findById(adminCreateDTO.getApp_user_id())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", adminCreateDTO.getApp_user_id()));
-        user.setRoles(Set.of(roleRepository.findByRoleName("ADMIN").orElseThrow(() -> new ResourceNotFoundException("User", "id", adminCreateDTO.getApp_user_id()))));
+        Role adminRole = roleRepository.findByRoleName("ADMIN").orElseThrow(() -> new ResourceNotFoundException("Role", "id", adminCreateDTO.getApp_user_id()));
+        if(user.getRoles() == null) {
+            user.setRoles(new HashSet<>());
+        }
+        user.getRoles().add(adminRole);
         admin.setUser(user);
-        adminRepository.save(admin);
+        admin = adminRepository.save(admin);
         AdminCreateDTO dto = modelMapper.map(admin, AdminCreateDTO.class);
         dto.setApp_user_id(admin.getUser().getId());
         return dto;
@@ -72,13 +70,14 @@ public class AdminService {
 
     public AdminUpdateDTO updateAdmin(Long id,AdminUpdateDTO adminUpdateDTO) {
         Optional<Admin> adminOp = adminRepository.findByNameIgnoreCaseAndIdNot(adminUpdateDTO.getName(),id);
+
         if (adminOp.isPresent()) {
             throw new DuplicateException("Another admin with the same name already exists");
         }
+        validateIdsUniqueOrThrow(id, adminUpdateDTO.getPassportNumber(), adminUpdateDTO.getNationalIdNumber());
+
         Admin admin = adminRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Admin","id",id));
-
         Admin admin1 = modelMapper.map(adminUpdateDTO, Admin.class);
-
         admin.setName(admin1.getName());
         admin.setPhone(admin1.getPhone());
         admin.setDateOfBirth(admin1.getDateOfBirth());
@@ -87,7 +86,6 @@ public class AdminService {
         admin.setNationalIdNumber(admin1.getNationalIdNumber());
         admin.setAdminType(admin1.getAdminType());
         if (adminUpdateDTO.getApp_user_id() != null && (admin.getUser() == null || !admin.getUser().getId().equals(adminUpdateDTO.getApp_user_id()))) {
-
             User newUser = userRepository.findById(adminUpdateDTO.getApp_user_id())
                     .orElseThrow(() -> new ResourceNotFoundException("User", "id", adminUpdateDTO.getApp_user_id()));
             admin.setUser(newUser);
@@ -137,23 +135,6 @@ public class AdminService {
         return adminList.stream().map(admin -> modelMapper.map(admin, AdminDTO.class)).toList();
     }
 
-//    public AdminDTO getUrl(AdminDTO adminDTO) {
-//        adminDTO.setProfileUrl(fileService.getFileName(FileType.ADMIN,adminDTO.getId()));
-//        adminDTO.setContentType(multipartFile.getContentType());
-//        return adminDTO;
-//    }
-
-//    public AdminDTO upload(MultipartFile file) {
-//        multipartFile = file;
-//        User user = userService.findById(authService.getCurrentUser().getId());
-//        Admin admin = adminRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("User","id",user.getId()));
-//        fileService.handleFileUpload(multipartFile,FileType.ADMIN,admin.getId(),"s3");
-//        AdminDTO adminDTO = new AdminDTO();
-//        adminDTO.setProfileUrl(fileService.getFileName(FileType.ADMIN,admin.getId()));
-//        adminDTO.setContentType(multipartFile.getContentType());
-//        return adminDTO;
-//    }
-
     public AdminResponse search(AdminSearchCriteria adminSearchCriteria) {
         Sort sortByAndSortOrder = adminSearchCriteria.getSortOrder().equalsIgnoreCase("asc") ? Sort.by(adminSearchCriteria.getSortBy()).ascending() : Sort.by(adminSearchCriteria.getSortBy()).descending();
         Pageable pageable = PageRequest.of(adminSearchCriteria.getPageNumber(), adminSearchCriteria.getPageSize(), sortByAndSortOrder);
@@ -196,4 +177,32 @@ public class AdminService {
         }
         return adminRepository.findAll(spec,pageable);
     }
+
+    private void validateIdsUniqueOrThrow(Long currentAdminId, String passport, String nationalId) {
+        String p = (passport == null) ? null : passport.trim();
+        String n = (nationalId == null) ? null : nationalId.trim();
+
+        if ((p == null || p.isEmpty()) && (n == null || n.isEmpty())) {
+            throw new IllegalArgumentException("Either passport number or national ID number must be provided.");
+        }
+
+        if (p != null && !p.isEmpty()) {
+            boolean dup = (currentAdminId == null)
+                    ? adminRepository.existsByPassportNumberIgnoreCase(p)
+                    : adminRepository.existsByPassportNumberIgnoreCaseAndIdNot(p, currentAdminId);
+            if (dup) {
+                throw new DuplicateException("Passport number is already used by another admin.");
+            }
+        }
+
+        if (n != null && !n.isEmpty()) {
+            boolean dup = (currentAdminId == null)
+                    ? adminRepository.existsByNationalIdNumberIgnoreCase(n)
+                    : adminRepository.existsByNationalIdNumberIgnoreCaseAndIdNot(n, currentAdminId);
+            if (dup) {
+                throw new DuplicateException("National ID number is already used by another admin.");
+            }
+        }
+    }
+
 }

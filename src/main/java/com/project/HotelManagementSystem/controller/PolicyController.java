@@ -1,13 +1,11 @@
 package com.project.HotelManagementSystem.controller;
 
-
 import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.policy.PolicyCreateDTO;
 import com.project.HotelManagementSystem.dto.policy.PolicyDTO;
 import com.project.HotelManagementSystem.dto.policy.PolicyResponse;
 import com.project.HotelManagementSystem.dto.policy.PolicyUpdateDTO;
-import com.project.HotelManagementSystem.entity.Policy;
 import com.project.HotelManagementSystem.service.PolicyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

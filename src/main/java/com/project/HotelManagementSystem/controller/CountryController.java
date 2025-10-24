@@ -28,7 +28,6 @@ public class CountryController {
                                   @RequestParam(defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
                                   @RequestParam(defaultValue = AppConstants.SORT_BY_Id,required = false) String sortBy,
                                   @RequestParam(defaultValue = AppConstants.SORT_ORDER,required = false) String sortOrder) {
-//        CountryResponse response = countryService.findAllCountriesWithPagination(pageNumber,pageSize,sortBy,sortOrder);
 
         CountrySearchCriteria criteria = new CountrySearchCriteria();
         criteria.setName(name);
