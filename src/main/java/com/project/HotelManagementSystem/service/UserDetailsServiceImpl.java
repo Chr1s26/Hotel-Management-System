@@ -3,6 +3,7 @@ package com.project.HotelManagementSystem.service;
 import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
+import com.project.HotelManagementSystem.exception.AccountNotConfirmedException;
 import com.project.HotelManagementSystem.exception.InvalidRoleException;
 import com.project.HotelManagementSystem.repository.RoleRepository;
 import com.project.HotelManagementSystem.repository.UserRepository;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.security.auth.login.AccountNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -27,6 +29,8 @@ public class UserDetailsServiceImpl implements AbstractService{
     private RoleRepository roleRepository;
     @Autowired
     private AuthService authService;
+    @Autowired
+    private OtpService otpService;
 
     public UserDetailsServiceImpl(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
@@ -37,6 +41,10 @@ public class UserDetailsServiceImpl implements AbstractService{
         User user = userRepository.findByEmail(parameter)
                 .orElseGet(() -> userRepository.findByNameIgnoreCase(parameter)
                         .orElseThrow(() -> new UsernameNotFoundException("User not found")));
+
+        if(user.getConfirmedAt() == null){
+            throw new AccountNotConfirmedException("Account not found");
+        }
         return UserDetailsImpl.build(user);
     }
 

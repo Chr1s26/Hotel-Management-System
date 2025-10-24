@@ -1,7 +1,10 @@
 package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.entity.User;
+import com.project.HotelManagementSystem.exception.OtpExpiredException;
+import com.project.HotelManagementSystem.exception.OtpInvalidException;
 import com.project.HotelManagementSystem.repository.UserRepository;
+import com.project.HotelManagementSystem.service.OtpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
@@ -17,22 +20,37 @@ import java.time.LocalDateTime;
 public class OtpController {
     @Autowired
     private UserRepository appUserRepository;
+    @Autowired
+    private OtpService otpService;
 
     @GetMapping("/confirm-account/otp")
     public String showConfirmAccountOtp(@RequestParam("email") String email, @RequestParam("message") String message , Model model){
         model.addAttribute("email",email);
         model.addAttribute("message",message);
+        User appUser = appUserRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        if(!message.equals("OTP is Invalid")){
+            otpService.sendOtp(appUser);
+        }
         return "confirm-account/otp";
     }
 
     @PostMapping("/confirm-account/verify-otp")
     public String verifyOtp(@RequestParam("otp") String otp,@RequestParam String email){
-        if(otp.equals("123")){
-            User appUser = appUserRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-            appUser.setConfirmedAt(LocalDateTime.now());
-            appUserRepository.save(appUser);
+        try{
+            otpService.isOtpValid(email, otp);
             return "redirect:/login";
+        }catch (OtpExpiredException e){
+            String encodedMessage = "OTP is expired";
+            return "redirect:/confirm-account/otp?email=" + email + "&error=unconfirmed&message=" + encodedMessage;
+        }catch (OtpInvalidException e){
+            String encodedMessage = "OTP is Invalid";
+            return "redirect:/confirm-account/otp?email=" + email + "&error=unconfirmed&message=" + encodedMessage;
         }
-        return "redirect:/confirm-account/otp";
+    }
+
+    @PostMapping("/confirm-account/resend-otp")
+    public String resendOtp(@RequestParam String email){
+        String encodedMessage = "OTP is resent";
+        return "redirect:/confirm-account/otp?email=" + email + "&error=unconfirmed&message=" + encodedMessage;
     }
 }

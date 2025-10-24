@@ -26,6 +26,12 @@ public class User extends MasterData{
     @Column(nullable = true)
     private LocalDateTime confirmedAt;
 
+    @Column
+    private String otp;
+
+    @Column
+    private Long otpGeneratedAt;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_roles",

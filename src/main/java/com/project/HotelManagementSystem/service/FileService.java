@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.project.HotelManagementSystem.entity.FileStorage;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.FileType;
+import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.FileStorageRepository;
 import lombok.Data;
@@ -105,6 +106,7 @@ public class FileService {
             fileStorage.setCreatedAt(LocalDateTime.now());
             fileStorage.setCreatedBy(user);
             fileStorage.setUpdatedBy(user);
+            fileStorage.setStatus(StatusType.ACTIVE);
             FileStorage fileStorage1 = fileStorageRepository.save(fileStorage);
         } catch (IOException e) {
             throw new RuntimeException("Filed to upload file : "+e.getMessage());
