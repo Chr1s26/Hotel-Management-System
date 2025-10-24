@@ -4,11 +4,15 @@ import com.project.HotelManagementSystem.dto.room.RoomCreateDTO;
 import com.project.HotelManagementSystem.dto.room.RoomDTO;
 import com.project.HotelManagementSystem.dto.room.RoomResponse;
 import com.project.HotelManagementSystem.dto.room.RoomUpdateDTO;
+import com.project.HotelManagementSystem.entity.Hotel;
 import com.project.HotelManagementSystem.entity.Room;
+import com.project.HotelManagementSystem.entity.RoomAttachment;
+import com.project.HotelManagementSystem.entity.constants.FileType;
+import com.project.HotelManagementSystem.entity.constants.RoomMediaType;
+import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
-import com.project.HotelManagementSystem.repository.AmenitiesRepository;
-import com.project.HotelManagementSystem.repository.PromotionRepository;
-import com.project.HotelManagementSystem.repository.RoomRepository;
+import com.project.HotelManagementSystem.repository.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,12 +38,21 @@ public class RoomService {
 
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private HotelRepository hotelRepository;
+    @Autowired
+    private AuthService authService;
+    @Autowired
+    private RoomAttachmentRepository roomAttachmentRepository;
+    @Autowired
+    private FileService fileService;
 
     public RoomCreateDTO createRoom(RoomCreateDTO roomCreateDTO) {
         Room room = modelMapper.map(roomCreateDTO, Room.class);
         room.setAmenities(new HashSet<>(amenitiesRepository.findAllById(roomCreateDTO.getAmenityIds())));
         room.setPromotions(new HashSet<>(promotionRepository.findAllById(roomCreateDTO.getPromotionIds())));
         Room savedRoom = roomRepository.save(room);
+        this.addAttachment(roomCreateDTO.getFiles(),savedRoom.getId(),roomCreateDTO.getRoomMediaType(),roomCreateDTO.getHotel().getId());
         return modelMapper.map(savedRoom, RoomCreateDTO.class);
     }
 
@@ -53,8 +69,30 @@ public class RoomService {
         roomOp.setAmenities(new HashSet<>(amenitiesRepository.findAllById(roomUpdateDTO.getAmenityIds())));
         roomOp.setPromotions(new HashSet<>(promotionRepository.findAllById(roomUpdateDTO.getPromotionIds())));
         Room savedRoom = roomRepository.save(roomOp);
+        this.addAttachment(roomUpdateDTO.getFiles(),savedRoom.getId(),roomUpdateDTO.getRoomMediaType(),roomUpdateDTO.getHotel().getId());
         return modelMapper.map(savedRoom, RoomUpdateDTO.class);
     }
+
+    private void addAttachment(List<MultipartFile> files, Long roomId, @NotNull(message = "Media type must be selected") RoomMediaType roomMediaType,long hotelId) {
+        if(files==null || files.isEmpty()) return ;
+
+        Room optionalRoom = roomRepository.findById(roomId).orElseThrow(() -> new ResourceNotFoundException("Room","id",roomId));
+        Hotel optionalHotel = hotelRepository.findById(hotelId).orElseThrow(() -> new ResourceNotFoundException("Hotel","id",hotelId));
+        for(MultipartFile multipartFile : files) {
+            if(multipartFile.isEmpty()) continue;
+            RoomAttachment roomAttachment = new RoomAttachment();
+            roomAttachment.setRoom(optionalRoom);
+            roomAttachment.setHotel(optionalHotel);
+            roomAttachment.setRoomMediaType(roomMediaType);
+            roomAttachment.setStatus(StatusType.ACTIVE);
+            roomAttachment.setCreatedAt(LocalDateTime.now());
+            roomAttachment.setCreatedBy(authService.getCurrentUser());
+            roomAttachment = roomAttachmentRepository.save(roomAttachment);
+            fileService.handleFileUpload(multipartFile, FileType.ROOM_ATTACHMENT, roomAttachment.getId(), "s3");
+        }
+    }
+
+
 
     public void deleteRoom(Long id) {
         Room roomOp = roomRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Room", "id", id));

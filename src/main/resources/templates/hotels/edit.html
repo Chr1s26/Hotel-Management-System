@@ -188,8 +188,17 @@
         </select>
     </div>
     <div class="mb-3">
+        <label class="form-label">Media Type</label>
+        <select id="mediaType-select" th:field="*{hotelMediaType}" class="form-select">
+            <option th:each="h : ${T(com.project.HotelManagementSystem.entity.constants.HotelMediaType).values()}"
+                    th:value="${h}"
+                    th:text="${h.name()}">Media Type</option>
+        </select>
+        <div class="text-danger" th:if="${#fields.hasErrors('hotelMediaType')}" th:errors="*{hotelMediaType}"></div>
+    </div>
+    <div class="mb-3">
         <label class="form-label">File Upload</label>
-        <input type="file" th:field="*{file}">
+        <input type="file" th:field="*{files}" multiple/>
     </div>
     <button type="submit" class="btn btn-primary">Update Hotel</button>
     <a class="btn btn-secondary" th:href="@{/hotels}">Cancel</a>

@@ -6,7 +6,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -51,6 +54,9 @@ public class Room extends MasterData {
     joinColumns = @JoinColumn(name = "room_id"),
     inverseJoinColumns = @JoinColumn(name = "promotion_id"))
     private Set<Promotion> promotions = new HashSet<>();
+
+    @OneToMany(mappedBy = "room",cascade = CascadeType.ALL)
+    private List<RoomAttachment> roomAttachments = new ArrayList<>();
 
     public boolean isAvailable() {
         return available;

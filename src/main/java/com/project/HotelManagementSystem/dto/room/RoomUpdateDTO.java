@@ -1,6 +1,7 @@
 package com.project.HotelManagementSystem.dto.room;
 
 import com.project.HotelManagementSystem.entity.Hotel;
+import com.project.HotelManagementSystem.entity.constants.RoomMediaType;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -8,8 +9,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -29,4 +32,7 @@ public class RoomUpdateDTO {
     private Hotel hotel;
     private Set<Long> amenityIds = new HashSet<>();
     private Set<Long> promotionIds = new HashSet<>();
+    private List<MultipartFile> files;
+    @NotNull(message = "Media type must be selected")
+    private RoomMediaType roomMediaType;
 }

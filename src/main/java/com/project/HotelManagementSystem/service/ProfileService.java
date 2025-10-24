@@ -4,6 +4,7 @@ import com.project.HotelManagementSystem.dto.admin.AdminDTO;
 import com.project.HotelManagementSystem.dto.editor.EditorDTO;
 import com.project.HotelManagementSystem.dto.profile.ProfileRequest;
 import com.project.HotelManagementSystem.dto.profile.ProfileResponse;
+import com.project.HotelManagementSystem.dto.user.UserDTO;
 import com.project.HotelManagementSystem.entity.Admin;
 import com.project.HotelManagementSystem.entity.Editor;
 import com.project.HotelManagementSystem.entity.User;
@@ -11,7 +12,9 @@ import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.AdminRepository;
 import com.project.HotelManagementSystem.repository.EditorRepository;
+import com.project.HotelManagementSystem.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,12 +33,23 @@ public class ProfileService {
     private EditorRepository editorRepository;
     @Autowired
     private FileService fileService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private ModelMapper modelMapper;
 
     public ProfileResponse<Object> getProfile() {
         User user = authService.getCurrentUser();
         String role = activeRoleService.getActiveRole();
 
         ProfileResponse<Object> profileResponse = new ProfileResponse<>();
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+        String profileUrl = this.fileService.getFileName(FileType.USER,user.getId());
+        if (profileUrl == null) {
+            profileUrl = "/images/default-profile.png";
+        }
+        userDTO.setProfileUrl(profileUrl);
+        profileResponse.setUserDTO(userDTO);
 
         if(role.equals("ADMIN")) {
             Admin admin = adminRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("User","id",user.getId()));
@@ -48,20 +62,14 @@ public class ProfileService {
         }else{
             return null;
         }
+
         return profileResponse;
     }
 
     public void uploadProfile(ProfileRequest profileRequest) {
         User user = authService.getCurrentUser();
         MultipartFile file = profileRequest.getFile();
-        String role = activeRoleService.getActiveRole();
-        if(role.equals("ADMIN")) {
-            Admin admin = adminRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("User","id",user.getId()));
-            this.fileService.handleFileUpload(file,FileType.ADMIN,admin.getId(), "S3");
-        }else if(role.equals("EDITOR")) {
-            Editor editor = editorRepository.findEditorByUser(user).orElseThrow(() -> new ResourceNotFoundException("User","id",user.getId()));
-            this.fileService.handleFileUpload(file,FileType.EDITOR,editor.getId(), "S3");
-        }
+        this.fileService.handleFileUpload(file,FileType.USER,user.getId(),"S3");
     }
 
     public AdminDTO getAdminDTO(Admin admin) {
@@ -75,11 +83,6 @@ public class ProfileService {
         adminDTO.setNationalIdNumber(admin.getNationalIdNumber());
         adminDTO.setAdminType(admin.getAdminType());
         adminDTO.setUser(admin.getUser());
-        String profileUrl = this.fileService.getFileName(FileType.ADMIN,admin.getId());
-        if (profileUrl == null) {
-            profileUrl = "/images/default-profile.png";
-        }
-        adminDTO.setProfileUrl(profileUrl);
         return adminDTO;
     }
 
@@ -94,8 +97,6 @@ public class ProfileService {
         editorDTO.setNationalIdNumber(editor.getNationalIdNumber());
         editorDTO.setEditorType(editor.getEditorType());
         editorDTO.setUser(editor.getUser());
-        String profileUrl = this.fileService.getFileName(FileType.EDITOR,editor.getId());
-        editorDTO.setProfileUrl(profileUrl);
         return editorDTO;
     }
 }

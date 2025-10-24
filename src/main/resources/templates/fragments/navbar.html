@@ -28,9 +28,13 @@
             <div class="dropdown">
                 <a class="d-flex align-items-center" href="#" role="button" id="profileDropdown"
                    data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="/images/placeholder-profile.png" alt="Profile"
-                         class="rounded-circle" width="40" height="40">
+                    <img th:src="${#strings.isEmpty(navbarProfileUrl)}
+                  ? @{/images/default-profile.png}
+                  : ${navbarProfileUrl}"
+                         th:alt="${#strings.isEmpty(navbarProfileUrl)} ? 'Default profile' : 'Profile'"
+                         style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
                 </a>
+
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                     <li><a class="dropdown-item" th:href="@{/profiles}">User Profile</a></li>
                     <li>
@@ -40,6 +44,7 @@
                     </li>
                 </ul>
             </div>
+
         </div>
     </nav>
 </div>
