@@ -188,4 +188,15 @@ public class CityService {
             throw new RuntimeException("Failed to import Excel file: " + e.getMessage());
         }
     }
+
+
+//    protected <T> void uniqueOrThrow(Optional<T> existing, String entity, String field, Object value) {
+//        if (existing.isPresent()) throw new DuplicateException("%s with %s '%s' already exists"
+//                .formatted(entity, field, String.valueOf(value)));
+//    }
+//    validator.uniqueOrThrow(
+//            regionRepository.findByNameIgnoreCase(dto.getName()),
+//            "Region", "name", dto.getName()
+//            );
+
 }
