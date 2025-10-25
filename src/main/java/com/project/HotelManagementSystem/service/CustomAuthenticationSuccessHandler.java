@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Set;
 
 @Component
-public class CustomAuthenticationSuccessSuccessHandler implements AuthenticationSuccessHandler {
+public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     @Autowired
     private UserRepository userRepository;

@@ -21,13 +21,14 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         String name = request.getParameter("username");
-        User user = userRepository.findByNameIgnoreCase(name).orElseThrow(() -> new ResourceNotFoundException("User","Name not found","User Name"));
-        String email = user.getEmail();
-        String encodedMessage = "Please Verify the OTP!!";
-        if(exception.getCause() instanceof AccountNotConfirmedException){
-            response.sendRedirect("/confirm-account/otp?email=" + email + "&error=unconfirmed&message=" + encodedMessage);
-        }else{
-            response.sendRedirect("/login");
+
+        if(exception.getCause() instanceof AccountNotConfirmedException) {
+            User user = userRepository.findByNameIgnoreCase(name).orElse(null);
+            if(user != null) {
+                response.sendRedirect("/confirm-account/otp?email=" + user.getEmail() + "&error=unconfirmed&message=" + "Please Verify the OTP!!");
+                return;
+            }
         }
+        response.sendRedirect("/login?error=true");
     }
 }

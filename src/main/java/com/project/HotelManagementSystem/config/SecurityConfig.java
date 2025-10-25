@@ -2,7 +2,7 @@ package com.project.HotelManagementSystem.config;
 
 import com.project.HotelManagementSystem.service.AbstractService;
 import com.project.HotelManagementSystem.service.CustomAuthenticationFailureHandler;
-import com.project.HotelManagementSystem.service.CustomAuthenticationSuccessSuccessHandler;
+import com.project.HotelManagementSystem.service.CustomAuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +22,7 @@ public class SecurityConfig {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
-    private CustomAuthenticationSuccessSuccessHandler customAuthenticationSuccessSuccessHandler;
+    private CustomAuthenticationSuccessHandler customAuthenticationSuccessSuccessHandler;
     @Autowired
     private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
@@ -31,12 +31,13 @@ public class SecurityConfig {
         DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
         auth.setUserDetailsService(abstractService);
         auth.setPasswordEncoder(passwordEncoder);
+        auth.setHideUserNotFoundExceptions(false);
         return auth;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/register","/registerUser","/static/assets/**","/confirm-account/**","/").permitAll()
+        http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/register","/registerUser","/static/assets/**","/confirm-account/**","/error").permitAll()
                         .requestMatchers("/select-role", "/set-active-role").authenticated()
                         .requestMatchers("/admins/**").hasRole("ADMIN")
                         .requestMatchers("/editors/**").hasAnyRole("EDITOR", "ADMIN")

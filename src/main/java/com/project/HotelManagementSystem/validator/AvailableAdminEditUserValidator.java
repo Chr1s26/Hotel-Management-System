@@ -9,14 +9,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AvailableAdminUserValidator implements ConstraintValidator<AvailableAdminUser, Long> {
+public class AvailableAdminEditUserValidator implements ConstraintValidator<AvailableAdminEditUser, Long> {
 
     private final AdminRepository adminRepository;
     private final UserRepository userRepository;
 
     @Override
     public boolean isValid(Long userId, ConstraintValidatorContext ctx) {
-        if (userId == null) return true;
+        if (userId == null) return false;
 
         if (!userRepository.existsById(userId)) {
             ctx.disableDefaultConstraintViolation();
@@ -24,7 +24,8 @@ public class AvailableAdminUserValidator implements ConstraintValidator<Availabl
                     .addConstraintViolation();
             return false;
         }
+        //role remove lote ynn
 
-        return !adminRepository.existsByUser_Id(userId);
+        return true;
     }
 }

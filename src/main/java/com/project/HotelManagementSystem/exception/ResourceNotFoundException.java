@@ -20,4 +20,12 @@ public class ResourceNotFoundException extends RuntimeException {
         this.field = field;
         this.fieldId = fieldId;
     }
+
+    @Override
+    public String getMessage() {
+        if (fieldName != null)
+            return String.format("%s not found with %s : %s", resourceName, field, fieldName);
+        else
+            return String.format("%s not found with %s : %d", resourceName, field, fieldId);
+    }
 }
