@@ -13,6 +13,5 @@ import java.util.Optional;
 @Repository
 public interface RegionRepository extends JpaRepository<Region,Long> {
     Optional<Region> findByNameIgnoreCase(@NotBlank(message = "Region name can't be empty.") String name);
-
     Page<Region> findAll(Specification<Region> spec, Pageable pageable);
 }

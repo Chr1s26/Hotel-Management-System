@@ -27,6 +27,8 @@ public class RoleService {
     private RoleRepository roleRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private AuthService authService;
 
     public RoleCreateDTO createRole(RoleCreateDTO roleCreateDTO) {
         Optional<Role> optionalRole = this.roleRepository.findByRoleName(roleCreateDTO.getRoleName());
@@ -36,6 +38,7 @@ public class RoleService {
         Role role = modelMapper.map(roleCreateDTO, Role.class);
         role.setStatus(StatusType.ACTIVE);
         role.setCreatedAt(LocalDateTime.now());
+        role.setCreatedBy(authService.getCurrentUser());
         Role savedRole = this.roleRepository.save(role);
         return modelMapper.map(savedRole,RoleCreateDTO.class);
     }
@@ -49,6 +52,7 @@ public class RoleService {
         Role role = modelMapper.map(roleUpdateDTO, Role.class);
         roleOp.setRoleName(role.getRoleName());
         roleOp.setUpdatedAt(LocalDateTime.now());
+        roleOp.setUpdatedBy(authService.getCurrentUser());
         Role savedRole = roleRepository.save(roleOp);
         return modelMapper.map(savedRole,RoleUpdateDTO.class);
     }

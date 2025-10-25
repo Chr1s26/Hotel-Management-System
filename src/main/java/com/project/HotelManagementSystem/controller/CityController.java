@@ -8,11 +8,18 @@ import com.project.HotelManagementSystem.service.CityService;
 import com.project.HotelManagementSystem.service.RegionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 
 
@@ -90,6 +97,28 @@ public class CityController {
     @ActiveRole({"ADMIN", "EDITOR"})
     public String deleteCity(@PathVariable Long id) {
         cityService.deleteCity(id);
+        return "redirect:/cities";
+    }
+
+    @GetMapping("/export/excel")
+    public ResponseEntity<byte[]> exportExcel(Model model) throws IOException {
+        ByteArrayInputStream in = cityService.exportCitiesToExcel();
+        byte[] bytes = in.readAllBytes();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=cities.xlsx")
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(bytes);
+    }
+
+    @PostMapping("/import/excel")
+    public String importCitiesFromExcel(@RequestParam("file") MultipartFile file,
+                                        RedirectAttributes redirectAttributes) {
+        try {
+            cityService.importCitiesFromExcel(file);
+            redirectAttributes.addFlashAttribute("success", "Cities imported successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to import cities: " + e.getMessage());
+        }
         return "redirect:/cities";
     }
 }
