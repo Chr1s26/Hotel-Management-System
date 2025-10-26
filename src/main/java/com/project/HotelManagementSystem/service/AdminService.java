@@ -54,17 +54,16 @@ public class AdminService {
         admin.setCreatedAt(LocalDateTime.now());
         admin.setCreatedBy(authService.getCurrentUser());
         admin.setStatus(StatusType.ACTIVE);
-        User user = userRepository.findById(adminCreateDTO.getApp_user_id())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", adminCreateDTO.getApp_user_id()));
-        Role adminRole = roleRepository.findByRoleName("ADMIN").orElseThrow(() -> new ResourceNotFoundException("Role", "id", adminCreateDTO.getApp_user_id()));
+        User user = userRepository.findById(adminCreateDTO.getUser())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", adminCreateDTO.getUser()));
+        Role adminRole = roleRepository.findByRoleName("ADMIN").orElseThrow(() -> new ResourceNotFoundException("Role", "id", adminCreateDTO.getUser()));
         if(user.getRoles() == null) {
             user.setRoles(new HashSet<>());
         }
         user.getRoles().add(adminRole);
         admin.setUser(user);
         admin = adminRepository.save(admin);
-        AdminCreateDTO dto = modelMapper.map(admin, AdminCreateDTO.class);
-        dto.setApp_user_id(admin.getUser().getId());
+        AdminCreateDTO dto = toCreateDTO(admin);
         return dto;
     }
 
@@ -85,16 +84,15 @@ public class AdminService {
         admin.setPassportNumber(admin1.getPassportNumber());
         admin.setNationalIdNumber(admin1.getNationalIdNumber());
         admin.setAdminType(admin1.getAdminType());
-        if (adminUpdateDTO.getApp_user_id() != null && (admin.getUser() == null || !admin.getUser().getId().equals(adminUpdateDTO.getApp_user_id()))) {
-            User newUser = userRepository.findById(adminUpdateDTO.getApp_user_id())
-                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", adminUpdateDTO.getApp_user_id()));
+        if (adminUpdateDTO.getUser() != null && (admin.getUser() == null || !admin.getUser().getId().equals(adminUpdateDTO.getUser()))) {
+            User newUser = userRepository.findById(adminUpdateDTO.getUser())
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", adminUpdateDTO.getUser()));
             admin.setUser(newUser);
         }
         admin.setUpdatedAt(LocalDateTime.now());
         admin.setUpdatedBy(authService.getCurrentUser());
         admin = adminRepository.save(admin);
-        AdminUpdateDTO dto = modelMapper.map(admin, AdminUpdateDTO.class);
-        if (admin.getUser() != null) dto.setApp_user_id(admin.getUser().getId());
+        AdminUpdateDTO dto = toUpdateDTO(admin);
         return dto;
     }
 
@@ -203,6 +201,38 @@ public class AdminService {
                 throw new DuplicateException("National ID number is already used by another admin.");
             }
         }
+    }
+
+    public AdminCreateDTO toCreateDTO(Admin admin) {
+        AdminCreateDTO dto = new AdminCreateDTO();
+        dto.setId(admin.getId());
+        dto.setName(admin.getName());
+        dto.setPhone(admin.getPhone());
+        dto.setDateOfBirth(admin.getDateOfBirth());
+        dto.setNationality(admin.getNationality());
+        dto.setPassportNumber(admin.getPassportNumber());
+        dto.setNationalIdNumber(admin.getNationalIdNumber());
+        dto.setAdminType(admin.getAdminType());
+        if(admin.getUser() != null){
+            dto.setUser(admin.getUser().getId());
+        }
+        return dto;
+    }
+
+    public AdminUpdateDTO toUpdateDTO(Admin admin) {
+        AdminUpdateDTO dto = new AdminUpdateDTO();
+        dto.setId(admin.getId());
+        dto.setName(admin.getName());
+        dto.setPhone(admin.getPhone());
+        dto.setDateOfBirth(admin.getDateOfBirth());
+        dto.setNationality(admin.getNationality());
+        dto.setPassportNumber(admin.getPassportNumber());
+        dto.setNationalIdNumber(admin.getNationalIdNumber());
+        dto.setAdminType(admin.getAdminType());
+        if(admin.getUser() != null){
+            dto.setUser(admin.getUser().getId());
+        }
+        return dto;
     }
 
 }

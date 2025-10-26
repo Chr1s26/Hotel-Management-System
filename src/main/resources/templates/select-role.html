@@ -1,23 +1,58 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Select Role</title>
+    <meta charset="UTF-8">
+    <title>Select Role | Hotel Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-<h2>Select Your Role</h2>
-<p>You have multiple roles. Please choose one to proceed:</p>
 
-<form th:action="@{/set-active-role}" method="post">
-    <div th:each="role : ${userRoles}">
-        <input type="radio" th:id="${role}" name="selectedRole" th:value="${role}" required/>
-        <label th:for="${role}" th:text="${role.replace('ROLE_', '')}"></label><br/>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center space-y-6 font-sans">
+
+<h2 class="text-3xl font-bold text-gray-800">Hotel Management System</h2>
+
+
+<div class="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
+    <h3 class="text-xl text-center font-semibold text-gray-600 mb-4">Select Your Role</h3>
+    <p class="text-sm text-gray-600 text-center mb-6">
+        You have multiple roles. Please choose one to proceed:
+    </p>
+
+
+    <div th:if="${param.error == 'invalid_selection'}"
+         class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-center">
+        Invalid role selection.
     </div>
-    <br/>
-    <button type="submit">Continue</button>
-</form>
 
-<div th:if="${param.error == 'invalid_selection'}" style="color: red;">
-    Invalid role selection.
+
+    <form th:action="@{/set-active-role}" method="post" class="space-y-4">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <div class="space-y-2">
+            <div th:each="role : ${userRoles}" class="flex items-center space-x-2">
+                <input type="radio"
+                       th:id="${role}"
+                       name="selectedRole"
+                       th:value="${role}"
+                       class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                       required />
+                <label th:for="${role}"
+                       th:text="${role.replace('ROLE_', '')}"
+                       class="text-gray-700 font-medium capitalize"></label>
+            </div>
+        </div>
+
+        <button type="submit"
+                class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Continue
+        </button>
+    </form>
+
+
+    <p class="mt-6 text-center text-sm text-gray-600">
+        Not you?
+        <a th:href="@{/login}" class="text-blue-600 hover:underline font-medium">Logout</a>
+    </p>
 </div>
+
 </body>
 </html>

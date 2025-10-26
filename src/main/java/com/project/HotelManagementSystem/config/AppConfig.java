@@ -141,8 +141,14 @@ public class  AppConfig {
             AdminCreateDTO dto = new AdminCreateDTO();
             dto.setId(admin.getId());
             dto.setName(admin.getName());
+            dto.setPhone(admin.getPhone());
+            dto.setDateOfBirth(admin.getDateOfBirth());
+            dto.setNationality(admin.getNationality());
+            dto.setPassportNumber(admin.getPassportNumber());
+            dto.setNationalIdNumber(admin.getNationalIdNumber());
+            dto.setAdminType(admin.getAdminType());
             if (admin.getUser() != null) {
-                dto.setApp_user_id(admin.getUser().getId());
+                dto.setUser(admin.getUser().getId());
             }
             return dto;
         };
@@ -153,8 +159,14 @@ public class  AppConfig {
             AdminUpdateDTO dto = new AdminUpdateDTO();
             dto.setId(admin.getId());
             dto.setName(admin.getName());
+            dto.setPhone(admin.getPhone());
+            dto.setDateOfBirth(admin.getDateOfBirth());
+            dto.setNationality(admin.getNationality());
+            dto.setPassportNumber(admin.getPassportNumber());
+            dto.setNationalIdNumber(admin.getNationalIdNumber());
+            dto.setAdminType(admin.getAdminType());
             if (admin.getUser() != null) {
-                dto.setApp_user_id(admin.getUser().getId());
+                dto.setUser(admin.getUser().getId());
             }
             return dto;
         };
@@ -186,7 +198,7 @@ public class  AppConfig {
             dto.setEditorType(editor.getEditorType());
 
             if (editor.getUser() != null) {
-                dto.setApp_user_id(editor.getUser().getId());
+                dto.setUser(editor.getUser().getId());
             }
             return dto;
         };

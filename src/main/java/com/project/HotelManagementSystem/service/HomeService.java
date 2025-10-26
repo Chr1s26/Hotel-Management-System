@@ -34,8 +34,6 @@ public class HomeService {
 
         List<FileStorage> fileList = fileStorageRepository.findByFileTypeAndFileId(FileType.HOME, 1L);
         String url = fileService.getFileName(FileType.ADMIN,1L);
-        System.out.println("*****");
-        System.out.println(url);
         if (!fileList.isEmpty()) {
             FileStorage storedFile = fileList.get(0);
             homeDTO.setProfileUrl(fileService.getFileName(FileType.HOME,1L));

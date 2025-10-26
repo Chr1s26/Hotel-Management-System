@@ -34,5 +34,5 @@ public class EditorCreateDTO {
     @NotNull(message = "Editor type cannot be empty")
     private EditorType editorType;
     @AvailableEditorUser(message = "This user is already assigned to another editor.")
-    private Long app_user_id;
+    private Long user;
 }

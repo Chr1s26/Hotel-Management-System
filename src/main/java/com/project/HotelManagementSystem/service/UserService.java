@@ -34,6 +34,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -42,9 +43,6 @@ public class UserService {
     private RoleRepository roleRepository;
 
     public UserCreateDTO createUser(UserCreateDTO userCreateDTO) {
-        if(userRepository.existsByName(userCreateDTO.getName())) throw new DuplicateException("User name "+userCreateDTO.getName()+" is already used.");
-        if(userRepository.existsByEmail(userCreateDTO.getEmail())) throw new DuplicateException("User's  email "+userCreateDTO.getEmail()+" is already used.");
-
         User user = modelMapper.map(userCreateDTO, User.class);
         user.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
         user.setConfirmedAt(LocalDateTime.now());
@@ -58,9 +56,6 @@ public class UserService {
     }
 
     public UserUpdateDTO updateUser(Long id, UserUpdateDTO userUpdateDTO) {
-        if(userRepository.existsByNameAndIdNot(userUpdateDTO.getName(), userUpdateDTO.getId())) throw new DuplicateException("User name "+userUpdateDTO.getName()+" already exists.");
-        if(userRepository.existsByEmailAndIdNot(userUpdateDTO.getEmail(),userUpdateDTO.getId())) throw new DuplicateException("User's  email "+userUpdateDTO.getEmail()+" already exists.");
-
         User updatedUser = this.userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User","id",id));
         User user = modelMapper.map(userUpdateDTO, User.class);
         updatedUser.setName(user.getName());
@@ -74,7 +69,6 @@ public class UserService {
         Role userRole = roleRepository.findByRoleName("NORMAL_USER").orElseThrow(() -> new InvalidRoleException("Role not found"));
         updatedUser.setRoles(Collections.singleton(userRole));
         User savedUser = userRepository.save(updatedUser);
-
         return modelMapper.map(savedUser, UserUpdateDTO.class);
     }
 
