@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
         ));
         model.addAttribute(ex.getObjectName(), ex.getObjectValue());
         model.addAttribute(MODEL_KEY_PREFIX + ex.getObjectName(), br);
-
+        model.addAttribute("requestURI", ex.getView());
         return ex.getView();
     }
 }

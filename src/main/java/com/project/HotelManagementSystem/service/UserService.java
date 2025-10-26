@@ -43,8 +43,8 @@ public class UserService {
     private RoleRepository roleRepository;
 
     public UserCreateDTO createUser(UserCreateDTO userCreateDTO) {
-        if(userRepository.existsByName(userCreateDTO.getName())) throw new DuplicateException("user",userCreateDTO,"name","users/new","An account with this name already exists");
-        if(userRepository.existsByEmail(userCreateDTO.getEmail())) throw new DuplicateException("user",userCreateDTO,"email","users/new","An account with this email already exists");
+        if(userRepository.existsByName(userCreateDTO.getName())) throw new DuplicateException("user",userCreateDTO,"name","users/create","An account with this name already exists");
+        if(userRepository.existsByEmail(userCreateDTO.getEmail())) throw new DuplicateException("user",userCreateDTO,"email","users/create","An account with this email already exists");
 
         User user = modelMapper.map(userCreateDTO, User.class);
         user.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
