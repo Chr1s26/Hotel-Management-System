@@ -1,0 +1,251 @@
+
+:root {
+    --royal:    #091235;
+    --navy:     #14202E;
+    --midnight: #2B4257;
+    --bluegray: #88A9C3;
+    --soft:     #DDE6EE;
+    --soft2:    #BFD4E6;
+    --danger:   #dc3545;
+    --warning:  #ffc107;
+}
+
+/* ===== Page base ===== */
+body {
+    background: linear-gradient(135deg, var(--royal), var(--navy));
+    color: var(--soft);
+    padding-top: 70px;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ===== Page Title ===== */
+h2 {
+    text-align: center;
+    padding-top: 30px;
+    color: var(--bluegray);
+    text-shadow: 0 2px 6px rgba(0,0,0,0.35);
+}
+
+/* ===== Form Container ===== */
+form {
+    background-color: rgba(43, 66, 87, 0.65);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid rgba(136,169,195,0.35);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+form.no-card {
+    background: transparent !important;
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+/* ===== Labels ===== */
+label.form-label {
+    color: var(--soft);
+}
+
+/* ===== Inputs & Selects ===== */
+.form-control,
+.form-select {
+    background-color: rgba(136,169,195,0.12);
+    color: var(--soft);
+    border: 1px solid rgba(136,169,195,0.4);
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: rgba(136,169,195,0.18);
+    color: var(--soft);
+    border-color: var(--bluegray);
+    box-shadow: 0 0 0 3px rgba(136,169,195,0.3);
+}
+
+/* ===== Tables ===== */
+table {
+    background-color: rgba(43, 66, 87, 0.8);
+    color: var(--soft);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+thead th {
+    background-color: var(--navy) !important;
+    color: var(--soft) !important;
+}
+
+tbody td {
+    background-color: rgba(43, 66, 87, 0.65) !important;
+    color: var(--soft) !important;
+}
+
+th, td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.table-bordered {
+    border: 1px solid rgba(136,169,195,0.35);
+}
+
+/* ===== Buttons ===== */
+
+/* Primary */
+.btn-primary {
+    background-color: var(--bluegray);
+    border-color: var(--bluegray);
+    color: var(--royal);
+    font-weight: 600;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+}
+.btn-primary:hover {
+    background-color: #9db8cf;
+    border-color: #9db8cf;
+    color: var(--royal);
+}
+
+/* Secondary */
+.btn-secondary {
+    background-color: var(--midnight);
+    border-color: var(--midnight);
+    color: var(--soft);
+}
+.btn-secondary:hover {
+    background-color: var(--bluegray);
+    border-color: var(--bluegray);
+    color: var(--royal);
+}
+
+/* Warning */
+.btn-warning {
+    background-color: var(--warning);
+    color: var(--royal);
+    border: none;
+    font-weight: 600;
+}
+.btn-warning:hover {
+    background-color: #e0a800;
+    color: var(--navy);
+}
+
+/* Danger */
+.btn-danger {
+    background-color: var(--danger);
+    border: none;
+    color: #fff;
+}
+.btn-danger:hover {
+    background-color: #bb2d3b;
+}
+
+/* ===== Pagination ===== */
+.pagination .page-item.active .page-link {
+    background-color: var(--bluegray);
+    color: var(--royal);
+    border-color: var(--bluegray);
+}
+
+.pagination .page-link {
+    color: var(--soft2);
+    background-color: transparent;
+    border: 1px solid rgba(136,169,195,0.25);
+    transition: 0.2s ease;
+}
+
+.pagination .page-link:hover {
+    background-color: rgba(136,169,195,0.25);
+    color: var(--royal);
+    border-color: var(--bluegray);
+}
+
+.pagination .page-item.disabled .page-link {
+    color: rgba(221,230,238,0.4);
+    pointer-events: none;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+/* ===== Select / Dropdowns ===== */
+#pageSize {
+    background-color: rgba(43,66,87,0.8);
+    color: var(--soft);
+    border: 1px solid rgba(136,169,195,0.35);
+}
+
+#pageSize option {
+    background-color: var(--royal);
+    color: var(--soft);
+}
+
+/* ===== Select2 ===== */
+.select2-container--default .select2-selection--single,
+.select2-container--default .select2-selection--multiple {
+    background-color: rgba(43,66,87,0.75);
+    color: var(--soft);
+    border: 1px solid rgba(136,169,195,0.35);
+}
+.select2-container--default .select2-selection__rendered {
+    color: var(--soft) !important;
+}
+.select2-container--default .select2-results__option {
+    background-color: rgba(43,66,87,0.9);
+    color: var(--soft);
+}
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--bluegray);
+    color: var(--royal);
+}
+.select2-container--default .select2-selection__placeholder {
+    color: var(--soft2);
+    font-weight: 500;
+}
+
+/* ===== Navbar & Dropdown Layers ===== */
+.navbar { z-index: 1050 !important; }
+.dropdown-menu { z-index: 2000 !important; }
+
+/* ===== Container spacing ===== */
+.container {
+    padding-top: 20px;
+}
+
+/* === Royal Blue Select Styling === */
+.form-select {
+    background-color: rgba(9, 18, 53, 0.8); /* Royal Blue base */
+    color: #ffffff;
+    border: 1px solid rgba(136, 169, 195, 0.4); /* soft border */
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* hover + focus effect */
+.form-select:hover,
+.form-select:focus {
+    background-color: rgba(20, 32, 46, 0.95); /* Navy Blue */
+    border-color: rgba(136, 169, 195, 0.8);
+    box-shadow: 0 0 8px rgba(136, 169, 195, 0.5);
+    color: #fff;
+}
+
+/* dropdown list styling (for modern browsers) */
+.form-select option {
+    background-color: #14202E;  /* Navy Blue */
+    color: #ffffff;
+}
+/* Placeholder text for inputs and selects */
+::placeholder {
+    color: var(--soft2);
+    opacity: 0.85;
+}
+
+.form-control::placeholder,
+.form-select::placeholder {
+    color: #BFD4E6;
+    opacity: 0.9;
+}

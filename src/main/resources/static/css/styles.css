@@ -1,0 +1,179 @@
+/* 🎨 Color Palette */
+:root {
+    --royal:    #091235;  /* Deep Royal Blue – main background / brand */
+    --navy:     #14202E;  /* Navy Blue – navbar, footer */
+    --midnight: #2B4257;  /* Midnight Blue – cards, glass tint */
+    --bluegray: #88A9C3;  /* Blue Gray – accent / primary button */
+    --soft:     #DDE6EE;  /* Light text / input color */
+    --soft2:    #BFD4E6;  /* Hover / placeholder color */
+}
+
+.bg-royal {
+    background-color: var(--royal) !important;
+}
+.bg-navy {
+    background-color: var(--navy) !important;
+}
+.bg-midnight {
+    background-color: var(--midnight) !important;
+}
+.bg-royal-navy-grad {
+    background: linear-gradient(135deg, var(--royal), var(--navy)) !important;
+}
+
+/* ✨ Glassmorphism Effect */
+.glass-card {
+    background: linear-gradient(
+            to bottom right,
+            rgba(43, 66, 87, 0.65),
+            rgba(20, 32, 46, 0.65)
+    );
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(136, 169, 195, 0.45);
+    border-radius: 18px;
+    box-shadow:
+            0 18px 40px rgba(0, 0, 0, 0.45),
+            inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    color: var(--soft);
+}
+
+/* 🧾 Text Colors */
+.text-royal    { color: var(--royal) !important; }
+.text-navy     { color: var(--navy) !important; }
+.text-midnight { color: var(--midnight) !important; }
+.text-bluegray { color: var(--bluegray) !important; }
+.text-soft     { color: var(--soft) !important; }
+.text-soft2    { color: var(--soft2) !important; }
+
+/* 🔲 Borders */
+.border-royal    { border-color: var(--royal) !important; }
+.border-navy     { border-color: var(--navy) !important; }
+.border-midnight { border-color: var(--midnight) !important; }
+.border-bluegray { border-color: var(--bluegray) !important; }
+
+/* 🧍 Labels */
+label {
+    color: var(--bluegray);
+}
+
+/* ✏️ Inputs (glass style) */
+.glass-input {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(136, 169, 195, 0.35);
+    color: var(--soft);
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    width: 100%;
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.glass-input::placeholder {
+    color: var(--soft2);
+    opacity: 0.9;
+}
+
+.glass-input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.16);
+    border-color: var(--bluegray);
+    box-shadow: 0 0 0 3px rgba(136, 169, 195, 0.35);
+}
+
+/* 🔘 Buttons */
+.btn-primary {
+    background: var(--bluegray);
+    color: var(--royal);
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 0.6rem 1rem;
+    transition: transform 0.08s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+}
+
+.btn-primary:hover {
+    background: #9db8cf;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+/* 🧭 Links */
+.link {
+    color: var(--bluegray);
+    transition: color 0.2s ease;
+}
+
+.link:hover {
+    color: var(--soft2);
+    text-decoration: underline;
+}
+
+/* 🧱 Utility Shadows */
+.shadow-glass {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* ===== Navbar (glass + royal palette) ===== */
+.navbar-glass {
+    background:
+            linear-gradient(to right,
+            rgba(43,66,87,0.70),   /* midnight */
+            rgba(20,32,46,0.70));  /* navy */
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(136,169,195,0.40); /* bluegray line */
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+}
+
+/* Brand / links */
+.navbar-link,
+.nav-link {
+    color: var(--soft) !important;
+}
+.navbar-link:hover,
+.nav-link:hover {
+    color: var(--soft2) !important;
+}
+
+/* Active link highlight */
+.nav-link.active {
+    color: var(--bluegray) !important;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+/* Dropdown */
+.dropdown-menu {
+    background: rgba(20,32,46,0.97); /* navy */
+    border: 1px solid rgba(136,169,195,0.25);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+.dropdown-item {
+    color: var(--soft);
+}
+.dropdown-item:hover {
+    color: var(--bluegray);
+    background: rgba(136,169,195,0.12);
+}
+
+/* Navbar avatar */
+.avatar-36{
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;     /* crop to a circle */
+    border: 1px solid rgba(136,169,195,0.35);
+    display: inline-block; /* prevent weird expansion */
+}
+
+/* extra safety: any img inside navbar won't blow up */
+.navbar img {
+    max-height: 40px;
+}
+
