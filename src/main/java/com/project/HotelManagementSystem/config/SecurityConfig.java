@@ -44,7 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/users/**").hasAnyRole("EDITOR", "ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
-                        .loginPage("/login")
+                        .loginPage("/login?error=true")
                         .loginProcessingUrl("/authenticateTheUser")
                         .successHandler(customAuthenticationSuccessSuccessHandler)
                         .failureHandler(customAuthenticationFailureHandler)

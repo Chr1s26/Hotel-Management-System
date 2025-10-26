@@ -2,7 +2,6 @@ package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.exception.AccountNotConfirmedException;
-import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.UserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
