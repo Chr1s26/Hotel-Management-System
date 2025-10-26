@@ -59,7 +59,6 @@ public class UserDetailsServiceImpl implements AbstractService{
         Role userRole = roleRepository.findByRoleName("NORMAL_USER").orElseThrow(() -> new InvalidRoleException("Role not found"));
         user.setRoles(Collections.singleton(userRole));
         user.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
-        user.setCreatedBy(authService.getCurrentUser());
         return userRepository.save(user);
     }
 }

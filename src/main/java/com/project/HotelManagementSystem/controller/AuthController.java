@@ -30,24 +30,16 @@ public class AuthController {
 
     @PostMapping("/registerUser")
     public String showLoginForm(@Valid @ModelAttribute("user") UserCreateDTO appUser, BindingResult br, Model model) {
+        if (userRepository.existsByNameIgnoreCase(appUser.getName())) br.rejectValue("name", "duplicate", "This username is already taken");
+        if (userRepository.existsByEmail(appUser.getEmail())) br.rejectValue("email", "duplicate", "An account with this email already exists");
+        if (br.hasErrors()) return "register";
 
-        if (userRepository.existsByNameIgnoreCase(appUser.getName())) {
-            br.rejectValue("name", "duplicate", "This username is already taken");
-        }
-        if (userRepository.existsByEmail(appUser.getEmail())) {
-            br.rejectValue("email", "duplicate", "An account with this email already exists");
-        }
-
-        if (br.hasErrors()) {
-            return "register";
-        }
         try{
             abstractService.registerNewUser(appUser);
         }catch (Exception e){
             model.addAttribute("registrationError", "Registration failed: " + e.getMessage());
             return "register";
         }
-
 
         return "redirect:/login?registered=true";
     }
