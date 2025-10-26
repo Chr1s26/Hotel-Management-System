@@ -23,17 +23,33 @@
 
         <div>
             <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-            <input type="text" id="username" th:field="*{name}" class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200" placeholder="Enter your username" required>
+            <input id="username" th:field="*{name}" type="text"
+                   class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
+                   placeholder="Enter your username" required>
+            <p class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
         </div>
 
+        <!-- Email -->
         <div>
             <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-            <input type="email" id="email" th:field="*{email}" class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200" placeholder="Enter your email" required>
+            <input id="email" th:field="*{email}" type="email"
+                   class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
+                   placeholder="Enter your email" required>
+            <p class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
         </div>
 
+        <!-- Password -->
         <div>
             <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-            <input type="password" id="password" th:field="*{password}" class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200" placeholder="Enter your password" required>
+            <input id="password" th:field="*{password}" type="password"
+                   class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
+                   placeholder="Enter your password" required>
+            <ul class="text-gray-600 text-xs mt-1 list-disc list-inside">
+                <li>At least 8 characters</li>
+                <li>Must include: uppercase, lowercase, number, symbol</li>
+                <li>No spaces</li>
+            </ul>
+            <p class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
         </div>
 
         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">

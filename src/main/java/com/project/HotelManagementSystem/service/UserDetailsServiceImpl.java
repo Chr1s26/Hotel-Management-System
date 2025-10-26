@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.service;
 
+import com.project.HotelManagementSystem.dto.user.UserCreateDTO;
 import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
@@ -49,20 +50,15 @@ public class UserDetailsServiceImpl implements AbstractService{
     }
 
     @Override
-    public User registerNewUser(User user) {
-        if(userRepository.existsByNameIgnoreCase(user.getName())){
-            throw new DuplicateException("Username already exists");
-        }
-        if(userRepository.existsByEmail(user.getEmail())){
-            throw new DuplicateException("Email already exists");
-        }
-
+    public User registerNewUser(UserCreateDTO userCreateDTO) {
+        User user = new User();
+        user.setName(userCreateDTO.getName());
+        user.setEmail(userCreateDTO.getEmail());
         user.setCreatedAt(LocalDateTime.now());
         user.setStatus(StatusType.ACTIVE);
         Role userRole = roleRepository.findByRoleName("NORMAL_USER").orElseThrow(() -> new InvalidRoleException("Role not found"));
         user.setRoles(Collections.singleton(userRole));
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setConfirmedAt(LocalDateTime.now());
+        user.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
         user.setCreatedBy(authService.getCurrentUser());
         return userRepository.save(user);
     }

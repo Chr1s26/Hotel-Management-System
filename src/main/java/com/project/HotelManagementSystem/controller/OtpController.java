@@ -35,7 +35,7 @@ public class OtpController {
     public String verifyOtp(@RequestParam("otp") String otp,@RequestParam String email){
         try{
             otpService.isOtpValid(email, otp);
-            return "redirect:/login";
+            return "redirect:/login?otpMessage=true";
         }catch (OtpExpiredException e){
             String encodedMessage = "OTP is expired";
             return "redirect:/confirm-account/otp?email=" + email + "&error=unconfirmed&message=" + encodedMessage;
