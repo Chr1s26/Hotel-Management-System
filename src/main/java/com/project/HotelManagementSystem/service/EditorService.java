@@ -47,9 +47,9 @@ public class EditorService {
 
     public EditorCreateDTO createEditor(EditorCreateDTO editorCreateDTO) {
         Optional<Editor> editorOp = editorRepository.findByNameIgnoreCase(editorCreateDTO.getName());
-        if (editorOp.isPresent()) {
-            throw new DuplicateException("Editor with name " + editorCreateDTO.getName() + " already exists");
-        }
+//        if (editorOp.isPresent()) {
+//            throw new DuplicateException("Editor with name " + editorCreateDTO.getName() + " already exists");
+//        }
         validateIdsUniqueOrThrow(null, editorCreateDTO.getPassportNumber(), editorCreateDTO.getNationalIdNumber());
 
         Editor editor = modelMapper.map(editorCreateDTO, Editor.class);
@@ -75,9 +75,9 @@ public class EditorService {
     @Transactional
     public EditorUpdateDTO updateEditor(Long id, EditorUpdateDTO editorUpdateDTO) {
         Optional<Editor> editorOp = editorRepository.findByNameIgnoreCaseAndIdNot(editorUpdateDTO.getName(),id);
-        if (editorOp.isPresent()) {
-            throw new DuplicateException("Editor with name " + editorUpdateDTO.getName() + " already exists");
-        }
+//        if (editorOp.isPresent()) {
+//            throw new DuplicateException("Editor with name " + editorUpdateDTO.getName() + " already exists");
+//        }
         validateIdsUniqueOrThrow(id, editorUpdateDTO.getPassportNumber(), editorUpdateDTO.getNationalIdNumber());
         Long userId = editorUpdateDTO.getUser();
         Editor savedEditor = editorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Editor","id",id));
@@ -195,18 +195,18 @@ public class EditorService {
             boolean dup = (currentEditorId == null)
                     ? editorRepository.existsByPassportNumberIgnoreCase(p)
                     : editorRepository.existsByPassportNumberIgnoreCaseAndIdNot(p, currentEditorId);
-            if (dup) {
-                throw new DuplicateException("Passport number is already used by another editor.");
-            }
+//            if (dup) {
+//                throw new DuplicateException("Passport number is already used by another editor.");
+//            }
         }
 
         if (n != null && !n.isEmpty()) {
             boolean dup = (currentEditorId == null)
                     ? editorRepository.existsByNationalIdNumberIgnoreCase(n)
                     : editorRepository.existsByNationalIdNumberIgnoreCaseAndIdNot(n, currentEditorId);
-            if (dup) {
-                throw new DuplicateException("National ID number is already used by another editor.");
-            }
+//            if (dup) {
+//                throw new DuplicateException("National ID number is already used by another editor.");
+//            }
         }
     }
 

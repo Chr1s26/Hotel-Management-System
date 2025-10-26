@@ -30,9 +30,9 @@ public class RegionService {
 
     public RegionCreateDTO createRegion(RegionCreateDTO regionCreateDTO) {
         Optional<Region> regionOp = regionRepository.findByNameIgnoreCase(regionCreateDTO.getName());
-        if(regionOp.isPresent()) {
-            throw new DuplicateException("Region name "+ regionCreateDTO.getName()+" already exists");
-        }
+//        if(regionOp.isPresent()) {
+//            throw new DuplicateException("Region name "+ regionCreateDTO.getName()+" already exists");
+//        }
         Region region = modelMapper.map(regionCreateDTO, Region.class);
         region.setCreatedAt(LocalDateTime.now());
         region.setCreatedBy(authService.getCurrentUser());
@@ -43,9 +43,9 @@ public class RegionService {
 
     public RegionUpdateDTO updateRegion(Long id, RegionUpdateDTO regionUpdateDTO) {
         Optional<Region> regionOp = regionRepository.findByNameIgnoreCase(regionUpdateDTO.getName());
-        if(regionOp.isPresent() && !regionOp.get().getId().equals(id)) {
-            throw new DuplicateException("Region name "+ regionUpdateDTO.getName()+" already exists");
-        }
+//        if(regionOp.isPresent() && !regionOp.get().getId().equals(id)) {
+//            throw new DuplicateException("Region name "+ regionUpdateDTO.getName()+" already exists");
+//        }
         Region region = modelMapper.map(regionUpdateDTO, Region.class);
         Region updatedRegionOp = this.regionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Region","id",id));
         updatedRegionOp.setName(region.getName());

@@ -32,9 +32,9 @@ public class RoleService {
 
     public RoleCreateDTO createRole(RoleCreateDTO roleCreateDTO) {
         Optional<Role> optionalRole = this.roleRepository.findByRoleName(roleCreateDTO.getRoleName());
-        if (optionalRole.isPresent()) {
-            throw new DuplicateException("Role with name " + roleCreateDTO.getRoleName() + " already exists");
-        }
+//        if (optionalRole.isPresent()) {
+//            throw new DuplicateException("Role with name " + roleCreateDTO.getRoleName() + " already exists");
+//        }
         Role role = modelMapper.map(roleCreateDTO, Role.class);
         role.setStatus(StatusType.ACTIVE);
         role.setCreatedAt(LocalDateTime.now());
@@ -45,9 +45,9 @@ public class RoleService {
 
     public RoleUpdateDTO updateRole(Long id, RoleUpdateDTO roleUpdateDTO) {
         Optional<Role> optionalRole = this.roleRepository.findByRoleNameAndIdNot(roleUpdateDTO.getRoleName(),id);
-        if (optionalRole.isPresent()) {
-            throw new DuplicateException("Role with name " + roleUpdateDTO.getRoleName() + " already exists");
-        }
+//        if (optionalRole.isPresent()) {
+//            throw new DuplicateException("Role with name " + roleUpdateDTO.getRoleName() + " already exists");
+//        }
         Role roleOp = roleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Role", "id", id));
         Role role = modelMapper.map(roleUpdateDTO, Role.class);
         roleOp.setRoleName(role.getRoleName());

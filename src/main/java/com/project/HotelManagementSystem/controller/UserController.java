@@ -6,8 +6,6 @@ import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
 import com.project.HotelManagementSystem.dto.searchFilter.user.*;
 import com.project.HotelManagementSystem.dto.user.*;
 import com.project.HotelManagementSystem.entity.User;
-import com.project.HotelManagementSystem.exception.DuplicateException;
-import com.project.HotelManagementSystem.repository.UserRepository;
 import com.project.HotelManagementSystem.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +23,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final UserRepository userRepository;
 
     @ModelAttribute("query")
     public UserSearchQuery initQuery() {
@@ -68,11 +65,8 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public String createUser(@Valid @ModelAttribute("user") UserCreateDTO userCreateDTO,BindingResult br, Model model) {
-        if(userRepository.existsByName(userCreateDTO.getName())) br.rejectValue("name", "duplicate", "This username is already taken");
-        if(userRepository.existsByEmail(userCreateDTO.getEmail())) br.rejectValue("email", "duplicate", "An account with this email already exists");
+    public String createUser(@Valid @ModelAttribute("user") UserCreateDTO userCreateDTO,BindingResult br) {
         if(br.hasErrors()) return "users/create";
-
         this.userService.createUser(userCreateDTO);
         return "redirect:/users";
     }
@@ -87,11 +81,8 @@ public class UserController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateUser(@PathVariable Long id,@Valid @ModelAttribute("user") UserUpdateDTO userUpdateDTO, BindingResult br, Model model) {
-        if(userRepository.existsByNameAndIdNot(userUpdateDTO.getName(), userUpdateDTO.getId())) br.rejectValue("name", "duplicate", "This username is already taken");
-        if(userRepository.existsByEmailAndIdNot(userUpdateDTO.getEmail(),userUpdateDTO.getId())) br.rejectValue("email", "duplicate", "An account with this email already exists");
+    public String updateUser(@PathVariable Long id,@Valid @ModelAttribute("user") UserUpdateDTO userUpdateDTO, BindingResult br) {
         if(br.hasErrors()) return "users/edit";
-
         this.userService.updateUser(id,userUpdateDTO);
         return "redirect:/users";
     }

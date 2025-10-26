@@ -43,6 +43,9 @@ public class UserService {
     private RoleRepository roleRepository;
 
     public UserCreateDTO createUser(UserCreateDTO userCreateDTO) {
+        if(userRepository.existsByName(userCreateDTO.getName())) throw new DuplicateException("user",userCreateDTO,"name","users/new","An account with this name already exists");
+        if(userRepository.existsByEmail(userCreateDTO.getEmail())) throw new DuplicateException("user",userCreateDTO,"email","users/new","An account with this email already exists");
+
         User user = modelMapper.map(userCreateDTO, User.class);
         user.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
         user.setConfirmedAt(LocalDateTime.now());
@@ -56,6 +59,9 @@ public class UserService {
     }
 
     public UserUpdateDTO updateUser(Long id, UserUpdateDTO userUpdateDTO) {
+        if(userRepository.existsByNameAndIdNot(userUpdateDTO.getName(), userUpdateDTO.getId())) throw new DuplicateException("user",userUpdateDTO,"name","users/edit","An account with this name already exists");
+        if(userRepository.existsByEmailAndIdNot(userUpdateDTO.getEmail(),userUpdateDTO.getId())) throw new DuplicateException("user",userUpdateDTO,"email","users/edit","An account with this email already exists");
+
         User updatedUser = this.userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User","id",id));
         User user = modelMapper.map(userUpdateDTO, User.class);
         updatedUser.setName(user.getName());
