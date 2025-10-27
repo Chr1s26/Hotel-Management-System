@@ -48,9 +48,9 @@
 
         public HotelCreateDTO createHotel(HotelCreateDTO hotelCreateDTO) {
             Optional<Hotel> hotelOp = hotelRepository.findHotelByNameAndCoordinates(hotelCreateDTO.getName(),hotelCreateDTO.getAddress().getLatitude(), hotelCreateDTO.getAddress().getLongitude());
-            if(hotelOp.isPresent()) {
-                throw new DuplicateException("Hotel with name " + hotelCreateDTO.getName() + " And with same latitude and longitude already exists");
-            }
+//            if(hotelOp.isPresent()) {
+//                throw new DuplicateException("Hotel with name " + hotelCreateDTO.getName() + " And with same latitude and longitude already exists");
+//            }
             Hotel hotel = modelMapper.map(hotelCreateDTO, Hotel.class);
             hotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelCreateDTO.getPolicyIds())));
             hotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelCreateDTO.getPromotionIds())));
@@ -65,9 +65,9 @@
 
         public HotelUpdateDTO updateHotel(Long id, HotelUpdateDTO hotelUpdateDTO) {
             Optional<Hotel> hotelOp = hotelRepository.findHotelByNameAndCoordinatesAndIdNot(hotelUpdateDTO.getName(),hotelUpdateDTO.getAddress().getLatitude(), hotelUpdateDTO.getAddress().getLongitude(),hotelUpdateDTO.getId());
-            if(hotelOp.isPresent()) {
-                throw new DuplicateException("Hotel with name " + hotelUpdateDTO.getName() + " And with same latitude and longitude already exists");
-            }
+//            if(hotelOp.isPresent()) {
+//                throw new DuplicateException("Hotel with name " + hotelUpdateDTO.getName() + " And with same latitude and longitude already exists");
+//            }
             Hotel optionalHotel = this.hotelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Hotel", "id", id));
             Hotel hotel = modelMapper.map(hotelUpdateDTO, Hotel.class);
             optionalHotel.setName(hotel.getName());

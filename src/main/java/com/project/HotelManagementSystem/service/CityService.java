@@ -39,9 +39,9 @@ public class CityService {
 
     public CityCreateDTO createCity(CityCreateDTO cityCreateDTO) {
         Optional<City> cityOp = this.cityRepository.findByNameIgnoreCase(cityCreateDTO.getName());
-        if(cityOp.isPresent()) {
-            throw new DuplicateException("Another City with name " + cityCreateDTO.getName() + " already exists");
-        }
+//        if(cityOp.isPresent()) {
+//            throw new DuplicateException("Another City with name " + cityCreateDTO.getName() + " already exists");
+//        }
         City city = modelMapper.map(cityCreateDTO, City.class);
         city.setStatus(StatusType.ACTIVE);
         city.setCreatedAt(LocalDateTime.now());
@@ -52,9 +52,9 @@ public class CityService {
 
     public CityUpdateDTO updateCity(Long id, CityUpdateDTO cityUpdateDTO) {
         Optional<City> cityOptional = this.cityRepository.findByNameIgnoreCaseAndIdNot(cityUpdateDTO.getName(),cityUpdateDTO.getId());
-        if(cityOptional.isPresent() && !cityOptional.get().getId().equals(id)) {
-            throw new DuplicateException("Another City with name " + cityUpdateDTO.getName() + " already exists");
-        }
+//        if(cityOptional.isPresent() && !cityOptional.get().getId().equals(id)) {
+//            throw new DuplicateException("Another City with name " + cityUpdateDTO.getName() + " already exists");
+//        }
         City cityOp = cityRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("City","id",id));
         City city = modelMapper.map(cityUpdateDTO, City.class);
         cityOp.setName(city.getName());
