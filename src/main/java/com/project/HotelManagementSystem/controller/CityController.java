@@ -102,7 +102,7 @@ public class CityController {
 
     @GetMapping("/export/excel")
     public ResponseEntity<byte[]> exportExcel(Model model) throws IOException {
-        ByteArrayInputStream in = cityService.exportCitiesToExcel();
+        ByteArrayInputStream in = cityService.export();
         byte[] bytes = in.readAllBytes();
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=cities.xlsx")

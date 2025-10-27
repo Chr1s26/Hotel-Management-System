@@ -7,6 +7,8 @@ import com.project.HotelManagementSystem.entity.specification.CountrySpecificati
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CountryRepository;
+import com.project.HotelManagementSystem.service.excelExport.ColumnSpec;
+import com.project.HotelManagementSystem.service.excelExport.CommonExportProcess;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -23,7 +25,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CountryService {
+public class CountryService extends CommonExportProcess<Country> {
 
     private final CountryRepository countryRepository;
     private final ModelMapper modelMapper;
@@ -106,8 +108,24 @@ public class CountryService {
         countryResponse.setTotalPages(countryPage.getTotalPages());
         countryResponse.setLastPage(countryPage.isLast());
         return countryResponse;
+    }
 
+    @Override
+    public String getSheetName() {
+        return "Countries";
+    }
 
+    @Override
+    public List<Country> fetchData() {
+        return countryRepository.findAll();
+    }
+
+    @Override
+    public List<ColumnSpec<Country>> columns() {
+        return List.of(
+                new ColumnSpec<>("ID", c -> String.valueOf(c.getId()), null),
+                new ColumnSpec<>("Name", Country::getName, null)
+        );
     }
 }
 

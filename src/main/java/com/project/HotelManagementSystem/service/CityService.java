@@ -9,6 +9,8 @@ import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CityRepository;
 import com.project.HotelManagementSystem.repository.RegionRepository;
+import com.project.HotelManagementSystem.service.excelExport.ColumnSpec;
+import com.project.HotelManagementSystem.service.excelExport.CommonExportProcess;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -21,8 +23,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,7 +30,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CityService {
+public class CityService extends CommonExportProcess<City> {
 
     private final CityRepository cityRepository;
     private final RegionRepository regionRepository;
@@ -119,43 +119,6 @@ public class CityService {
         return cityResponse;
     }
 
-    public ByteArrayInputStream exportCitiesToExcel() throws IOException {
-        List<CityDTO> cities = findAllCities();
-
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Cities");
-
-        Row headerRow = sheet.createRow(0);
-        String[] headers = {"ID", "Name", "Region"};
-        for (int i = 0; i < headers.length; i++) {
-            Cell cell = headerRow.createCell(i);
-            cell.setCellValue(headers[i]);
-            CellStyle style = workbook.createCellStyle();
-            Font font = workbook.createFont();
-            font.setBold(true);
-            style.setFont(font);
-            cell.setCellStyle(style);
-        }
-
-        int rowNum = 1;
-        for (CityDTO city : cities) {
-            Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(city.getId());
-            row.createCell(1).setCellValue(city.getName());
-            row.createCell(2).setCellValue(city.getRegion() != null ? city.getRegion().getName() : "-");
-        }
-
-        for (int i = 0; i < headers.length; i++) {
-            sheet.autoSizeColumn(i);
-        }
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        workbook.write(out);
-        workbook.close();
-
-        return new ByteArrayInputStream(out.toByteArray());
-    }
-
     public void importCitiesFromExcel(MultipartFile file) {
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
@@ -189,14 +152,22 @@ public class CityService {
         }
     }
 
+    @Override
+    public String getSheetName() {
+        return "Cities";
+    }
 
-//    protected <T> void uniqueOrThrow(Optional<T> existing, String entity, String field, Object value) {
-//        if (existing.isPresent()) throw new DuplicateException("%s with %s '%s' already exists"
-//                .formatted(entity, field, String.valueOf(value)));
-//    }
-//    validator.uniqueOrThrow(
-//            regionRepository.findByNameIgnoreCase(dto.getName()),
-//            "Region", "name", dto.getName()
-//            );
+    @Override
+    public List<City> fetchData() {
+        return cityRepository.findAll();
+    }
 
+    @Override
+    public List<ColumnSpec<City>> columns() {
+        return List.of(
+                new ColumnSpec<>("ID", c -> String.valueOf(c.getId()), null),
+                new ColumnSpec<>("Name", City::getName,null),
+                new ColumnSpec<>("Region", c -> c.getRegion() != null ? c.getRegion().getName() : null, null)
+        );
+    }
 }
