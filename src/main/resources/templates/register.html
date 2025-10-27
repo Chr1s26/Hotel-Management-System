@@ -3,64 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <title>Register | Hotel Management System</title>
+
+    <!-- Tailwind utilities -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Your royal-blue theme + glass styles -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center space-y-6">
+
+<body class="bg-royal-navy-grad min-h-screen flex flex-col items-center justify-center">
 
 <!-- Page Title -->
-<h2 class="text-3xl font-bold text-gray-800">Hotel Management System</h2>
+<h2 class="page-title text-4xl font-extrabold mb-8 text-bluegray">Hotel Management System</h2>
 
-<!-- Registration Form -->
-<div class="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
-    <h3 class="text-xl text-center font-semibold text-gray-600 mb-4">Register</h3>
+<!-- Registration Form (Glass) -->
+<div class="glass-card p-8 w-full max-w-md">
+    <h3 class="card-title text-xl text-center font-semibold mb-6">Register</h3>
 
-    <div th:if="${registrationError}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <div th:if="${registrationError}" class="bg-red-200 bg-opacity-70 border border-red-400 text-red-900 px-4 py-3 rounded mb-4">
         <p th:text="${registrationError}"></p>
     </div>
 
-    <form th:action="@{/registerUser}" th:object="${user}" method="POST" class="space-y-4">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <form th:action="@{/registerUser}" th:object="${user}" method="POST" class="space-y-5">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
+        <!-- Username -->
         <div>
-            <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+            <label for="username" class="block text-sm font-medium mb-1">Username</label>
             <input id="username" th:field="*{name}" type="text"
-                   class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
+                   class="glass-input mt-1"
                    placeholder="Enter your username" required>
-            <p class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+            <p class="text-red-300 text-sm mt-1" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
         </div>
 
         <!-- Email -->
         <div>
-            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+            <label for="email" class="block text-sm font-medium mb-1">Email</label>
             <input id="email" th:field="*{email}" type="email"
-                   class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
+                   class="glass-input mt-1"
                    placeholder="Enter your email" required>
-            <p class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+            <p class="text-red-300 text-sm mt-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
         </div>
 
         <!-- Password -->
         <div>
-            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+            <label for="password" class="block text-sm font-medium mb-1">Password</label>
             <input id="password" th:field="*{password}" type="password"
-                   class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200"
+                   class="glass-input mt-1"
                    placeholder="Enter your password" required>
-            <ul class="text-gray-600 text-xs mt-1 list-disc list-inside">
+
+            <ul class="text-soft2 text-xs mt-2 list-disc list-inside">
                 <li>At least 8 characters</li>
-                <li>Must include: uppercase, lowercase, number, symbol</li>
+                <li>Include uppercase, lowercase, number, symbol</li>
                 <li>No spaces</li>
             </ul>
-            <p class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+
+            <p class="text-red-300 text-sm mt-1" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
         </div>
 
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Register
-        </button>
+        <button type="submit" class="btn-primary w-full py-2.5">Register</button>
     </form>
 
-    <p class="mt-6 text-center text-sm text-gray-600">
+    <p class="mt-6 text-center text-sm">
         Already have an account?
-        <a th:href="@{/login}" class="text-blue-600 hover:underline font-medium">Login here</a>
+        <a th:href="@{/login}" class="link font-medium">Login here</a>
     </p>
 </div>
+
 </body>
 </html>
