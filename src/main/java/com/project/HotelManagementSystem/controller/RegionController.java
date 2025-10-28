@@ -7,11 +7,16 @@ import com.project.HotelManagementSystem.service.CountryService;
 import com.project.HotelManagementSystem.service.RegionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -88,6 +93,16 @@ public class RegionController {
     public String deleteRegion(@PathVariable Long id){
         regionService.deleteRegion(id);
         return "redirect:/regions";
+    }
+
+    @GetMapping("/export/excel")
+    public ResponseEntity<byte[]> exportExcel(Model model) throws IOException {
+        ByteArrayInputStream in = regionService.export();
+        byte[] bytes = in.readAllBytes();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=regions.xlsx")
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(bytes);
     }
 
 }
