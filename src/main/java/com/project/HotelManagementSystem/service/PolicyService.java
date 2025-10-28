@@ -48,7 +48,7 @@ public class PolicyService {
         if (optionalPolicy.isPresent()) {
             throw new DuplicateException("policy",policyUpdateDTO,"title","policies/edit","An account with this title and description already exists");
         }
-        Policy policyOp = policyRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Policy", "id", id));
+        Policy policyOp = policyRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("policy",policyUpdateDTO,"id","policies/edit","An account with this id cannot be found"));
         Policy policy = modelMapper.map(policyUpdateDTO, Policy.class);
         policyOp.setTitle(policy.getTitle());
         policyOp.setDescription(policy.getDescription());
@@ -61,13 +61,19 @@ public class PolicyService {
     }
 
     public void deletePolicy(Long id) {
-        Policy policy = policyRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Policy", "id", id));
+        Optional<Policy> policyOp = policyRepository.findById(id);
+        if (policyOp.isEmpty()) {
+            throw new ResourceNotFoundException("policy",policyOp,"id","policies","An account with this id cannot be found");
+        }
         policyRepository.deleteById(id);
     }
 
     public PolicyDTO findPolicyById(Long id) {
-        Policy policy = policyRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Policy", "id", id));
-        return modelMapper.map(policy,PolicyDTO.class);
+        Optional<Policy> policyOp = policyRepository.findById(id);
+        if (policyOp.isEmpty()) {
+            throw new ResourceNotFoundException("policy",policyOp,"id","policies","An account with this id cannot be found");
+        }
+        return modelMapper.map(policyOp,PolicyDTO.class);
     }
 
     public PolicyResponse findAllPoliciesWithPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {

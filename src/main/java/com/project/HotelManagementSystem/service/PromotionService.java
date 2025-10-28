@@ -49,7 +49,7 @@ public class PromotionService {
             throw new DuplicateException("promotion",promotionUpdateDTO,"code","promotions/edit","A promotion with this code already exists");
         }
         Promotion promotion = modelMapper.map(promotionUpdateDTO, Promotion.class);
-        Promotion promotionOp = promotionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Promotion","id",id));
+        Promotion promotionOp = promotionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("promotion",promotionUpdateDTO,"id","promotions/edit","A promotion with this id cannot be found"));
         promotionOp.setCode(promotion.getCode());
         promotionOp.setDiscountType(promotion.getDiscountType());
         promotionOp.setDiscountAmount(promotion.getDiscountAmount());
@@ -70,13 +70,19 @@ public class PromotionService {
     }
 
     public void deletePromotion(Long id) {
-        Promotion promotion = promotionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Promotion", "id", id));
-        promotionRepository.delete(promotion);
+        Optional<Promotion> promotionOp = promotionRepository.findById(id);
+        if(promotionOp.isEmpty()){
+            throw new ResourceNotFoundException("promotion",promotionOp,"id","promotions","A promotion with this id cannot be found");
+        }
+        promotionRepository.delete(promotionOp.get());
     }
 
     public PromotionUpdateDTO findPromotionById(Long id) {
-        Promotion promotion = promotionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Promotion", "id", id));
-        return modelMapper.map(promotion,PromotionUpdateDTO.class);
+        Optional<Promotion> promotionOp = promotionRepository.findById(id);
+        if(promotionOp.isEmpty()){
+            throw new ResourceNotFoundException("promotion",promotionOp,"id","promotions","A promotion with this id cannot be found");
+        }
+        return modelMapper.map(promotionOp,PromotionUpdateDTO.class);
     }
 
     public PromotionResponse findAllPromotionsWithPagination(Integer pageNumber, Integer pageSize, String sortBy,String sortOrder) {

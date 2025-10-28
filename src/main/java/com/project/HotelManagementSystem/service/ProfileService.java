@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
@@ -52,12 +54,18 @@ public class ProfileService {
         profileResponse.setUserDTO(userDTO);
 
         if(role.equals("ADMIN")) {
-            Admin admin = adminRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("User","id",user.getId()));
-            AdminDTO adminDTO = getAdminDTO(admin);
+            Optional<Admin> adminOptional = adminRepository.findByUser(user);
+            if(adminOptional.isEmpty()) {
+                throw new ResourceNotFoundException("admin",adminOptional,"id","profiles","An account with this id cannot be found");
+            }
+            AdminDTO adminDTO = getAdminDTO(adminOptional.get());
             profileResponse.setObject(adminDTO);
         }else if(role.equals("EDITOR")) {
-            Editor editor = editorRepository.findEditorByUser(user).orElseThrow(() -> new ResourceNotFoundException("User","id",user.getId()));
-            EditorDTO editorDTO = getEditorDTO(editor);
+            Optional<Editor> editorOp = editorRepository.findEditorByUser(user);
+            if(editorOp.isEmpty()) {
+                throw new ResourceNotFoundException("editor",editorOp,"id","profiles","An account with this id cannot be found");
+            }
+            EditorDTO editorDTO = getEditorDTO(editorOp.get());
             profileResponse.setObject(editorDTO);
         }else{
             return null;

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +38,7 @@ public class ReviewService {
     }
 
     public ReviewUpdateDTO updateReview(Long id, ReviewUpdateDTO reviewUpdateDTO) {
-        Review reviewOp = reviewRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Review","id",id));
+        Review reviewOp = reviewRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("review",reviewUpdateDTO,"id","reviews/edit","A review with this id cannot be found"));
         Review review = modelMapper.map(reviewUpdateDTO, Review.class);
         reviewOp.setDescription(review.getDescription());
         reviewOp.setRating(review.getRating());
@@ -52,11 +53,17 @@ public class ReviewService {
     }
 
     public void deleteReview(Long id) {
-        Review review = reviewRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Review","id",id));
+        Optional<Review> review = reviewRepository.findById(id);
+        if(review.isEmpty()){
+            throw new ResourceNotFoundException("review",review,"id","reviews","A review with this id cannot be found");
+        }
         reviewRepository.deleteById(id);}
 
     public ReviewDTO findReviewById(Long id) {
-        Review review = this.reviewRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Review","id",id));
+        Optional<Review> review = reviewRepository.findById(id);
+        if(review.isEmpty()){
+            throw new ResourceNotFoundException("review",review,"id","reviews","A review with this id cannot be found");
+        }
         return modelMapper.map(review,ReviewDTO.class);
     }
 

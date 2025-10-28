@@ -55,7 +55,7 @@ public class CityService extends CommonExportProcess<City> {
         if(cityOptional.isPresent() && !cityOptional.get().getId().equals(id)) {
             throw new DuplicateException("city",cityUpdateDTO,"name","cities/edit","An city with this name already exists");
         }
-        City cityOp = cityRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("City","id",id));
+        City cityOp = cityRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("city",cityUpdateDTO,"id","cities/edit"," Cities with the id cannot be found"));
         City city = modelMapper.map(cityUpdateDTO, City.class);
         cityOp.setName(city.getName());
         cityOp.setRegion(city.getRegion());
@@ -67,12 +67,18 @@ public class CityService extends CommonExportProcess<City> {
     }
 
     public void deleteCity(Long id) {
-        City city = cityRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("City", "id", id));
-        cityRepository.delete(city);
+        Optional<City> city = cityRepository.findById(id);
+        if(city.isEmpty()){
+            throw new ResourceNotFoundException("city",city,"id","cities"," Cities with the id cannot be found");
+        }
+        cityRepository.delete(city.get());
     }
 
     public CityDTO findCityById(Long id) {
-        City city = cityRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("City", "id", id));
+        Optional<City> city = cityRepository.findById(id);
+        if(city.isEmpty()){
+            throw new ResourceNotFoundException("city",city,"id","cities"," Cities with the id cannot be found");
+        }
         return modelMapper.map(city,CityDTO.class);
     }
 

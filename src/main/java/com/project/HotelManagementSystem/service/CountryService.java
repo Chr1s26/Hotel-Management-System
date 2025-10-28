@@ -49,7 +49,7 @@ public class CountryService extends CommonExportProcess<Country> {
         if(countryOptional.isPresent() && !countryOptional.get().getId().equals(id)){
             throw new DuplicateException("country",countryUpdateDTO,"name","countries/edit","A country with the same name already exists");
         }
-        Country optionalCountry = countryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Country", "id", id));
+        Country optionalCountry = countryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("country",countryUpdateDTO,"id","countries/edit"," A Country with the id cannot be found"));
         Country country = modelMapper.map(countryUpdateDTO, Country.class);
         optionalCountry.setName(country.getName());
         optionalCountry.setUpdatedAt(LocalDateTime.now());
@@ -60,12 +60,18 @@ public class CountryService extends CommonExportProcess<Country> {
     }
 
     public void deleteCountry(Long id) {
-        Country country = countryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Country", "id", id));
+        Optional<Country> country = countryRepository.findById(id);
+        if(country.isEmpty()){
+            throw new ResourceNotFoundException("country",country,"id","countries"," A Country with the id cannot be found");
+        }
         this.countryRepository.deleteById(id);
     }
 
     public CountryDTO findCountryById(Long id) {
-        Country country = countryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Country", "id", id));
+        Optional<Country> country = countryRepository.findById(id);
+        if(country.isEmpty()){
+            throw new ResourceNotFoundException("country",country,"id","countries"," A Country with the id cannot be found");
+        }
         return modelMapper.map(country,CountryDTO.class);
     }
 
