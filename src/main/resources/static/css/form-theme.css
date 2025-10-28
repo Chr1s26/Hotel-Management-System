@@ -249,3 +249,133 @@ th, td {
     color: #BFD4E6;
     opacity: 0.9;
 }
+
+/* ================= Royal Blue Form Page ================= */
+
+.royal-form-page {
+    background: linear-gradient(135deg, var(--royal), var(--navy));
+    color: var(--soft);
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    padding-top: 90px;
+}
+
+/* Headings */
+.page-title {
+    text-align: center;
+    color: var(--bluegray);
+    font-weight: 700;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    margin-bottom: 30px;
+}
+
+/* Glass Form */
+.glass-form {
+    background: rgba(20, 32, 46, 0.55);
+    border-radius: 16px;
+    border: 1px solid rgba(136, 169, 195, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    max-width: 850px;
+    margin: 0 auto 60px;
+    padding: 30px;
+}
+
+/* Accordion Styling */
+.royal-accordion .accordion-item {
+    background: rgba(43, 66, 87, 0.45);
+    border: 1px solid rgba(136, 169, 195, 0.4);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(12px);
+}
+
+.royal-accordion  {
+    background: linear-gradient(to right, var(--midnight), var(--royal));
+    color: var(--soft);
+    font-weight: 600;
+    border-radius: 12px 12px 0 0;
+}
+
+.royal-accordion {
+    background: rgba(20, 32, 46, 0.7);
+    color: var(--bluegray);
+}
+
+.royal-accordion .accordion-body {
+    background: rgba(20, 32, 46, 0.5);
+    border-radius: 0 0 12px 12px;
+}
+
+/* Form elements */
+.form-control,
+.form-select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(136, 169, 195, 0.4);
+    color: var(--soft);
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.form-control::placeholder {
+    color: var(--soft2);
+    opacity: 0.8;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--bluegray);
+    box-shadow: 0 0 0 3px rgba(136, 169, 195, 0.25);
+    color: var(--soft);
+}
+
+label.form-label {
+    color: var(--bluegray);
+    font-weight: 600;
+}
+
+.text-danger {
+    color: #ff7b7b !important;
+}
+
+/* Buttons */
+.btn-primary {
+    background: var(--bluegray);
+    color: var(--royal);
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    transition: 0.25s;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary:hover {
+    background: #9db8cf;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: var(--midnight);
+    color: var(--soft);
+    border-radius: 10px;
+    border: none;
+    transition: 0.25s;
+}
+
+.btn-secondary:hover {
+    background: var(--royal);
+}
+.role-badge {
+    background: rgba(136,169,195,0.25);
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: var(--soft);
+}
+
+.center-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 75vh;
+}
