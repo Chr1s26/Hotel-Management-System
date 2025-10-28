@@ -1,8 +1,6 @@
 package com.project.HotelManagementSystem.dto.promotion;
 
 import com.project.HotelManagementSystem.entity.constants.DiscountType;
-import com.project.HotelManagementSystem.validator.NotIntegerString;
-import com.project.HotelManagementSystem.validator.NumericString;
 import com.project.HotelManagementSystem.validator.ValidDateRange;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -15,7 +13,8 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ValidDateRange
+@ValidDateRange(start = "startDate", end = "endDate", allowEqual = false,
+        message = "End date must be after start date")
 public class PromotionCreateDTO {
     private Long id;
     @NotBlank(message = "Promotion code cannot be empty.")
