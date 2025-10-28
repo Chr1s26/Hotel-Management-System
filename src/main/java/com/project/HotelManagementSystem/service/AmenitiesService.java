@@ -47,7 +47,7 @@ public class AmenitiesService {
         if(amenitiesOp.isPresent() && !amenitiesOp.get().getId().equals(id)) {
             throw new DuplicateException("amenities",amenitiesUpdateDTO,"name","amenities/edit","Amenities with this name already exists");
         }
-        Amenities updatedAmenitiesOp = this.amenitiesRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Amenities","id",id));
+        Amenities updatedAmenitiesOp = this.amenitiesRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("amenities",amenitiesUpdateDTO,"id","amenities/edit"," Amenities with the id cannot be found"));
         Amenities amenities = modelMapper.map(amenitiesUpdateDTO, Amenities.class);
         updatedAmenitiesOp.setName(amenities.getName());
         updatedAmenitiesOp.setDescription(amenities.getDescription());
@@ -59,12 +59,18 @@ public class AmenitiesService {
     }
 
     public void deleteAmenities(Long id) {
-        Amenities amenities = this.amenitiesRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Amenities","id",id));
-        this.amenitiesRepository.delete(amenities);
+        Optional<Amenities> amenities = this.amenitiesRepository.findById(id);
+        if(amenities.isEmpty()){
+            throw new ResourceNotFoundException("amenities",amenities,"id","amenities"," Amenities with the id cannot be found");
+        }
+        this.amenitiesRepository.delete(amenities.get());
     }
 
     public AmenitiesDTO findAmenitiesById(Long id) {
-        Amenities amenities = this.amenitiesRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Amenities","id",id));
+        Optional<Amenities> amenities = this.amenitiesRepository.findById(id);
+        if(amenities.isEmpty()){
+            throw new ResourceNotFoundException("amenities",amenities,"id","amenities"," Amenities with the id cannot be found");
+        }
         return modelMapper.map(amenities, AmenitiesDTO.class);
     }
 

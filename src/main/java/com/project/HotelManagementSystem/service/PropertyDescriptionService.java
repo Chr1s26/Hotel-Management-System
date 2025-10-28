@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +53,7 @@ public class PropertyDescriptionService {
             throw new DuplicateException("propertyDescription",propertyDescriptionUpdateDTO,"description","propertyDescriptions/edit","A property with this description already exists");
         }
         PropertyDescription propertyDescription = modelMapper.map(propertyDescriptionUpdateDTO, PropertyDescription.class);
-        PropertyDescription updatedPropertyDescription = this.propertyDescriptionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("PropertyDescription", "id", id) );
+        PropertyDescription updatedPropertyDescription = this.propertyDescriptionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("propertyDescription",propertyDescriptionUpdateDTO,"id","propertyDescriptions/edit","A property with this id cannot be found") );
         updatedPropertyDescription.setDescription(propertyDescription.getDescription());
         updatedPropertyDescription.setNumberOfRooms(propertyDescription.getNumberOfRooms());
         updatedPropertyDescription.setOpeningDate(propertyDescription.getOpeningDate());
@@ -66,12 +67,18 @@ public class PropertyDescriptionService {
     }
 
     public void deletePropertyDescription(Long id) {
-        PropertyDescription propertyDescription = this.propertyDescriptionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("PropertyDescription", "id", id));
+        Optional<PropertyDescription> propertyDescription = this.propertyDescriptionRepository.findById(id);
+        if(propertyDescription.isEmpty()){
+            throw new ResourceNotFoundException("propertyDescription",propertyDescription,"id","propertyDescriptions","A property with this id cannot be found");
+        }
         this.propertyDescriptionRepository.deleteById(id);
     }
 
     public PropertyDescriptionDTO findPropertyDescriptionById(Long id) {
-        PropertyDescription propertyDescription = this.propertyDescriptionRepository.findById(id).orElseThrow(() ->  new ResourceNotFoundException("PropertyDescription", "id", id));
+        Optional<PropertyDescription> propertyDescription = this.propertyDescriptionRepository.findById(id);
+        if(propertyDescription.isEmpty()){
+            throw new ResourceNotFoundException("propertyDescription",propertyDescription,"id","propertyDescriptions/edit","A property with this id cannot be found");
+        }
         return modelMapper.map(propertyDescription, PropertyDescriptionDTO.class);
 
     }

@@ -51,7 +51,7 @@ public class AddressService {
             throw new DuplicateException("address",addressUpdateDTO,"latitude","addresses/edit","An address with this latitude and longitude already exists");
         }
 
-        Address updatedAddressOp = addressRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Address","id",id));
+        Address updatedAddressOp = addressRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("address",addressUpdateDTO,"id","addresses/edit","An address with the id cannot be found"));
         Address address = modelMapper.map(addressUpdateDTO, Address.class);
 
         updatedAddressOp.setRoad(address.getRoad());
@@ -67,12 +67,18 @@ public class AddressService {
     }
 
     public void deleteAddress(Long id) {
-        Address address = addressRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Address", "id", id));
-        addressRepository.delete(address);
+        Optional<Address> address = addressRepository.findById(id);
+        if(address.isEmpty()){
+            throw new ResourceNotFoundException("address",address,"id","addresses","An address with the id cannot be found");
+        }
+        addressRepository.delete(address.get());
     }
 
     public AddressDTO findAddressById(Long id) {
-        Address address = addressRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Address", "id", id));
+        Optional<Address> address = addressRepository.findById(id);
+        if(address.isEmpty()){
+            throw new ResourceNotFoundException("address",address,"id","addresses","An address with the id cannot be found");
+        }
         return modelMapper.map(address,AddressDTO.class);
     }
 

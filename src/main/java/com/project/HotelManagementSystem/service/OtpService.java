@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -25,7 +26,11 @@ public class OtpService {
     public String generateOtpCode() {return String.format("%06d", new Random().nextInt(999999));}
 
     public void isOtpValid(String email, String otp) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found ",email,"email"));
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if(userOptional.isEmpty()){
+            throw new ResourceNotFoundException("user",userOptional,"email","hotels","User with the email address does not exist");
+        }
+        User user = userOptional.get();
         Long otpGeneratedAt = user.getOtpGeneratedAt();
 
         if(System.currentTimeMillis() - otpGeneratedAt > OTP_EXPIRATION_TIME) {

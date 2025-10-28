@@ -23,9 +23,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,7 +59,7 @@ public class RoomService {
     }
 
     public RoomUpdateDTO updateRoom(Long id, RoomUpdateDTO roomUpdateDTO) {
-        Room roomOp = roomRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Room", "id", id));
+        Room roomOp = roomRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("room",roomUpdateDTO,"id","rooms/edit","A room with this id cannot be found"));
         Room room = modelMapper.map(roomUpdateDTO, Room.class);
 
         roomOp.setPrice(room.getPrice());
@@ -76,13 +78,15 @@ public class RoomService {
     private void addAttachment(List<MultipartFile> files, Long roomId, @NotNull(message = "Media type must be selected") RoomMediaType roomMediaType,long hotelId) {
         if(files==null || files.isEmpty()) return ;
 
-        Room optionalRoom = roomRepository.findById(roomId).orElseThrow(() -> new ResourceNotFoundException("Room","id",roomId));
-        Hotel optionalHotel = hotelRepository.findById(hotelId).orElseThrow(() -> new ResourceNotFoundException("Hotel","id",hotelId));
+        Optional<Room> optionalRoom = roomRepository.findById(roomId);
+        if(optionalRoom.isEmpty()) throw new ResourceNotFoundException("room",optionalRoom,"id","rooms","A room with this id cannot be found");
+        Optional<Hotel> optionalHotel = hotelRepository.findById(hotelId);
+        if(optionalHotel.isEmpty()) throw new ResourceNotFoundException("hotel",optionalHotel,"id","hotels","A hotel with this id cannot be found");
         for(MultipartFile multipartFile : files) {
             if(multipartFile.isEmpty()) continue;
             RoomAttachment roomAttachment = new RoomAttachment();
-            roomAttachment.setRoom(optionalRoom);
-            roomAttachment.setHotel(optionalHotel);
+            roomAttachment.setRoom(optionalRoom.get());
+            roomAttachment.setHotel(optionalHotel.get());
             roomAttachment.setRoomMediaType(roomMediaType);
             roomAttachment.setStatus(StatusType.ACTIVE);
             roomAttachment.setCreatedAt(LocalDateTime.now());
@@ -95,13 +99,19 @@ public class RoomService {
 
 
     public void deleteRoom(Long id) {
-        Room roomOp = roomRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Room", "id", id));
+        Optional<Room> roomOp = roomRepository.findById(id);
+        if (roomOp.isEmpty()) {
+            throw new ResourceNotFoundException("room",roomOp,"id","rooms","A room with this id cannot be found");
+        }
         roomRepository.deleteById(id);
     }
 
     public RoomUpdateDTO findRoomById(Long id) {
-        Room room = roomRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Room", "id", id));
-        return modelMapper.map(room, RoomUpdateDTO.class);
+        Optional<Room> roomOp = roomRepository.findById(id);
+        if (roomOp.isEmpty()) {
+            throw new ResourceNotFoundException("room",roomOp,"id","rooms","A room with this id cannot be found");
+        }
+        return modelMapper.map(roomOp, RoomUpdateDTO.class);
     }
 
     public List<RoomDTO> findAllRooms() {

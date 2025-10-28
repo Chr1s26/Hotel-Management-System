@@ -68,7 +68,7 @@
             if(hotelOp.isPresent()) {
                 throw new DuplicateException("hotels",hotelUpdateDTO,"name","hotels/edit","Hotel with name with this coordinates already exists");
             }
-            Hotel optionalHotel = this.hotelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Hotel", "id", id));
+            Hotel optionalHotel = this.hotelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("hotel",hotelUpdateDTO,"id","hotels/edit"," A hotel with the id cannot be found"));
             Hotel hotel = modelMapper.map(hotelUpdateDTO, Hotel.class);
             optionalHotel.setName(hotel.getName());
             optionalHotel.setPhoneNumber(hotel.getPhoneNumber());
@@ -91,11 +91,15 @@
         public void addAttachment(List<MultipartFile> files, Long hotelId, HotelMediaType hotelMediaType){
             if(files==null || files.isEmpty()) { return;}
 
-            Hotel optionalHotel = this.hotelRepository.findById(hotelId).orElseThrow(() -> new ResourceNotFoundException("Hotel", "id", hotelId));
+            Optional<Hotel> optionalHotel = this.hotelRepository.findById(hotelId);
+            if(optionalHotel.isEmpty()) {
+                throw new ResourceNotFoundException("hotels",optionalHotel,"id","hotels/edit"," A hotel with the id cannot be found");
+            }
+            Hotel hotel = optionalHotel.get();
             for(MultipartFile multipartFile : files) {
                 if(multipartFile.isEmpty()) continue;
                 HotelAttachment hotelAttachment = new HotelAttachment();
-                hotelAttachment.setHotel(optionalHotel);
+                hotelAttachment.setHotel(hotel);
                 hotelAttachment.setHotelMediaType(hotelMediaType);
                 hotelAttachment.setStatus(StatusType.ACTIVE);
                 hotelAttachment.setCreatedAt(LocalDateTime.now());
@@ -106,13 +110,19 @@
         }
 
         public void deleteHotel(Long id) {
-            Hotel hotel = hotelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Hotel", "id", id));
-            this.hotelRepository.delete(hotel);
+            Optional<Hotel> optionalHotel = hotelRepository.findById(id);
+            if(optionalHotel.isEmpty()) {
+                throw new ResourceNotFoundException("hotels",optionalHotel,"id","hotels"," A hotel with the id cannot be found");
+            }
+            this.hotelRepository.delete(optionalHotel.get());
         }
 
         public HotelUpdateDTO findHotelById(Long id) {
-            Hotel hotel = hotelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Hotel", "id", id));
-            HotelUpdateDTO hotelUpdateDTO = modelMapper.map(hotel, HotelUpdateDTO.class);
+            Optional<Hotel> optionalHotel = hotelRepository.findById(id);
+            if(optionalHotel.isEmpty()) {
+                throw new ResourceNotFoundException("hotels",optionalHotel,"id","hotels"," A hotel with the id cannot be found");
+            }
+            HotelUpdateDTO hotelUpdateDTO = modelMapper.map(optionalHotel.get(), HotelUpdateDTO.class);
             return hotelUpdateDTO;
         }
 

@@ -49,7 +49,7 @@ public class RegionService extends CommonExportProcess<Region> {
             throw new DuplicateException("regions",regionUpdateDTO,"name","regions/edit","A region with this name already exists");
         }
         Region region = modelMapper.map(regionUpdateDTO, Region.class);
-        Region updatedRegionOp = this.regionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Region","id",id));
+        Region updatedRegionOp = this.regionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("regions",regionUpdateDTO,"id","regions/edit","A region with this id cannot be found"));
         updatedRegionOp.setName(region.getName());
         updatedRegionOp.setCountry(region.getCountry());
         updatedRegionOp.setStatus(StatusType.ACTIVE);
@@ -61,13 +61,19 @@ public class RegionService extends CommonExportProcess<Region> {
     }
 
     public void deleteRegion(Long id) {
-        Region regionOp = regionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Region","id",id));
+        Optional<Region> regionOp = regionRepository.findById(id);
+        if(regionOp.isEmpty()) {
+            throw new ResourceNotFoundException("regions",regionOp,"id","regions","A region with this id cannot be found");
+        }
         regionRepository.deleteById(id);
     }
 
     public RegionDTO findRegionById(Long id) {
-        Region region = regionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Region","id",id));
-        return modelMapper.map(region, RegionDTO.class);
+        Optional<Region> regionOp = regionRepository.findById(id);
+        if(regionOp.isEmpty()) {
+            throw new ResourceNotFoundException("regions",regionOp,"id","regions","A region with this id cannot be found");
+        }
+        return modelMapper.map(regionOp, RegionDTO.class);
     }
 
     public List<RegionDTO> findAllRegion() {

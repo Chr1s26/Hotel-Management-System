@@ -45,10 +45,10 @@ public class RoleService {
 
     public RoleUpdateDTO updateRole(Long id, RoleUpdateDTO roleUpdateDTO) {
         Optional<Role> optionalRole = this.roleRepository.findByRoleNameAndIdNot(roleUpdateDTO.getRoleName(),id);
-//        if (optionalRole.isPresent()) {
-//            throw new DuplicateException("Role with name " + roleUpdateDTO.getRoleName() + " already exists");
-//        }
-        Role roleOp = roleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Role", "id", id));
+        if (optionalRole.isPresent()) {
+            throw new DuplicateException("role",roleUpdateDTO,"name","roles/edit","A role with this name already exists");
+        }
+        Role roleOp = roleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("role",roleUpdateDTO,"id","roles/edit","A role with this id cannot be found"));
         Role role = modelMapper.map(roleUpdateDTO, Role.class);
         roleOp.setRoleName(role.getRoleName());
         roleOp.setUpdatedAt(LocalDateTime.now());
@@ -58,12 +58,18 @@ public class RoleService {
     }
 
     public void deleteRole(Long id) {
-        Role role = roleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Role", "id", id));
-        roleRepository.delete(role);
+        Optional<Role> role = roleRepository.findById(id);
+        if (role.isEmpty()) {
+            throw new ResourceNotFoundException("role",role,"id","roles","A role with this id cannot be found");
+        }
+        roleRepository.delete(role.get());
     }
 
     public RoleDTO findRoleById(Long id) {
-        Role role = this.roleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Role", "id", id));
+        Optional<Role> role = roleRepository.findById(id);
+        if (role.isEmpty()) {
+            throw new ResourceNotFoundException("role",role,"id","roles","A role with this id cannot be found");
+        }
         return modelMapper.map(role, RoleDTO.class);
     }
 

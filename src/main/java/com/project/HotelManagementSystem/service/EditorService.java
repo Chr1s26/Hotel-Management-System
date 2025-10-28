@@ -47,17 +47,17 @@ public class EditorService {
 
     public EditorCreateDTO createEditor(EditorCreateDTO editorCreateDTO) {
         Optional<Editor> editorOp = editorRepository.findByNameIgnoreCase(editorCreateDTO.getName());
-//        if (editorOp.isPresent()) {
-//            throw new DuplicateException("Editor with name " + editorCreateDTO.getName() + " already exists");
-//        }
+        if (editorOp.isPresent()) {
+            throw new DuplicateException("editor",editorCreateDTO,"name","editors/create","An editor with the same name already exists");
+        }
         validateIdsUniqueOrThrow(null, editorCreateDTO.getPassportNumber(), editorCreateDTO.getNationalIdNumber());
 
         Editor editor = modelMapper.map(editorCreateDTO, Editor.class);
 
         User user = userRepository.findById(editorCreateDTO.getUser())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", editorCreateDTO.getUser()));
+                .orElseThrow(() -> new ResourceNotFoundException("editor",editorCreateDTO,"id","editors/create","An editor with the id cannot be found"));
         Role editorRole = roleRepository.findByRoleName("EDITOR")
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id",editorCreateDTO.getUser()));
+                .orElseThrow(() -> new ResourceNotFoundException("editor",editorCreateDTO,"id","editors/create","An editor with the id cannot be found"));
 
         if(user.getRoles() == null) {
             user.setRoles(new HashSet<>());
@@ -75,12 +75,12 @@ public class EditorService {
     @Transactional
     public EditorUpdateDTO updateEditor(Long id, EditorUpdateDTO editorUpdateDTO) {
         Optional<Editor> editorOp = editorRepository.findByNameIgnoreCaseAndIdNot(editorUpdateDTO.getName(),id);
-//        if (editorOp.isPresent()) {
-//            throw new DuplicateException("Editor with name " + editorUpdateDTO.getName() + " already exists");
-//        }
+        if (editorOp.isPresent()) {
+            throw new DuplicateException("editor",editorUpdateDTO,"name","editors/edit","An editor with the same name already exists");
+        }
         validateIdsUniqueOrThrow(id, editorUpdateDTO.getPassportNumber(), editorUpdateDTO.getNationalIdNumber());
         Long userId = editorUpdateDTO.getUser();
-        Editor savedEditor = editorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Editor","id",id));
+        Editor savedEditor = editorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("editor",editorUpdateDTO,"id","editors/edit","An editor with the id cannot be found"));
         Editor editor = modelMapper.map(editorUpdateDTO, Editor.class);
         savedEditor.setName(editor.getName());
         savedEditor.setPhone(editor.getPhone());
@@ -93,7 +93,7 @@ public class EditorService {
                 (savedEditor.getUser() == null || !savedEditor.getUser().getId().equals(editorUpdateDTO.getUser()))) {
 
             User newUser = userRepository.findById(editorUpdateDTO.getUser())
-                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", editorUpdateDTO.getUser()));
+                    .orElseThrow(() -> new ResourceNotFoundException("editor",editorUpdateDTO,"id","editors/edit","An editor with the id cannot be found"));
             savedEditor.setUser(newUser);
         }
         savedEditor.setUpdatedAt(LocalDateTime.now());
@@ -104,7 +104,11 @@ public class EditorService {
     }
 
     public void deleteEditor(Long id) {
-        Editor editor = editorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Editor","id",id));
+        Optional<Editor> editorOptional = editorRepository.findById(id);
+        if(editorOptional.isEmpty()){
+            throw new ResourceNotFoundException("editor",editorOptional,"id","editors","An editor with the id cannot be found");
+        }
+        Editor editor = editorOptional.get();
         User user = editor.getUser();
         if(user != null) {
             user.setEditor(null);
@@ -114,7 +118,10 @@ public class EditorService {
     }
 
     public EditorDTO findEditorById(Long id) {
-        Editor editorOp = editorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Editor","id",id));
+        Optional<Editor> editorOp = editorRepository.findById(id);
+        if(editorOp.isEmpty()){
+            throw new ResourceNotFoundException("editor",editorOp,"id","editors","An editor with the id cannot be found");
+        }
         return modelMapper.map(editorOp, EditorDTO.class);
     }
 
