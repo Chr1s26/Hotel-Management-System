@@ -9,5 +9,4 @@ import java.util.List;
 public abstract class CommonExportProcess<T extends MasterData> {
     public abstract String getSheetName();
     public abstract List<T> featchData();
-    public
 }

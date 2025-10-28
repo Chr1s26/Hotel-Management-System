@@ -23,8 +23,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,6 +61,7 @@ public class UserService {
         return modelMapper.map(user, UserCreateDTO.class);
     }
 
+    @Transactional
     public UserUpdateDTO updateUser(Long id, UserUpdateDTO userUpdateDTO) {
         if(userRepository.existsByNameAndIdNot(userUpdateDTO.getName(), userUpdateDTO.getId())) throw new DuplicateException("user",userUpdateDTO,"name","users/edit","An account with this name already exists");
         if(userRepository.existsByEmailAndIdNot(userUpdateDTO.getEmail(),userUpdateDTO.getId())) throw new DuplicateException("user",userUpdateDTO,"email","users/edit","An account with this email already exists");
@@ -67,13 +71,10 @@ public class UserService {
         updatedUser.setName(user.getName());
         updatedUser.setEmail(user.getEmail());
         updatedUser.setPassword(passwordEncoder.encode(user.getPassword()));
-        updatedUser.setRoles(user.getRoles());
         updatedUser.setConfirmedAt(LocalDateTime.now());
         updatedUser.setUpdatedAt(LocalDateTime.now());
         updatedUser.setStatus(StatusType.ACTIVE);
         updatedUser.setUpdatedBy(authService.getCurrentUser());
-        Role userRole = roleRepository.findByRoleName("NORMAL_USER").orElseThrow(() -> new InvalidRoleException("Role not found"));
-        updatedUser.setRoles(Collections.singleton(userRole));
         User savedUser = userRepository.save(updatedUser);
         return modelMapper.map(savedUser, UserUpdateDTO.class);
     }
