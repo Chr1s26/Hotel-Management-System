@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -55,8 +56,8 @@ public class AdminService {
         admin.setCreatedBy(authService.getCurrentUser());
         admin.setStatus(StatusType.ACTIVE);
         User user = userRepository.findById(adminCreateDTO.getUser())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", adminCreateDTO.getUser()));
-        Role adminRole = roleRepository.findByRoleName("ADMIN").orElseThrow(() -> new ResourceNotFoundException("Role", "id", adminCreateDTO.getUser()));
+                .orElseThrow(() -> new ResourceNotFoundException("admin",adminCreateDTO,"id","admins/create","An account with this id cannot be found"));
+        Role adminRole = roleRepository.findByRoleName("ADMIN").orElseThrow(() -> new ResourceNotFoundException("admin",adminCreateDTO,"name","admins/create","Role name cannot be found"));
         if(user.getRoles() == null) {
             user.setRoles(new HashSet<>());
         }
@@ -75,7 +76,7 @@ public class AdminService {
         }
         validateIdsUniqueOrThrow(id, adminUpdateDTO.getPassportNumber(), adminUpdateDTO.getNationalIdNumber(),adminUpdateDTO,"update");
 
-        Admin admin = adminRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Admin","id",id));
+        Admin admin = adminRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("admin",adminUpdateDTO,"id","admins/edit","An account with this id cannot be found"));
         Admin admin1 = modelMapper.map(adminUpdateDTO, Admin.class);
         admin.setName(admin1.getName());
         admin.setPhone(admin1.getPhone());
@@ -86,7 +87,7 @@ public class AdminService {
         admin.setAdminType(admin1.getAdminType());
         if (adminUpdateDTO.getUser() != null && (admin.getUser() == null || !admin.getUser().getId().equals(adminUpdateDTO.getUser()))) {
             User newUser = userRepository.findById(adminUpdateDTO.getUser())
-                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", adminUpdateDTO.getUser()));
+                    .orElseThrow(() -> new ResourceNotFoundException("admin",adminUpdateDTO,"id","admins/edit","An account with this id cannot be found"));
             admin.setUser(newUser);
         }
         admin.setUpdatedAt(LocalDateTime.now());
@@ -97,8 +98,11 @@ public class AdminService {
     }
 
     public void deleteAdmin(Long id) {
-        Admin admin = adminRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Admin", "id", id));
+        Optional<Admin> adminOptional = adminRepository.findById(id);
+        if(adminOptional.isEmpty()){
+            throw new ResourceNotFoundException("admin",adminOptional,"id","admins","An account with this id cannot be found");
+        }
+        Admin admin =adminOptional.get();
         User user = admin.getUser();
         if (user != null) {
             user.setAdmin(null);
@@ -108,7 +112,10 @@ public class AdminService {
     }
 
     public AdminDTO findAdminById(Long id) {
-        Admin adminOp = adminRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Admin","id",id));
+        Optional<Admin> adminOp = adminRepository.findById(id);
+        if(adminOp.isEmpty()){
+            throw new ResourceNotFoundException("admin",adminOp,"id","admins","An account with this id cannot be found");
+        }
         return modelMapper.map(adminOp, AdminDTO.class);
     }
 

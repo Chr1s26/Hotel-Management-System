@@ -1,6 +1,7 @@
 package com.project.HotelManagementSystem.dto.admin;
 
 import com.project.HotelManagementSystem.entity.constants.AdminType;
+import com.project.HotelManagementSystem.validator.admin.AvailableAdminCreateUser;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,6 +34,6 @@ public class AdminCreateDTO {
     private String nationalIdNumber;
     @NotNull(message = "Admin type cannot be empty")
     private AdminType adminType;
-//    @AvailableAdminCreateUser(message = "This user is already assigned to another admin.")
+    @AvailableAdminCreateUser(message = "This user is already assigned to another admin.")
     private Long user;
 }

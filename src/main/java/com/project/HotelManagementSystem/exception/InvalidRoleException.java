@@ -1,5 +1,8 @@
 package com.project.HotelManagementSystem.exception;
 
+import lombok.Data;
+
+@Data
 public class InvalidRoleException extends RuntimeException {
     private final String objectName;
     private final Object ObjectValue;
@@ -14,7 +17,7 @@ public class InvalidRoleException extends RuntimeException {
         this.ObjectValue = objectValue;
         this.field = field;
         this.view = view;
-        this.messageKey = "duplicate";
+        this.messageKey = "invalidRole";
         this.defaultMessage = defaultMessage;
     }
 }

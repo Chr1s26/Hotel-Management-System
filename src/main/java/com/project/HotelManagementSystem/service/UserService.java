@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -66,7 +67,7 @@ public class UserService {
         if(userRepository.existsByNameAndIdNot(userUpdateDTO.getName(), userUpdateDTO.getId())) throw new DuplicateException("user",userUpdateDTO,"name","users/edit","An account with this name already exists");
         if(userRepository.existsByEmailAndIdNot(userUpdateDTO.getEmail(),userUpdateDTO.getId())) throw new DuplicateException("user",userUpdateDTO,"email","users/edit","An account with this email already exists");
 
-        User updatedUser = this.userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User","id",id));
+        User updatedUser = this.userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("user",userUpdateDTO,"id","users/edit","An account with this id cannot be found"));
         User user = modelMapper.map(userUpdateDTO, User.class);
         updatedUser.setName(user.getName());
         updatedUser.setEmail(user.getEmail());
@@ -80,17 +81,26 @@ public class UserService {
     }
 
     public void deleteUser( Long id) {
-        User optionalUser = this.userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User","id",id));
+        Optional<User> optionalUser = this.userRepository.findById(id);
+        if(optionalUser.isEmpty()){
+            throw new ResourceNotFoundException("user",optionalUser,"id","users","An account with this id cannot be found");
+        }
         this.userRepository.deleteById(id);
     }
 
     public UserUpdateDTO findUserById(Long id) {
-        User user = this.userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User","id",id));
+        Optional<User> user = this.userRepository.findById(id);
+        if(user.isEmpty()){
+            throw new ResourceNotFoundException("user",user,"id","users","An account with this id cannot be found");
+        }
         return modelMapper.map(user, UserUpdateDTO.class);
     }
 
-    public User findById(Long id) {
-        User user = this.userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User","id",id));
+    public Optional<User> findById(Long id) {
+        Optional<User> user = this.userRepository.findById(id);
+        if(user.isEmpty()){
+            throw new ResourceNotFoundException("user",user,"id","users/edit","An account with this id cannot be found");
+        }
         return user;
     }
 
