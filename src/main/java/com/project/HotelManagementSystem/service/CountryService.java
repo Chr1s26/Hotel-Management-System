@@ -33,9 +33,9 @@ public class CountryService extends CommonExportProcess<Country> {
 
     public CountryCreateDTO createCountry(CountryCreateDTO countryCreateDTO) {
         Optional<Country> countryOptional = this.countryRepository.findByNameIgnoreCase(countryCreateDTO.getName());
-//        if(countryOptional.isPresent()){
-//            throw new DuplicateException("Country with name " + countryCreateDTO.getName() + " already exists");
-//        }
+        if(countryOptional.isPresent()){
+            throw new DuplicateException("country",countryCreateDTO,"name","countries/create","A country with the same name already exists");
+        }
         Country country = modelMapper.map(countryCreateDTO, Country.class);
         country.setStatus(StatusType.ACTIVE);
         country.setCreatedAt(LocalDateTime.now());
@@ -46,9 +46,9 @@ public class CountryService extends CommonExportProcess<Country> {
 
     public CountryUpdateDTO updateCountry(Long id, CountryUpdateDTO countryUpdateDTO) {
         Optional<Country> countryOptional = this.countryRepository.findByNameIgnoreCaseAndIdNot(countryUpdateDTO.getName(),countryUpdateDTO.getId());
-//        if(countryOptional.isPresent() && !countryOptional.get().getId().equals(id)){
-//            throw new DuplicateException("Country with name " + countryUpdateDTO.getName() + " already exists");
-//        }
+        if(countryOptional.isPresent() && !countryOptional.get().getId().equals(id)){
+            throw new DuplicateException("country",countryUpdateDTO,"name","countries/edit","A country with the same name already exists");
+        }
         Country optionalCountry = countryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Country", "id", id));
         Country country = modelMapper.map(countryUpdateDTO, Country.class);
         optionalCountry.setName(country.getName());

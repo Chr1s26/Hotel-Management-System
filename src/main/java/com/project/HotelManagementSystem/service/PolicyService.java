@@ -32,9 +32,9 @@ public class PolicyService {
 
     public PolicyCreateDTO createPolicy(PolicyCreateDTO policyCreateDTO) {
         Optional<Policy> optionalPolicy = this.policyRepository.findByTitleAndDescription(policyCreateDTO.getTitle(), policyCreateDTO.getDescription());
-//        if (optionalPolicy.isPresent()) {
-//            throw new DuplicateException("Policy with title " + policyCreateDTO.getTitle() + " And same description already exists");
-//        }
+        if (optionalPolicy.isPresent()) {
+            throw new DuplicateException("policy",policyCreateDTO,"title","policies/create","An account with this title and description already exists");
+        }
         Policy policy = modelMapper.map(policyCreateDTO, Policy.class);
         policy.setCreatedAt(LocalDateTime.now());
         policy.setStatus(StatusType.ACTIVE);
@@ -45,9 +45,9 @@ public class PolicyService {
 
     public PolicyUpdateDTO updatePolicy(Long id, PolicyUpdateDTO policyUpdateDTO) {
         Optional<Policy> optionalPolicy = this.policyRepository.findByTitleAndDescriptionAndIdNot(policyUpdateDTO.getTitle(), policyUpdateDTO.getDescription(),policyUpdateDTO.getId());
-//        if (optionalPolicy.isPresent()) {
-//            throw new DuplicateException("Policy with title " + policyUpdateDTO.getTitle() + " And same description already exists");
-//        }
+        if (optionalPolicy.isPresent()) {
+            throw new DuplicateException("policy",policyUpdateDTO,"title","policies/edit","An account with this title and description already exists");
+        }
         Policy policyOp = policyRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Policy", "id", id));
         Policy policy = modelMapper.map(policyUpdateDTO, Policy.class);
         policyOp.setTitle(policy.getTitle());

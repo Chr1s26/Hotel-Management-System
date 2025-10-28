@@ -19,15 +19,19 @@ import java.util.Set;
 @NoArgsConstructor
 public class HotelUpdateDTO {
     private Long id;
-    @NotBlank(message = "Hotel name cannot be empty")
+    @NotBlank(message = "Hotel name cannot be empty.")
+    @Size(min = 2, max = 100, message = "Hotel name must be between 2 and 100 characters.")
+    @Pattern(regexp = "^[A-Za-z0-9\\s.,'\\-()]+$", message = "Hotel name can only contain letters, numbers, spaces, and symbols (.,' - ()).")
     private String name;
-    @NotBlank(message = "Phone number cannot be empty")
+    @NotBlank(message = "Phone number cannot be empty.")
+    @Pattern(regexp = "^[0-9\\-\\s()]{8,15}$", message = "Invalid phone number format.")
     private String phoneNumber;
-    @NotBlank(message = "Email cannot be empty")
-    @Email(message = "Invalid email format")
+    @NotBlank(message = "Email cannot be empty.")
+    @Email(message = "Invalid email format.")
     private String email;
-    @NotBlank(message = "Description cannot be empty")
-    @Size(max = 500, message = "Description must be less than 500 characters")
+    @NotBlank(message = "Description cannot be empty.")
+    @Size(min = 10, max = 500, message = "Description must be between 10 and 500 characters.")
+    @Pattern(regexp = "^[A-Za-z0-9\\s.,'\\-()]+$", message = "Description can only contain letters, numbers, spaces, and symbols (.,' - ()).")
     private String description;
     @DecimalMin(value = "0.0", message = "Rating must be at least 0.0")
     @DecimalMax(value = "5.0", message = "Rating cannot be more than 5.0")

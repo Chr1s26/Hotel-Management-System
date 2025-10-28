@@ -35,9 +35,9 @@ public class PropertyDescriptionService {
 
     public PropertyDescriptionCreateDTO createPropertyDescription(PropertyDescriptionCreateDTO propertyDescriptionCreateDTO){
         Optional<PropertyDescription> propertyDescriptionOptional = propertyDescriptionRepository.findByDescriptionIgnoreCase(propertyDescriptionCreateDTO.getDescription());
-//        if(propertyDescriptionOptional.isPresent()){
-//            throw new DuplicateException("Description already exists.");
-//        }
+        if(propertyDescriptionOptional.isPresent()){
+            throw new DuplicateException("propertyDescription",propertyDescriptionCreateDTO,"description","propertyDescriptions/create","A property with this description already exists");
+        }
         PropertyDescription propertyDescription = modelMapper.map(propertyDescriptionCreateDTO, PropertyDescription.class);
         propertyDescription.setCreatedAt(LocalDateTime.now());
         propertyDescription.setCreatedBy(authService.getCurrentUser());
@@ -48,9 +48,9 @@ public class PropertyDescriptionService {
 
     public PropertyDescriptionUpdateDTO updatePropertyDescription(Long id, PropertyDescriptionUpdateDTO propertyDescriptionUpdateDTO) {
         Optional<PropertyDescription> propertyDescriptionOp = propertyDescriptionRepository.findByDescriptionIgnoreCase(propertyDescriptionUpdateDTO.getDescription());
-//        if(propertyDescriptionOp.isPresent() && !propertyDescriptionOp.get().getId().equals(id)){
-//            throw new DuplicateException("Propperty description "+ propertyDescriptionUpdateDTO.getDescription() +" already exists.");
-//        }
+        if(propertyDescriptionOp.isPresent() && !propertyDescriptionOp.get().getId().equals(id)){
+            throw new DuplicateException("propertyDescription",propertyDescriptionUpdateDTO,"description","propertyDescriptions/edit","A property with this description already exists");
+        }
         PropertyDescription propertyDescription = modelMapper.map(propertyDescriptionUpdateDTO, PropertyDescription.class);
         PropertyDescription updatedPropertyDescription = this.propertyDescriptionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("PropertyDescription", "id", id) );
         updatedPropertyDescription.setDescription(propertyDescription.getDescription());

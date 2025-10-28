@@ -31,9 +31,9 @@ public class AmenitiesService {
 
     public AmenitiesCreateDTO createAmenities(AmenitiesCreateDTO amenitiesCreateDTO) {
         Optional<Amenities> amenitiesOp = this.amenitiesRepository.findByNameAndDescriptionIgnoreCase(amenitiesCreateDTO.getName(), amenitiesCreateDTO.getDescription());
-//        if(amenitiesOp.isPresent()) {
-//            throw new DuplicateException("Another Amenities with name " + amenitiesCreateDTO.getName() + " And with same description already exists");
-//        }
+        if(amenitiesOp.isPresent()) {
+            throw new DuplicateException("amenities",amenitiesCreateDTO,"name","amenities/create","Amenities with this name already exists");
+        }
         Amenities amenities = modelMapper.map(amenitiesCreateDTO, Amenities.class);
         amenities.setStatus(StatusType.ACTIVE);
         amenities.setCreatedAt(LocalDateTime.now());
@@ -44,9 +44,9 @@ public class AmenitiesService {
 
     public AmenitiesUpdateDTO updateAmenities(Long id, AmenitiesUpdateDTO amenitiesUpdateDTO) {
         Optional<Amenities> amenitiesOp = this.amenitiesRepository.findByNameAndDescriptionIgnoreCaseAndIdNot(amenitiesUpdateDTO.getName(), amenitiesUpdateDTO.getDescription(), amenitiesUpdateDTO.getId());
-//        if(amenitiesOp.isPresent() && !amenitiesOp.get().getId().equals(id)) {
-//            throw new DuplicateException("Another Amenities with name " + amenitiesUpdateDTO.getName() + " And with same description already exists");
-//        }
+        if(amenitiesOp.isPresent() && !amenitiesOp.get().getId().equals(id)) {
+            throw new DuplicateException("amenities",amenitiesUpdateDTO,"name","amenities/edit","Amenities with this name already exists");
+        }
         Amenities updatedAmenitiesOp = this.amenitiesRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Amenities","id",id));
         Amenities amenities = modelMapper.map(amenitiesUpdateDTO, Amenities.class);
         updatedAmenitiesOp.setName(amenities.getName());

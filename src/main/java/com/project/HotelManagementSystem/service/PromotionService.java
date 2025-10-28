@@ -32,9 +32,9 @@ public class PromotionService {
 
     public PromotionCreateDTO createPromotion(PromotionCreateDTO promotionCreateDTO) {
         Optional<Promotion> promotionOp = promotionRepository.findByCode(promotionCreateDTO.getCode());
-//        if (promotionOp.isPresent()) {
-//            throw new DuplicateException("Promotion with code " + promotionCreateDTO.getCode() + " already exists");
-//        }
+        if (promotionOp.isPresent()) {
+            throw new DuplicateException("promotion",promotionCreateDTO,"code","promotions/create","A promotion with this code already exists");
+        }
         Promotion promotion = modelMapper.map(promotionCreateDTO, Promotion.class);
         promotion.setStatus(StatusType.ACTIVE);
         promotion.setCreatedAt(LocalDateTime.now());
@@ -45,9 +45,9 @@ public class PromotionService {
 
     public PromotionUpdateDTO updatePromotion(Long id, PromotionUpdateDTO promotionUpdateDTO) {
         Optional<Promotion> promotionOptional = promotionRepository.findByCodeAndIdNot(promotionUpdateDTO.getCode(),promotionUpdateDTO.getId());
-//        if (promotionOptional.isPresent() && !promotionOptional.get().getId().equals(id)) {
-//            throw new DuplicateException("Promotion with code " + promotionUpdateDTO.getCode() + " already exists");
-//        }
+        if (promotionOptional.isPresent() && !promotionOptional.get().getId().equals(id)) {
+            throw new DuplicateException("promotion",promotionUpdateDTO,"code","promotions/edit","A promotion with this code already exists");
+        }
         Promotion promotion = modelMapper.map(promotionUpdateDTO, Promotion.class);
         Promotion promotionOp = promotionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Promotion","id",id));
         promotionOp.setCode(promotion.getCode());
