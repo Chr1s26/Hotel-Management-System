@@ -1,4 +1,4 @@
-package com.project.HotelManagementSystem.validator;
+package com.project.HotelManagementSystem.validator.admin;
 
 import com.project.HotelManagementSystem.repository.AdminRepository;
 import com.project.HotelManagementSystem.repository.UserRepository;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AvailableAdminEditUserValidator implements ConstraintValidator<AvailableAdminEditUser, Long> {
+public class AvailableAdminCreateUserValidator implements ConstraintValidator<AvailableAdminCreateUser, Long> {
 
     private final AdminRepository adminRepository;
     private final UserRepository userRepository;
@@ -24,8 +24,7 @@ public class AvailableAdminEditUserValidator implements ConstraintValidator<Avai
                     .addConstraintViolation();
             return false;
         }
-        //role remove lote ynn
 
-        return true;
+        return !adminRepository.existsByUser_Id(userId);
     }
 }

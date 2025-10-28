@@ -45,10 +45,10 @@ public class AdminService {
     public AdminCreateDTO createAdmin(AdminCreateDTO adminCreateDTO) {
         Optional<Admin> adminOp = adminRepository.findByNameIgnoreCase(adminCreateDTO.getName());
 
-//        if (adminOp.isPresent()) {
-//            throw new DuplicateException("Another admin with the same name already exists");
-//        }
-        validateIdsUniqueOrThrow(null, adminCreateDTO.getPassportNumber(), adminCreateDTO.getNationalIdNumber());
+        if (adminOp.isPresent()) {
+            throw new DuplicateException("admin",adminCreateDTO,"name","admins/create","An admin with the same name already exists");
+        }
+        validateIdsUniqueOrThrow(null, adminCreateDTO.getPassportNumber(), adminCreateDTO.getNationalIdNumber(),adminCreateDTO,"create");
 
         Admin admin = modelMapper.map(adminCreateDTO, Admin.class);
         admin.setCreatedAt(LocalDateTime.now());
@@ -70,10 +70,10 @@ public class AdminService {
     public AdminUpdateDTO updateAdmin(Long id,AdminUpdateDTO adminUpdateDTO) {
         Optional<Admin> adminOp = adminRepository.findByNameIgnoreCaseAndIdNot(adminUpdateDTO.getName(),id);
 
-//        if (adminOp.isPresent()) {
-//            throw new DuplicateException("Another admin with the same name already exists");
-//        }
-        validateIdsUniqueOrThrow(id, adminUpdateDTO.getPassportNumber(), adminUpdateDTO.getNationalIdNumber());
+        if (adminOp.isPresent()) {
+            throw new DuplicateException("admin",adminUpdateDTO,"name","admins/edit","An admin with the same name already exists");
+        }
+        validateIdsUniqueOrThrow(id, adminUpdateDTO.getPassportNumber(), adminUpdateDTO.getNationalIdNumber(),adminUpdateDTO,"update");
 
         Admin admin = adminRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Admin","id",id));
         Admin admin1 = modelMapper.map(adminUpdateDTO, Admin.class);
@@ -176,9 +176,15 @@ public class AdminService {
         return adminRepository.findAll(spec,pageable);
     }
 
-    private void validateIdsUniqueOrThrow(Long currentAdminId, String passport, String nationalId) {
+    private void validateIdsUniqueOrThrow(Long currentAdminId, String passport, String nationalId,Object object,String type) {
         String p = (passport == null) ? null : passport.trim();
         String n = (nationalId == null) ? null : nationalId.trim();
+        String route = "";
+        if(type.equalsIgnoreCase("create")){
+            route = "admins/create";
+        }else if(type.equalsIgnoreCase("update")){
+            route = "admins/update";
+        }
 
         if ((p == null || p.isEmpty()) && (n == null || n.isEmpty())) {
             throw new IllegalArgumentException("Either passport number or national ID number must be provided.");
@@ -188,18 +194,18 @@ public class AdminService {
             boolean dup = (currentAdminId == null)
                     ? adminRepository.existsByPassportNumberIgnoreCase(p)
                     : adminRepository.existsByPassportNumberIgnoreCaseAndIdNot(p, currentAdminId);
-//            if (dup) {
-//                throw new DuplicateException("Passport number is already used by another admin.");
-//            }
+            if (dup) {
+                throw new DuplicateException("admin",object,"passportNumber",route,"Passport Number already exists.");
+            }
         }
 
         if (n != null && !n.isEmpty()) {
             boolean dup = (currentAdminId == null)
                     ? adminRepository.existsByNationalIdNumberIgnoreCase(n)
                     : adminRepository.existsByNationalIdNumberIgnoreCaseAndIdNot(n, currentAdminId);
-//            if (dup) {
-//                throw new DuplicateException("National ID number is already used by another admin.");
-//            }
+            if (dup) {
+                throw new DuplicateException("admin",object,"nationalIdNumber",route,"Passport Number already exists.");
+            }
         }
     }
 

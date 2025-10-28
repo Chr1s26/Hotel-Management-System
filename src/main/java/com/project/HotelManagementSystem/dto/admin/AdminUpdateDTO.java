@@ -1,20 +1,19 @@
 package com.project.HotelManagementSystem.dto.admin;
 
 import com.project.HotelManagementSystem.entity.constants.AdminType;
-import com.project.HotelManagementSystem.validator.AvailableAdminEditUser;
-import com.project.HotelManagementSystem.validator.NumericString;
+import com.project.HotelManagementSystem.validator.admin.AvailableAdminEditUser;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@AvailableAdminEditUser
 public class AdminUpdateDTO {
     private Long id;
     @NotBlank(message = "Name cannot be empty.")
@@ -36,6 +35,5 @@ public class AdminUpdateDTO {
     private String nationalIdNumber;
     @NotNull(message = "Admin type cannot be empty")
     private AdminType adminType;
-    @AvailableAdminEditUser(message = "This user is already assigned to another admin.")
     private Long user;
 }
