@@ -22,4 +22,6 @@ public interface AdminRepository extends JpaRepository<Admin,Long> {
     boolean existsByNationalIdNumberIgnoreCaseAndIdNot(String nationalIdNumber, Long id);
     boolean existsByPassportNumberIgnoreCase(String passportNumber);
     boolean existsByNationalIdNumberIgnoreCase(String nationalIdNumber);
+
+    boolean existsByUserIdAndIdNot(Long user, Long id);
 }

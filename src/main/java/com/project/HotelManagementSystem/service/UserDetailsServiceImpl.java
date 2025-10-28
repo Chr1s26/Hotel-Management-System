@@ -56,7 +56,7 @@ public class UserDetailsServiceImpl implements AbstractService{
         user.setEmail(userCreateDTO.getEmail());
         user.setCreatedAt(LocalDateTime.now());
         user.setStatus(StatusType.ACTIVE);
-        Role userRole = roleRepository.findByRoleName("NORMAL_USER").orElseThrow(() -> new InvalidRoleException("Role not found"));
+        Role userRole = roleRepository.findByRoleName("NORMAL_USER").orElseThrow(() -> new InvalidRoleException("user",userCreateDTO,"role","/register","User Role cannot assign"));
         user.setRoles(Collections.singleton(userRole));
         user.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
         return userRepository.save(user);

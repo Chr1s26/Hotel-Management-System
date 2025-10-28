@@ -54,7 +54,7 @@ public abstract class CommonExportProcess<T extends MasterData> {
         for(T rowObject: fetchData()){
             Row row = sheet.createRow(r++);
             for(int c = 0; c < cols.size(); c++){
-                String text = cols.get(c).getExtractor().apply(rowObject);
+                String text = safe(cols.get(c).getExtractor().apply(rowObject));
                 row.createCell(c).setCellValue(text);
             }
         }

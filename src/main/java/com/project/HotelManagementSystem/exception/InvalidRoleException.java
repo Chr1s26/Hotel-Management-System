@@ -1,8 +1,20 @@
 package com.project.HotelManagementSystem.exception;
 
 public class InvalidRoleException extends RuntimeException {
-  private static final long serialVersionUID = 1L;
-  public InvalidRoleException(String message) {
-        super(message);
+    private final String objectName;
+    private final Object ObjectValue;
+    private final String field;
+    private final String view;
+    private final String messageKey;
+    private final String defaultMessage;
+
+    public InvalidRoleException(String objectName, Object objectValue, String field, String view ,String defaultMessage) {
+        super(defaultMessage);
+        this.objectName = objectName;
+        this.ObjectValue = objectValue;
+        this.field = field;
+        this.view = view;
+        this.messageKey = "duplicate";
+        this.defaultMessage = defaultMessage;
     }
 }

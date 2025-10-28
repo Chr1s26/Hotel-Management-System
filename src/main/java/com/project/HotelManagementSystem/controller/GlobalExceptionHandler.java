@@ -1,6 +1,7 @@
 package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.exception.DuplicateException;
+import com.project.HotelManagementSystem.exception.InvalidRoleException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.ui.Model;
@@ -23,6 +24,25 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateException.class)
     public String handleDuplicateField(DuplicateException ex, Model model) {
+        BindingResult br = new BeanPropertyBindingResult(ex.getObjectValue(), ex.getObjectName());
+        Object rejected = new BeanWrapperImpl(ex.getObjectValue()).getPropertyValue(ex.getField());
+        br.addError(new FieldError(
+                ex.getObjectName(),
+                ex.getField(),
+                rejected,
+                false,
+                new String[]{ex.getMessageKey()},
+                null,
+                ex.getDefaultMessage()
+        ));
+        model.addAttribute(ex.getObjectName(), ex.getObjectValue());
+        model.addAttribute(MODEL_KEY_PREFIX + ex.getObjectName(), br);
+        model.addAttribute("requestURI", ex.getView());
+        return ex.getView();
+    }
+
+    @ExceptionHandler(InvalidRoleException.class)
+    public String handleInvalidRoleField(DuplicateException ex, Model model) {
         BindingResult br = new BeanPropertyBindingResult(ex.getObjectValue(), ex.getObjectName());
         Object rejected = new BeanWrapperImpl(ex.getObjectValue()).getPropertyValue(ex.getField());
         br.addError(new FieldError(
