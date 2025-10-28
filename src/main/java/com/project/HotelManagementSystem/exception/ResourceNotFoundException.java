@@ -1,31 +1,23 @@
 package com.project.HotelManagementSystem.exception;
 
+import lombok.Data;
+
+@Data
 public class ResourceNotFoundException extends RuntimeException {
+    private final String objectName;
+    private final Object ObjectValue;
+    private final String field;
+    private final String view;
+    private final String messageKey;
+    private final String defaultMessage;
 
-    String resourceName;
-    String field;
-    String fieldName;
-    Long fieldId;
-
-    public ResourceNotFoundException(String resourceName, String field, String fieldName) {
-        super(String.format("%s not found with %s : %s",resourceName,field,fieldName));
-        this.resourceName = resourceName;
+    public ResourceNotFoundException(String objectName, Object objectValue, String field, String view ,String defaultMessage) {
+        super(defaultMessage);
+        this.objectName = objectName;
+        this.ObjectValue = objectValue;
         this.field = field;
-        this.fieldName = fieldName;
-    }
-
-    public ResourceNotFoundException(String resourceName, String field, Long fieldId) {
-        super(String.format("%s not found with %s : %d",resourceName,field,fieldId));
-        this.resourceName = resourceName;
-        this.field = field;
-        this.fieldId = fieldId;
-    }
-
-    @Override
-    public String getMessage() {
-        if (fieldName != null)
-            return String.format("%s not found with %s : %s", resourceName, field, fieldName);
-        else
-            return String.format("%s not found with %s : %d", resourceName, field, fieldId);
+        this.view = view;
+        this.messageKey = "resourceNotFound";
+        this.defaultMessage = defaultMessage;
     }
 }

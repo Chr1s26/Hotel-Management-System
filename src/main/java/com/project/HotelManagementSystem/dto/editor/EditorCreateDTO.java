@@ -1,7 +1,7 @@
 package com.project.HotelManagementSystem.dto.editor;
 
 import com.project.HotelManagementSystem.entity.constants.EditorType;
-import com.project.HotelManagementSystem.validator.AvailableEditorUser;
+import com.project.HotelManagementSystem.validator.editor.AvailableEditorCreateUser;
 import com.project.HotelManagementSystem.validator.NumericString;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -33,6 +33,6 @@ public class EditorCreateDTO {
     private String nationalIdNumber;
     @NotNull(message = "Editor type cannot be empty")
     private EditorType editorType;
-    @AvailableEditorUser(message = "This user is already assigned to another editor.")
+    @AvailableEditorCreateUser(message = "This user is already assigned to another editor.")
     private Long user;
 }

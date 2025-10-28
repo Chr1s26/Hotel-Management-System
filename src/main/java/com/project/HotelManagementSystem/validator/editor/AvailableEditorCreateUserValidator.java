@@ -1,4 +1,4 @@
-package com.project.HotelManagementSystem.validator;
+package com.project.HotelManagementSystem.validator.editor;
 
 import com.project.HotelManagementSystem.repository.EditorRepository;
 import com.project.HotelManagementSystem.repository.UserRepository;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AvailableEditorUserValidator implements ConstraintValidator<AvailableEditorUser, Long> {
+public class AvailableEditorCreateUserValidator implements ConstraintValidator<AvailableEditorCreateUser, Long> {
 
     private final EditorRepository editorRepository;
     private final UserRepository userRepository;

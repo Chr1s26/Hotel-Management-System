@@ -1,9 +1,8 @@
 package com.project.HotelManagementSystem.dto.editor;
 
-import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.EditorType;
-import com.project.HotelManagementSystem.validator.AvailableEditorUser;
 import com.project.HotelManagementSystem.validator.NumericString;
+import com.project.HotelManagementSystem.validator.editor.AvailableEditorEditUser;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -11,13 +10,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@AvailableEditorEditUser
 public class EditorUpdateDTO {
     private Long id;
     @NotBlank(message = "Name cannot be empty.")
@@ -34,6 +33,5 @@ public class EditorUpdateDTO {
     private String passportNumber;
     private String nationalIdNumber;
     private EditorType editorType;
-//    @AvailableEditorUser(message = "This user is already assigned to another editor.")
     private Long user;
 }
