@@ -26,12 +26,18 @@ public class AdminUpdateDTO {
     @NotNull(message = "Date of Birth cannot be empty.")
     @PastOrPresent(message = "Birth date cannot be in the future")
     private LocalDate dateOfBirth;
-    @NotBlank(message = "Nationality cannot be empty.")
     @Pattern(regexp = "^[A-Za-z\\s]+$", message = "Nationality cannot include numbers or symbols")
     private String nationality;
-    @Pattern(regexp = "^[A-Za-z0-9]{6,9}$", message = "Invalid passport number format (6–9 letters or digits only)")
+    @Pattern(
+            regexp = "^[A-Za-z0-9]{6,9}$|^$",
+            message = "Invalid passport number format (6–9 letters or digits only)"
+    )
     private String passportNumber;
-    @Pattern(regexp = "^[A-Za-z0-9/\\-()]+$", message = "Invalid ID format (only A–Z, 0–9, /, -, (, ) are allowed)")
+
+    @Pattern(
+            regexp = "^[A-Za-z0-9/\\-()]+$|^$",
+            message = "Invalid ID format (only A–Z, 0–9, /, -, (, ) are allowed)"
+    )
     private String nationalIdNumber;
     @NotNull(message = "Admin type cannot be empty")
     private AdminType adminType;

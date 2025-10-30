@@ -105,6 +105,12 @@ public class AdminService {
         Admin admin =adminOptional.get();
         User user = admin.getUser();
         if (user != null) {
+            Role adminRole = roleRepository.findByRoleName("ADMIN")
+                    .orElse(null);
+            if(user.getRoles() != null) {
+                user.getRoles().remove(adminRole);
+                userRepository.save(user);
+            }
             user.setAdmin(null);
             admin.setUser(null);
         }
@@ -183,35 +189,39 @@ public class AdminService {
         return adminRepository.findAll(spec,pageable);
     }
 
-    private void validateIdsUniqueOrThrow(Long currentAdminId, String passport, String nationalId,Object object,String type) {
-        String p = (passport == null) ? null : passport.trim();
-        String n = (nationalId == null) ? null : nationalId.trim();
-        String route = "";
-        if(type.equalsIgnoreCase("create")){
-            route = "admins/create";
-        }else if(type.equalsIgnoreCase("update")){
-            route = "admins/update";
-        }
+    private void validateIdsUniqueOrThrow(Long currentAdminId, String passport, String nationalId, Object object, String type) {
+        String p = (passport != null) ? passport.trim() : "";
+        String n = (nationalId != null) ? nationalId.trim() : "";
 
-        if ((p == null || p.isEmpty()) && (n == null || n.isEmpty())) {
+        String route = switch (type.toLowerCase()) {
+            case "create" -> "admins/create";
+            case "update" -> "admins/edit";
+            default -> "admins";
+        };
+
+        // ✅ Require at least one ID
+        if (p.isEmpty() && n.isEmpty()) {
             throw new IllegalArgumentException("Either passport number or national ID number must be provided.");
         }
 
-        if (p != null && !p.isEmpty()) {
+        // ✅ Only check non-empty values
+        if (!p.isEmpty()) {
             boolean dup = (currentAdminId == null)
                     ? adminRepository.existsByPassportNumberIgnoreCase(p)
                     : adminRepository.existsByPassportNumberIgnoreCaseAndIdNot(p, currentAdminId);
+
             if (dup) {
-                throw new DuplicateException("admin",object,"passportNumber",route,"Passport Number already exists.");
+                throw new DuplicateException("admin", object, "passportNumber", route, "Passport Number already exists.");
             }
         }
 
-        if (n != null && !n.isEmpty()) {
+        if (!n.isEmpty()) {
             boolean dup = (currentAdminId == null)
                     ? adminRepository.existsByNationalIdNumberIgnoreCase(n)
                     : adminRepository.existsByNationalIdNumberIgnoreCaseAndIdNot(n, currentAdminId);
+
             if (dup) {
-                throw new DuplicateException("admin",object,"nationalIdNumber",route,"Passport Number already exists.");
+                throw new DuplicateException("admin", object, "nationalIdNumber", route, "National ID Number already exists.");
             }
         }
     }

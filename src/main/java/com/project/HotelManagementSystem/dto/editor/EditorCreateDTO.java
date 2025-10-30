@@ -3,9 +3,7 @@ package com.project.HotelManagementSystem.dto.editor;
 import com.project.HotelManagementSystem.entity.constants.EditorType;
 import com.project.HotelManagementSystem.validator.editor.AvailableEditorCreateUser;
 import com.project.HotelManagementSystem.validator.NumericString;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,19 +17,29 @@ import java.time.LocalDate;
 public class EditorCreateDTO {
     private Long id;
     @NotBlank(message = "Name cannot be empty.")
+    @Pattern(regexp = "^[A-Za-z\\s]+$", message = "Name cannot include numbers or symbols")
     private String name;
     @NotBlank(message = "Phone number cannot be empty.")
-    @Size(min = 8, message = "Phone number must include at least 8 characters.")
-    @NumericString(message = "Phone number cannot be string")
+    @Pattern(regexp = "^[0-9\\-\\s()]{8,15}$", message = "Invalid phone number format")
     private String phone;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "Date of Birth cannot be empty.")
+    @PastOrPresent(message = "Birth date cannot be in the future")
     private LocalDate dateOfBirth;
     @NotBlank(message = "Nationality cannot be empty.")
+    @Pattern(regexp = "^[A-Za-z\\s]+$", message = "Nationality cannot include numbers or symbols")
     private String nationality;
+    @Pattern(
+            regexp = "^[A-Za-z0-9]{6,9}$|^$",
+            message = "Invalid passport number format (6–9 letters or digits only)"
+    )
     private String passportNumber;
+    @Pattern(
+            regexp = "^[A-Za-z0-9/\\-()]+$|^$",
+            message = "Invalid ID format (only A–Z, 0–9, /, -, (, ) are allowed)"
+    )
     private String nationalIdNumber;
-    @NotNull(message = "Editor type cannot be empty")
+    @NotNull(message = "Admin type cannot be empty")
     private EditorType editorType;
     @AvailableEditorCreateUser(message = "This user is already assigned to another editor.")
     private Long user;
