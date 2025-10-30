@@ -7,90 +7,91 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/form-theme.css}">
 </head>
-<body class="container mt-4">
-<div th:replace="fragments/navbar :: navbar"></div>
-<h2>Update Rooms</h2>
-<form th:action="@{/rooms/update/{id}(id=${room.id})}" th:object="${room}" method="post" class="needs-validation" enctype="multipart/form-data">
-    <div class="mb-3">
-        <label class="form-label">Price</label>
-        <input type="text" th:field="*{price}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
-    </div>
-    <div class="form-check mb-3">
-        <input type="checkbox" th:field="*{available}" class="form-check-input" id="available"/>
-        <label class="form-check-label" for="available">Is Available</label>
-        <div class="text-danger" th:if="${#fields.hasErrors('available')}" th:errors="*{available}"></div>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Description</label>
-        <input type="text" th:field="*{description}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Room Type</label>
-        <select th:field="*{roomType}" class="form-select">
-            <option value="" disabled selected>-- Select Room Type --</option>
-            <option th:each="r : ${T(com.project.HotelManagementSystem.entity.constants.RoomType).values()}"
-                    th:value="${r}"
-                    th:text="${r.name()}">Role</option>
-        </select>
-        <div class="text-danger" th:if="${#fields.hasErrors('roomType')}" th:errors="*{roomType}"></div>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Max Capacity</label>
-        <input type="text" th:field="*{maxCapacity}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('maxCapacity')}" th:errors="*{maxCapacity}"></div>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Hotel</label>
-        <select id="hotel-select" th:field="*{hotel.id}" class="form-select" required>
-            <option value="" disabled selected>-- Select Hotel --</option>
-            <option th:each="hotel : ${hotels}"
-                    th:value="${hotel.id}"
-                    th:text="${hotel.name}">
-            </option>
-        </select>
-        <div class="text-danger" th:if="${#fields.hasErrors('hotel')}" th:errors="*{hotel}"></div>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Amenities</label>
-        <select class="form-select" id="amenities-select" name="amenityIds" multiple>
-            <option value="" disabled selected>-- Select Amenity --</option>
-            <option th:each="am : ${amenities}"
-                    th:value="${am.id}"
-                    th:text="${am.name}"
-                    th:selected="${room.amenityIds.contains(am.id)}">
-            </option>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Promotions</label>
-        <select class="form-select" id="promotions-select" name="promotionIds" multiple>
-            <option value="" disabled selected>-- Select Promotion --</option>
-            <option th:each="promo : ${promotions}"
-                    th:value="${promo.id}"
-                    th:text="${promo.code}"
-                    th:selected="${room.promotionIds.contains(promo.id)}">
-            </option>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Media Type</label>
-        <select id="mediaType-select" th:field="*{roomMediaType}" class="form-select">
-            <option th:each="h : ${T(com.project.HotelManagementSystem.entity.constants.RoomMediaType).values()}"
-                    th:value="${h}"
-                    th:text="${h.name()}">Media Type</option>
-        </select>
-        <div class="text-danger" th:if="${#fields.hasErrors('roomMediaType')}" th:errors="*{roomMediaType}"></div>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">File Upload</label>
-        <input type="file" th:field="*{files}" multiple/> <----
-    </div>
+<body class="royal-form-page">
+<div class="container mt-4">
+    <h2>Update Rooms</h2>
+    <form th:action="@{/rooms/update/{id}(id=${room.id})}" th:object="${room}" method="post" class="needs-validation" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label class="form-label">Price</label>
+            <input type="text" th:field="*{price}" class="form-control"/>
+            <div class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+        </div>
+        <div class="form-check mb-3">
+            <input type="checkbox" th:field="*{available}" class="form-check-input" id="available"/>
+            <label class="form-check-label" for="available">Is Available</label>
+            <div class="text-danger" th:if="${#fields.hasErrors('available')}" th:errors="*{available}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <input type="text" th:field="*{description}" class="form-control"/>
+            <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Room Type</label>
+            <select th:field="*{roomType}" class="form-select">
+                <option value="" disabled selected>-- Select Room Type --</option>
+                <option th:each="r : ${T(com.project.HotelManagementSystem.entity.constants.RoomType).values()}"
+                        th:value="${r}"
+                        th:text="${r.name()}">Role</option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('roomType')}" th:errors="*{roomType}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Max Capacity</label>
+            <input type="text" th:field="*{maxCapacity}" class="form-control"/>
+            <div class="text-danger" th:if="${#fields.hasErrors('maxCapacity')}" th:errors="*{maxCapacity}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Hotel</label>
+            <select id="hotel-select" th:field="*{hotel.id}" class="form-select" required>
+                <option value="" disabled selected>-- Select Hotel --</option>
+                <option th:each="hotel : ${hotels}"
+                        th:value="${hotel.id}"
+                        th:text="${hotel.name}">
+                </option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('hotel')}" th:errors="*{hotel}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Amenities</label>
+            <select class="form-select" id="amenities-select" name="amenityIds" multiple>
+                <option value="" disabled selected>-- Select Amenity --</option>
+                <option th:each="am : ${amenities}"
+                        th:value="${am.id}"
+                        th:text="${am.name}"
+                        th:selected="${room.amenityIds.contains(am.id)}">
+                </option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Promotions</label>
+            <select class="form-select" id="promotions-select" name="promotionIds" multiple>
+                <option value="" disabled selected>-- Select Promotion --</option>
+                <option th:each="promo : ${promotions}"
+                        th:value="${promo.id}"
+                        th:text="${promo.code}"
+                        th:selected="${room.promotionIds.contains(promo.id)}">
+                </option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Media Type</label>
+            <select id="mediaType-select" th:field="*{roomMediaType}" class="form-select">
+                <option th:each="h : ${T(com.project.HotelManagementSystem.entity.constants.RoomMediaType).values()}"
+                        th:value="${h}"
+                        th:text="${h.name()}">Media Type</option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('roomMediaType')}" th:errors="*{roomMediaType}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">File Upload</label>
+            <input type="file" th:field="*{files}" multiple/> <----
+        </div>
 
-    <button type="submit" class="btn btn-primary">Update Room</button>
-    <a class="btn btn-secondary" th:href="@{/rooms}">Cancel</a>
-</form>
+        <button type="submit" class="btn btn-primary">Update Room</button>
+        <a class="btn btn-secondary" th:href="@{/rooms}">Cancel</a>
+    </form>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

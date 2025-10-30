@@ -1,0 +1,104 @@
+<div th:fragment="sidebar">
+    <!-- Toggle button at very top-left -->
+    <button id="sidebarToggle" class="sidebar-toggle" aria-label="Toggle sidebar">≡</button>
+
+    <aside id="appSidebar" class="sidebar sidebar-glass">
+        <div class="sidebar-inner d-flex flex-column h-100">
+
+            <!-- Logo / Home link -->
+            <div class="sidebar-top px-3 py-3 d-flex align-items-center">
+                <a class="navbar-link text-decoration-none d-flex align-items-center" th:href="@{/home}">
+                    <span class="sidebar-logo">Home</span>
+                </a>
+            </div>
+
+            <!-- Links -->
+            <nav class="sidebar-nav flex-grow-1 px-2">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${requestURI.startsWith('/users')} ? ' active' : ''"
+                           th:href="@{/users}">Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${requestURI.startsWith('/admins')} ? ' active' : ''"
+                           th:href="@{/admins}">Admins</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${requestURI.startsWith('/editors')} ? ' active' : ''"
+                           th:href="@{/editors}">Editors</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${requestURI.startsWith('/hotels')} ? ' active' : ''"
+                           th:href="@{/hotels}">Hotels</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${requestURI.startsWith('/rooms')} ? ' active' : ''"
+                           th:href="@{/rooms}">Rooms</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${requestURI.startsWith('/amenities')} ? ' active' : ''"
+                           th:href="@{/amenities}">Amenities</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${requestURI.startsWith('/addresses')} ? ' active' : ''"
+                           th:href="@{/addresses}">Addresses</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${requestURI.startsWith('/countries')} ? ' active' : ''"
+                           th:href="@{/countries}">Countries</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${requestURI.startsWith('/regions')} ? ' active' : ''"
+                           th:href="@{/regions}">Regions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${requestURI.startsWith('/cities')} ? ' active' : ''"
+                           th:href="@{/cities}">Cities</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${requestURI.startsWith('/promotions')} ? ' active' : ''"
+                           th:href="@{/promotions}">Promotions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${requestURI.startsWith('/policies')} ? ' active' : ''"
+                           th:href="@{/policies}">Policies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${requestURI.startsWith('/propertyDescriptions')} ? ' active' : ''"
+                           th:href="@{/propertyDescriptions}">Property Descriptions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${requestURI.startsWith('/roles')} ? ' active' : ''"
+                           th:href="@{/roles}">Roles</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Profile at bottom -->
+            <div class="sidebar-bottom px-3 py-3">
+                <div class="dropdown w-100">
+                    <a class="d-flex align-items-center justify-content-start w-100 text-decoration-none" href="#"
+                       id="sidebarProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img th:src="${#strings.isEmpty(navbarProfileUrl)} ? @{/images/default-profile.png} : ${navbarProfileUrl}"
+                             th:alt="${#strings.isEmpty(navbarProfileUrl)} ? 'Default profile' : 'Profile'"
+                             class="avatar-36 me-2">
+                        <div class="sidebar-profile-text">
+                            <div class="fw-semibold" th:text="${navbarProfileName}">User</div>
+                        </div>
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-start mt-2" aria-labelledby="sidebarProfileDropdown">
+                        <li><a class="dropdown-item" th:href="@{/profiles}">User Profile</a></li>
+                        <li>
+                            <a class="dropdown-item" href="#" onclick="document.getElementById('logout-form').submit(); return false;">Logout</a>
+                            <form id="logout-form" th:action="@{/logout}" method="post" style="display:none;"></form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </aside>
+</div>
+
+

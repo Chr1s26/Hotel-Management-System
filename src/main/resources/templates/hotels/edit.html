@@ -8,117 +8,116 @@
     <link rel="stylesheet" th:href="@{/css/form-theme.css}">
 
 </head>
-<body class="container mt-4">
+<body class="royal-form-page">
+<div class="container mt-4">
+    <h2>Update Hotel</h2>
 
-<div th:replace="fragments/navbar :: navbar"></div>
+    <form th:action="@{/hotels/update/{id}(id=${hotel.id})}" th:object="${hotel}" method="post" class="needs-validation" enctype="multipart/form-data">
 
-<h2>Update Hotel</h2>
+        <input type="hidden" th:field="*{id}" />
 
-<form th:action="@{/hotels/update/{id}(id=${hotel.id})}" th:object="${hotel}" method="post" class="needs-validation" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" th:field="*{name}" class="form-control"/>
+            <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+        </div>
 
-    <input type="hidden" th:field="*{id}" />
+        <div class="mb-3">
+            <label class="form-label">Phone Number</label>
+            <input type="text" th:field="*{phoneNumber}" class="form-control"/>
+            <div class="text-danger" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Name</label>
-        <input type="text" th:field="*{name}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="text" th:field="*{email}" class="form-control"/>
+            <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Phone Number</label>
-        <input type="text" th:field="*{phoneNumber}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <input type="text" th:field="*{description}" class="form-control"/>
+            <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Email</label>
-        <input type="text" th:field="*{email}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Rating</label>
+            <input type="text" th:field="*{rating}" class="form-control"/>
+            <div class="text-danger" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></div>
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Description</label>
-        <input type="text" th:field="*{description}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Hotel Type</label>
+            <select id="hotelType-select" th:field="*{hotelType}" class="form-select">
+                <option th:each="h : ${T(com.project.HotelManagementSystem.entity.constants.HotelType).values()}"
+                        th:value="${h}"
+                        th:text="${h.name()}">Hotel Type</option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('hotelType')}" th:errors="*{hotelType}"></div>
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Rating</label>
-        <input type="text" th:field="*{rating}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></div>
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Address</label>
+            <select id="address-select" th:field="*{address.id}" class="form-select" required>
+                <option value="" disabled>-- Select Address --</option>
+                <option th:each="address : ${addresses}"
+                        th:value="${address.id}"
+                        th:text="${address}">
+                </option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Hotel Type</label>
-        <select id="hotelType-select" th:field="*{hotelType}" class="form-select">
-            <option th:each="h : ${T(com.project.HotelManagementSystem.entity.constants.HotelType).values()}"
-                    th:value="${h}"
-                    th:text="${h.name()}">Hotel Type</option>
-        </select>
-        <div class="text-danger" th:if="${#fields.hasErrors('hotelType')}" th:errors="*{hotelType}"></div>
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Property Description</label>
+            <select id="property-select" th:field="*{propertyDescription.id}" class="form-select" required>
+                <option value="" disabled>-- Select Property Description --</option>
+                <option th:each="propertyDescription : ${propertyDescriptions}"
+                        th:value="${propertyDescription.id}"
+                        th:text="${propertyDescription}">
+                </option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('propertyDescription')}" th:errors="*{propertyDescription}"></div>
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Address</label>
-        <select id="address-select" th:field="*{address.id}" class="form-select" required>
-            <option value="" disabled>-- Select Address --</option>
-            <option th:each="address : ${addresses}"
-                    th:value="${address.id}"
-                    th:text="${address}">
-            </option>
-        </select>
-        <div class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Policies</label>
+            <select id="policies-select" class="form-select" th:field="*{policyIds}" multiple>
+                <option value="" disabled>-- Select Policies --</option>
+                <option th:each="pol : ${policies}"
+                        th:value="${pol.id}"
+                        th:text="${pol.description}">
+                </option>
+            </select>
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Property Description</label>
-        <select id="property-select" th:field="*{propertyDescription.id}" class="form-select" required>
-            <option value="" disabled>-- Select Property Description --</option>
-            <option th:each="propertyDescription : ${propertyDescriptions}"
-                    th:value="${propertyDescription.id}"
-                    th:text="${propertyDescription}">
-            </option>
-        </select>
-        <div class="text-danger" th:if="${#fields.hasErrors('propertyDescription')}" th:errors="*{propertyDescription}"></div>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Policies</label>
-        <select id="policies-select" class="form-select" th:field="*{policyIds}" multiple>
-            <option value="" disabled>-- Select Policies --</option>
-            <option th:each="pol : ${policies}"
-                    th:value="${pol.id}"
-                    th:text="${pol.description}">
-            </option>
-        </select>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Promotions</label>
-        <select id="promotions-select" class="form-select" th:field="*{promotionIds}" multiple>
-            <option value="" disabled>-- Select Promotions --</option>
-            <option th:each="promo : ${promotions}"
-                    th:value="${promo.id}"
-                    th:text="${promo.code}">
-            </option>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Media Type</label>
-        <select id="mediaType-select" th:field="*{hotelMediaType}" class="form-select">
-            <option th:each="h : ${T(com.project.HotelManagementSystem.entity.constants.HotelMediaType).values()}"
-                    th:value="${h}"
-                    th:text="${h.name()}">Media Type</option>
-        </select>
-        <div class="text-danger" th:if="${#fields.hasErrors('hotelMediaType')}" th:errors="*{hotelMediaType}"></div>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">File Upload</label>
-        <input type="file" th:field="*{files}" multiple/>
-    </div>
-    <button type="submit" class="btn btn-primary">Update Hotel</button>
-    <a class="btn btn-secondary" th:href="@{/hotels}">Cancel</a>
-</form>
+        <div class="mb-3">
+            <label class="form-label">Promotions</label>
+            <select id="promotions-select" class="form-select" th:field="*{promotionIds}" multiple>
+                <option value="" disabled>-- Select Promotions --</option>
+                <option th:each="promo : ${promotions}"
+                        th:value="${promo.id}"
+                        th:text="${promo.code}">
+                </option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Media Type</label>
+            <select id="mediaType-select" th:field="*{hotelMediaType}" class="form-select">
+                <option th:each="h : ${T(com.project.HotelManagementSystem.entity.constants.HotelMediaType).values()}"
+                        th:value="${h}"
+                        th:text="${h.name()}">Media Type</option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('hotelMediaType')}" th:errors="*{hotelMediaType}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">File Upload</label>
+            <input type="file" th:field="*{files}" multiple/>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Hotel</button>
+        <a class="btn btn-secondary" th:href="@{/hotels}">Cancel</a>
+    </form>
+</div>
 
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

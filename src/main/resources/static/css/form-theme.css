@@ -257,7 +257,7 @@ th, td {
     color: var(--soft);
     font-family: 'Poppins', sans-serif;
     min-height: 100vh;
-    padding-top: 90px;
+    padding-top: 20px;
 }
 
 /* Headings */

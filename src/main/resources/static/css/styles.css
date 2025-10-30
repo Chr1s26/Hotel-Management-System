@@ -118,35 +118,7 @@ label {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
-/* ===== Navbar (glass + royal palette) ===== */
-.navbar-glass {
-    background:
-            linear-gradient(to right,
-            rgba(43,66,87,0.70),   /* midnight */
-            rgba(20,32,46,0.70));  /* navy */
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-bottom: 1px solid rgba(136,169,195,0.40); /* bluegray line */
-    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
-}
 
-/* Brand / links */
-.navbar-link,
-.nav-link {
-    color: var(--soft) !important;
-}
-.navbar-link:hover,
-.nav-link:hover {
-    color: var(--soft2) !important;
-}
-
-/* Active link highlight */
-.nav-link.active {
-    color: var(--bluegray) !important;
-    font-weight: 600;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-}
 
 /* Dropdown */
 .dropdown-menu {
@@ -172,8 +144,106 @@ label {
     display: inline-block; /* prevent weird expansion */
 }
 
-/* extra safety: any img inside navbar won't blow up */
-.navbar img {
-    max-height: 40px;
+
+
+/* Sidebar glass — reuses navbar color palette and glass look */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 260px;
+    padding-top: 56px;          /* reserve space if you previously had a top bar */
+    transition: transform 0.25s ease, width 0.25s ease, box-shadow 0.25s ease;
+    z-index: 1040;
+    overflow: hidden;
 }
 
+/* Glass effect (copy of navbar-glass visual) */
+.sidebar-glass {
+    background: rgba(9,18,53,0.75); /* adjust to match navbar-glass */
+    backdrop-filter: blur(8px);
+    border-right: 1px solid rgba(255,255,255,0.04);
+    box-shadow: 0 6px 18px rgba(9,18,53,0.12);
+    color: var(--soft);
+}
+
+/* Inner layout */
+.sidebar-inner { display:flex; flex-direction:column; height:100%; }
+
+/* Top logo */
+.sidebar-top .sidebar-logo {
+    font-weight:600;
+    color: var(--soft);
+    font-size: 1.05rem;
+}
+
+/* Nav links */
+.sidebar-nav { overflow:auto; padding-top: 8px; padding-bottom: 8px; }
+.sidebar .nav-link {
+    color: var(--soft2);
+    padding: .6rem .75rem;
+    border-radius: 6px;
+    margin: .15rem 0;
+    display:block;
+}
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Bottom profile */
+.sidebar-bottom { margin-top: auto; border-top: 1px solid rgba(255,255,255,0.03); }
+.sidebar-profile-text div { font-weight:600; color: var(--soft); }
+.sidebar-profile-text small { color: var(--bluegray); }
+
+/* Avatar */
+.avatar-36 { width:36px; height:36px; border-radius:50%; object-fit:cover; }
+
+/* Toggle button (≡) */
+.sidebar-toggle {
+    position: fixed;
+    top: 5px;
+    left: 14px;
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--soft);
+    font-size: 1.7rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    backdrop-filter: blur(5px);
+    padding: 5px 15px;
+    cursor: pointer;
+    z-index: 1100;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 7px rgba(0,0,0,0.2);
+}
+
+.sidebar-toggle:hover {
+    background: rgba(255, 255, 255, 0.35);
+    color: var(--soft2);
+    transform: scale(1.1);
+}
+
+
+/* Hidden / collapsed states */
+.sidebar-collapsed {
+    transform: translateX(-100%);
+}
+
+/* When content should shift right (optional) */
+.content-with-sidebar {
+    margin-left: 260px;
+    transition: margin-left 0.25s ease;
+}
+.content-no-sidebar {
+    margin-left: 0;
+}
+
+/* Responsive: small screens hide sidebar by default */
+@media (max-width: 991.98px) {
+    .sidebar { transform: translateX(-100%); width: 220px; }
+    .sidebar-toggle { left: 10px; top: 10px; }
+}

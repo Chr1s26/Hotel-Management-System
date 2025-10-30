@@ -19,7 +19,7 @@ public class GlobalModelAttribute {
     private final ModelMapper modelMapper;
 
     @ModelAttribute("navbarProfileUrl")
-    public String addProfileUrlToNavBar() {
+    public String addProfileUrlToSideBar() {
         try {
             User user = authService.getCurrentUser();
             if (user == null) return "/images/default-profile.png";
@@ -28,6 +28,19 @@ public class GlobalModelAttribute {
             return (url != null && !url.isBlank()) ? url : "/images/default-profile.png";
         } catch (Exception e) {
             return "/images/default-profile.png";
+        }
+    }
+
+    @ModelAttribute("navbarProfileName")
+    public String addProfileNameToSideBar() {
+        try {
+            User user = authService.getCurrentUser();
+            if (user == null) return "User";
+
+            String name = user.getName();
+            return (name != null && !name.isBlank()) ? name : "User";
+        } catch (Exception e) {
+            return "User";
         }
     }
 }

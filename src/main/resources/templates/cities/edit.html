@@ -9,33 +9,34 @@
     <link rel="stylesheet" th:href="@{/css/form-theme.css}">
 </head>
 
-<body class="container mt-4">
-<div th:replace="fragments/navbar :: navbar"></div>
-<h2>Edit Cities</h2>
-<form th:action="@{/cities/update/{id}(id=${city.id})}" th:object="${city}" method="post">
-    <input type="hidden" th:field="*{id}" />
+<body class="royal-form-page">
+<div class="container mt-4">
+    <h2>Edit Cities</h2>
+    <form th:action="@{/cities/update/{id}(id=${city.id})}" th:object="${city}" method="post">
+        <input type="hidden" th:field="*{id}" />
 
-    <div class="mb-3">
-        <label class="form-label">Name</label>
-        <input type="text" th:field="*{name}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" th:field="*{name}" class="form-control"/>
+            <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Regions</label>
-        <select id="country-select" th:field="*{region.id}" class="form-select" required>
-            <option value="" disabled selected>-- Select Region --</option>
-            <option th:each="region : ${regions}"
-                    th:value="${region.id}"
-                    th:text="${region.name}">
-            </option>
-        </select>
-        <div class="text-danger" th:if="${#fields.hasErrors('region')}" th:errors="*{region}"></div>
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Regions</label>
+            <select id="country-select" th:field="*{region.id}" class="form-select" required>
+                <option value="" disabled selected>-- Select Region --</option>
+                <option th:each="region : ${regions}"
+                        th:value="${region.id}"
+                        th:text="${region.name}">
+                </option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('region')}" th:errors="*{region}"></div>
+        </div>
 
-    <button type="submit" class="btn btn-primary">Update City</button>
-    <a class="btn btn-secondary" th:href="@{/cities}">Cancel</a>
-</form>
+        <button type="submit" class="btn btn-primary">Update City</button>
+        <a class="btn btn-secondary" th:href="@{/cities}">Cancel</a>
+    </form>
+</div>
 
 <!-- jQuery and Select2 JS -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

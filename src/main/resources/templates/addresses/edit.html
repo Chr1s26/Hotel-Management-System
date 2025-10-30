@@ -8,45 +8,48 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/form-theme.css}">
 </head>
-<body class="container mt-4">
-<div th:replace="fragments/navbar :: navbar"></div>
-<h2>Update Address</h2>
-<form th:action="@{/addresses/update/{id}(id=${address.id})}" th:object="${address}" method="post" class="needs-validation">
-    <input type="hidden" th:field="*{id}" />
-    <div class="mb-3">
-        <label class="form-label">Road</label>
-        <input type="text" th:field="*{road}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('road')}" th:errors="*{road}"></div>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Latitude</label>
-        <input type="text" th:field="*{latitude}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('latitude')}" th:errors="*{latitude}"></div>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Longitude</label>
-        <input type="text" th:field="*{longitude}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('longitude')}" th:errors="*{longitude}"></div>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Cities</label>
-        <select id="city-select" th:field="*{city.id}" class="form-select" required>
-            <option value="" disabled selected>-- Select City --</option>
-            <option th:each="city : ${cities}"
-                    th:value="${city.id}"
-                    th:text="${city.name}">
-            </option>
-        </select>
-        <div class="text-danger" th:if="${#fields.hasErrors('city')}" th:errors="*{city}"></div>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Zip Code</label>
-        <input type="text" th:field="*{zipCode}" class="form-control"/>
-        <div class="text-danger" th:if="${#fields.hasErrors('zipCode')}" th:errors="*{zipCode}"></div>
-    </div>
-    <button type="submit" class="btn btn-primary">Update Address</button>
-    <a class="btn btn-secondary" th:href="@{/addresses}">Cancel</a>
-</form>
+<body class="royal-form-page">
+<div class="container mt-4">
+    <h2>Update Address</h2>
+    <form th:action="@{/addresses/update/{id}(id=${address.id})}" th:object="${address}" method="post" class="needs-validation">
+        <input type="hidden" th:field="*{id}" />
+        <div class="mb-3">
+            <label class="form-label">Road</label>
+            <input type="text" th:field="*{road}" class="form-control"/>
+            <div class="text-danger" th:if="${#fields.hasErrors('road')}" th:errors="*{road}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Latitude</label>
+            <input type="text" th:field="*{latitude}" class="form-control"/>
+            <div class="text-danger" th:if="${#fields.hasErrors('latitude')}" th:errors="*{latitude}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Longitude</label>
+            <input type="text" th:field="*{longitude}" class="form-control"/>
+            <div class="text-danger" th:if="${#fields.hasErrors('longitude')}" th:errors="*{longitude}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Cities</label>
+            <select id="city-select" th:field="*{city.id}" class="form-select" required>
+                <option value="" disabled selected>-- Select City --</option>
+                <option th:each="city : ${cities}"
+                        th:value="${city.id}"
+                        th:text="${city.name}">
+                </option>
+            </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('city')}" th:errors="*{city}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Zip Code</label>
+            <input type="text" th:field="*{zipCode}" class="form-control"/>
+            <div class="text-danger" th:if="${#fields.hasErrors('zipCode')}" th:errors="*{zipCode}"></div>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Address</button>
+        <a class="btn btn-secondary" th:href="@{/addresses}">Cancel</a>
+    </form>
+</div>
+
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
