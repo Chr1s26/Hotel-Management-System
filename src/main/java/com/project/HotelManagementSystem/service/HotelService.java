@@ -47,9 +47,9 @@
         private final HotelAttachmentRepository hotelAttachmentRepository;
 
         public HotelCreateDTO createHotel(HotelCreateDTO hotelCreateDTO) {
-            Optional<Hotel> hotelOp = hotelRepository.findHotelByNameAndCoordinates(hotelCreateDTO.getName(),hotelCreateDTO.getAddress().getLatitude(), hotelCreateDTO.getAddress().getLongitude());
+            Optional<Hotel> hotelOp = hotelRepository.findHotelByAddress(hotelCreateDTO.getAddress());
             if(hotelOp.isPresent()) {
-                throw new DuplicateException("hotels",hotelCreateDTO,"name","hotels/create","Hotel with name with this coordinates already exists");
+                throw new DuplicateException("hotel",hotelCreateDTO,"name","hotels/create","Hotel with this address already exists");
             }
             Hotel hotel = modelMapper.map(hotelCreateDTO, Hotel.class);
             hotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelCreateDTO.getPolicyIds())));
@@ -64,9 +64,9 @@
         }
 
         public HotelUpdateDTO updateHotel(Long id, HotelUpdateDTO hotelUpdateDTO) {
-            Optional<Hotel> hotelOp = hotelRepository.findHotelByNameAndCoordinatesAndIdNot(hotelUpdateDTO.getName(),hotelUpdateDTO.getAddress().getLatitude(), hotelUpdateDTO.getAddress().getLongitude(),hotelUpdateDTO.getId());
+            Optional<Hotel> hotelOp = hotelRepository.findHotelByAddressAndIdNot(hotelUpdateDTO.getAddress(),hotelUpdateDTO.getId());
             if(hotelOp.isPresent()) {
-                throw new DuplicateException("hotels",hotelUpdateDTO,"name","hotels/edit","Hotel with name with this coordinates already exists");
+                throw new DuplicateException("hotel",hotelUpdateDTO,"name","hotels/edit","Hotel with this address already exists");
             }
             Hotel optionalHotel = this.hotelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("hotel",hotelUpdateDTO,"id","hotels/edit"," A hotel with the id cannot be found"));
             Hotel hotel = modelMapper.map(hotelUpdateDTO, Hotel.class);

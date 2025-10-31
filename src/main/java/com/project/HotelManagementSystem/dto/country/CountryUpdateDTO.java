@@ -15,6 +15,6 @@ public class CountryUpdateDTO {
     private Long id;
     @NotBlank(message = "Country name cannot be empty.")
     @Size(min = 2, max = 100, message = "Country name must be between 2 and 100 characters.")
-    @Pattern(regexp = "^[A-Za-z0-9\\s.,'\\-()]+$", message = "Country name can only contain letters, numbers, spaces, and symbols (.,' - ()).")
+    @Pattern(regexp = "^[A-Za-z\\s]+$", message = "Country Name cannot include numbers or symbols")
     private String name;
 }

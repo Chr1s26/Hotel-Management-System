@@ -50,7 +50,6 @@ public class AddressController {
 
     @PostMapping("/create")
     public String createAddress(@Valid @ModelAttribute("address") AddressCreateDTO addressCreateDTO, BindingResult bindingResult, Model model) {
-
         if (bindingResult.hasErrors()) {
             model.addAttribute("address", addressCreateDTO);
             model.addAttribute("cities", cityService.findAllCities());

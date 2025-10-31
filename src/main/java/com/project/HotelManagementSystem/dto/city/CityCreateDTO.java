@@ -17,7 +17,7 @@ public class CityCreateDTO {
     private Long id;
     @NotBlank(message = "City name cannot be empty.")
     @Size(min = 2, max = 100, message = "City name must be between 2 and 100 characters.")
-    @Pattern(regexp = "^[A-Za-z0-9\\s.,'\\-()]+$", message = "City name can only contain letters, numbers, spaces, and symbols (.,' - ()).")
+    @Pattern(regexp = "^[A-Za-z\\s]+$", message = "City Name cannot include numbers or symbols")
     private String name;
     @NotNull(message = "Region must be selected.")
     private Region region;

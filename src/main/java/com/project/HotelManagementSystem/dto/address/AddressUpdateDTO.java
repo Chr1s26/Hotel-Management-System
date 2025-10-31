@@ -4,10 +4,7 @@ import com.project.HotelManagementSystem.entity.City;
 import com.project.HotelManagementSystem.validator.NumericString;
 import com.project.HotelManagementSystem.validator.ValidCoordinates;
 import com.project.HotelManagementSystem.validator.NotIntegerString;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,11 +16,13 @@ public class AddressUpdateDTO {
     private Long id;
 
     @NotNull(message = "Latitude cannot be empty")
-    @Pattern(regexp = "^-?([0-8]?\\d(\\.\\d+)?|90(\\.0+)?)$", message = "Invalid latitude format (must be between -90 and 90)")
+    @DecimalMin(value = "-90.0", message = "Latitude must be greater than or equal to -90")
+    @DecimalMax(value = "90.0", message = "Latitude must be less than or equal to 90")
     private Double latitude;
 
     @NotNull(message = "longitude cannot be empty")
-    @Pattern(regexp = "^-?((1[0-7]\\d)|(\\d{1,2}))(\\.\\d+)?|180(\\.0+)?$", message = "Invalid longitude format (must be between -180 and 180)")
+    @DecimalMin(value = "-180.0", message = "Longitude must be greater than or equal to -180")
+    @DecimalMax(value = "180.0", message = "Longitude must be less than or equal to 180")
     private Double longitude;
 
     @NotBlank(message = "Road name cannot be empty.")
