@@ -111,4 +111,14 @@ public class CountryController {
                 .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                 .body(bytes);
     }
+
+    @PostMapping("/export/excel")
+    public ResponseEntity<byte[]> exportExcel(Model model, @ModelAttribute("query") CountrySearchQuery query) throws IOException {
+        ByteArrayInputStream in = countryService.export(query);
+        byte[] bytes = in.readAllBytes();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=countries.xlsx")
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(bytes);
+    }
 }

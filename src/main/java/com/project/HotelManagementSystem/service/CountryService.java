@@ -21,7 +21,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -137,14 +139,25 @@ public class CountryService extends CommonExportProcess<Country> {
         return countryRepository.findAll(spec,pageable);
     }
 
+    public List<Country> searchByQueryAll(CountrySearchQuery query){
+        Specification<Country> spec = Specification.where(null);
+        if(query.getFilterList() != null){
+            for(CountrySearchFilter f : query.getFilterList()){
+                Specification<Country> s = CountrySpecification.fromFilter(f);
+                if(s != null) spec = (spec == null)? Specification.where(s) : spec.and(s);
+            }
+        }
+        return countryRepository.findAll(spec);
+    }
+
     @Override
     public String getSheetName() {
         return "Countries";
     }
 
     @Override
-    public List<Country> fetchData() {
-        return countryRepository.findAll();
+    public List<Country> fetchData(CountrySearchQuery query) {
+        return searchByQueryAll(query);
     }
 
     @Override

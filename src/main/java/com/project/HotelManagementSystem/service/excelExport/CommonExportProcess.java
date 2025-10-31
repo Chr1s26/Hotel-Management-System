@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.service.excelExport;
 
+import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchQuery;
 import com.project.HotelManagementSystem.entity.MasterData;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -14,17 +15,18 @@ import java.util.List;
 public abstract class CommonExportProcess<T extends MasterData> {
     public abstract String getSheetName();
     public abstract List<T> fetchData();
+    public abstract List<T> fetchData(CountrySearchQuery query);
     public abstract List<ColumnSpec<T>> columns();
 
     public String fileName(){
         return getSheetName()+".xlsx";
     }
 
-    public ByteArrayInputStream export(){
+    public ByteArrayInputStream export(CountrySearchQuery query){
         try{
             Workbook wb = new XSSFWorkbook();
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            writeSheet(wb);
+            writeSheet(wb, query);
             wb.write(out);
             return new ByteArrayInputStream(out.toByteArray());
         } catch (IOException e) {
@@ -32,7 +34,7 @@ public abstract class CommonExportProcess<T extends MasterData> {
         }
     }
 
-    public void writeSheet(Workbook wb){
+    public void writeSheet(Workbook wb, CountrySearchQuery query){
         Sheet sheet = wb.createSheet(getSheetName());
 
         CellStyle headerStyle = wb.createCellStyle();
@@ -51,7 +53,7 @@ public abstract class CommonExportProcess<T extends MasterData> {
         }
 
         int r = 1;
-        for(T rowObject: fetchData()){
+        for(T rowObject: fetchData(query)){
             Row row = sheet.createRow(r++);
             for(int c = 0; c < cols.size(); c++){
                 String text = safe(cols.get(c).getExtractor().apply(rowObject));
