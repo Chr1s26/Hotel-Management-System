@@ -1,6 +1,9 @@
 package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.dto.country.*;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
+import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchFilter;
+import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchQuery;
 import com.project.HotelManagementSystem.entity.Country;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.entity.specification.CountrySpecification;
@@ -114,6 +117,24 @@ public class CountryService extends CommonExportProcess<Country> {
         countryResponse.setTotalPages(countryPage.getTotalPages());
         countryResponse.setLastPage(countryPage.isLast());
         return countryResponse;
+    }
+
+    public Page<Country> searchByQuery(CountrySearchQuery query){
+        int page = (query.getPageNumber() == null || query.getPageNumber() < 0) ? 0 : query.getPageNumber();
+        int size = (query.getPageSize() == null || query.getPageSize() < 1) ? 10 : query.getPageSize();
+        String sortBy = (query.getSortBy() == null || query.getSortBy().isBlank()) ? "createdAt" : query.getSortBy();
+        Sort.Direction dir = (query.getSortDirection() == null || query.getSortDirection() == SortDirection.DESC) ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(page,size,Sort.by(dir,sortBy));
+
+        Specification<Country> spec = Specification.where(null);
+        if(query.getFilterList() != null){
+            for(CountrySearchFilter f : query.getFilterList()){
+                Specification<Country> s = CountrySpecification.fromFilter(f);
+                if(s != null) spec = (spec == null)? Specification.where(s) : spec.and(s);
+            }
+        }
+        return countryRepository.findAll(spec,pageable);
     }
 
     @Override

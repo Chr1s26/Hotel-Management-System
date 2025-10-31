@@ -1,12 +1,17 @@
 package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.annotation.ActiveRole;
-import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.country.*;
+import com.project.HotelManagementSystem.dto.searchFilter.MatchType;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
+import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchField;
+import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchFilter;
+import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchQuery;
 import com.project.HotelManagementSystem.entity.Country;
 import com.project.HotelManagementSystem.service.CountryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,26 +31,35 @@ public class CountryController {
 
     private final CountryService countryService;
 
-    @GetMapping
-    public String getAllCountries(Model model,
-                                  @RequestParam(required = false) String name,
-                                  @RequestParam(defaultValue = AppConstants.PAGE_NUMBER,required = false) Integer pageNumber,
-                                  @RequestParam(defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
-                                  @RequestParam(defaultValue = AppConstants.SORT_BY_Id,required = false) String sortBy,
-                                  @RequestParam(defaultValue = AppConstants.SORT_ORDER,required = false) String sortOrder) {
+    @ModelAttribute("query")
+    public CountrySearchQuery initQuery() {
+        CountrySearchQuery query = new CountrySearchQuery();
+        query.setPageNumber(0);
+        query.setPageSize(6);
+        query.setSortBy("createdAt");
+        query.setSortDirection(SortDirection.DESC);
+        query.setFilterList(List.of(
+                new CountrySearchFilter(CountrySearchField.NAME, MatchType.CONTAINS, ""),
+                new CountrySearchFilter(CountrySearchField.STATUS, MatchType.EXACT, "")
+        ));
+        return query;
+    }
 
-        CountrySearchCriteria criteria = new CountrySearchCriteria();
-        criteria.setName(name);
-        criteria.setPageNumber(pageNumber);
-        criteria.setPageSize(pageSize);
-        criteria.setSortBy(sortBy);
-        criteria.setSortOrder(sortOrder);
-        CountryResponse countryResponse = this.countryService.search(criteria);
-        List<CountryDTO> countryDTOList = countryResponse.getCountries();
-        model.addAttribute("countries", countryDTOList);
-        model.addAttribute("response",countryResponse);
-        model.addAttribute("sortBy",sortBy);
-        model.addAttribute("sortOrder",sortOrder);
+    @GetMapping
+    public String getAllCountries(Model model, @ModelAttribute("query") CountrySearchQuery query) {
+        Page<Country> page = this.countryService.searchByQuery(query);
+        model.addAttribute("countries", page.getContent());
+        model.addAttribute("totalPages",page.getTotalPages());
+        model.addAttribute("totalElements",page.getTotalElements());
+        return "countries/listing";
+    }
+
+    @PostMapping
+    public String searchCountries(Model model, @ModelAttribute("query") CountrySearchQuery query) {
+        Page<Country> countries = this.countryService.searchByQuery(query);
+        model.addAttribute("countries", countries.getContent());
+        model.addAttribute("totalPages",countries.getTotalPages());
+        model.addAttribute("totalElements",countries.getTotalElements());
         return "countries/listing";
     }
 

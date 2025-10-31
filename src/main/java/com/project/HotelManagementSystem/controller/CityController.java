@@ -1,13 +1,18 @@
 package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.annotation.ActiveRole;
-import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.city.*;
+import com.project.HotelManagementSystem.dto.searchFilter.MatchType;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
+import com.project.HotelManagementSystem.dto.searchFilter.city.CitySearchField;
+import com.project.HotelManagementSystem.dto.searchFilter.city.CitySearchFilter;
+import com.project.HotelManagementSystem.dto.searchFilter.city.CitySearchQuery;
 import com.project.HotelManagementSystem.entity.City;
 import com.project.HotelManagementSystem.service.CityService;
 import com.project.HotelManagementSystem.service.RegionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,29 +36,35 @@ public class CityController {
     private final CityService cityService;
     private final RegionService regionService;
 
-    @GetMapping
-    public String getAllCities(Model model,
-                               @RequestParam(required = false) String name,
-                               @RequestParam(required = false,name = "regionName") String regionName,
-                               @RequestParam(defaultValue = AppConstants.PAGE_NUMBER,required = false) Integer pageNumber,
-                               @RequestParam(defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
-                               @RequestParam(defaultValue = AppConstants.SORT_BY_Id,required = false) String sortBy,
-                               @RequestParam(defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
+    @ModelAttribute("query")
+    public CitySearchQuery initQuery() {
+        CitySearchQuery query = new CitySearchQuery();
+        query.setPageNumber(0);
+        query.setPageSize(6);
+        query.setSortBy("createdAt");
+        query.setSortDirection(SortDirection.DESC);
+        query.setFilterList(List.of(
+                new CitySearchFilter(CitySearchField.NAME, MatchType.CONTAINS, ""),
+                new CitySearchFilter(CitySearchField.STATUS, MatchType.EXACT, "")
+        ));
+        return query;
+    }
 
-        CitySearchCriteria criteria = new CitySearchCriteria();
-        criteria.setName(name);
-        criteria.setRegionName(regionName);
-        criteria.setPageNumber(pageNumber);
-        criteria.setPageSize(pageSize);
-        criteria.setSortBy(sortBy);
-        criteria.setSortOrder(sortOrder);
-        CityResponse response = cityService.search(criteria);
-        List<CityDTO> cities = response.getCities();
-        model.addAttribute("cities", cities);
-        model.addAttribute("response", response);
-        model.addAttribute("sortOrder", sortOrder);
-        model.addAttribute("sortBy", sortBy);
-        model.addAttribute("regionName", regionName);
+    @GetMapping
+    public String getAllCities(Model model, @ModelAttribute("query") CitySearchQuery query) {
+        Page<City> page = cityService.searchByQuery(query);
+        model.addAttribute("cities", page.getContent());
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("totalElements", page.getTotalElements());
+        return "cities/listing";
+    }
+
+    @PostMapping
+    public String searchCities(Model model, @ModelAttribute("query") CitySearchQuery query) {
+        Page<City> cities = this.cityService.searchByQuery(query);
+        model.addAttribute("countries", cities.getContent());
+        model.addAttribute("totalPages",cities.getTotalPages());
+        model.addAttribute("totalElements",cities.getTotalElements());
         return "cities/listing";
     }
 

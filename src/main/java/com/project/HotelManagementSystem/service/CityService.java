@@ -1,6 +1,9 @@
 package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.dto.city.*;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
+import com.project.HotelManagementSystem.dto.searchFilter.city.CitySearchFilter;
+import com.project.HotelManagementSystem.dto.searchFilter.city.CitySearchQuery;
 import com.project.HotelManagementSystem.entity.City;
 import com.project.HotelManagementSystem.entity.Region;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
@@ -156,6 +159,24 @@ public class CityService extends CommonExportProcess<City> {
         } catch (IOException e) {
             throw new RuntimeException("Failed to import Excel file: " + e.getMessage());
         }
+    }
+
+    public Page<City> searchByQuery(CitySearchQuery query){
+        int page = (query.getPageNumber() == null || query.getPageNumber() < 0) ? 0 : query.getPageNumber();
+        int size = (query.getPageSize() == null || query.getPageSize() < 1) ? 10 : query.getPageSize();
+        String sortBy = (query.getSortBy() == null || query.getSortBy().isBlank()) ? "createdAt" : query.getSortBy();
+        Sort.Direction dir = (query.getSortDirection() == null || query.getSortDirection() == SortDirection.DESC) ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(page,size,Sort.by(dir,sortBy));
+
+        Specification<City> spec = Specification.where(null);
+        if(query.getFilterList() != null){
+            for(CitySearchFilter f : query.getFilterList()){
+                Specification<City> s = CitySpecification.fromFilter(f);
+                if(s != null) spec = (spec == null)? Specification.where(s) : spec.and(s);
+            }
+        }
+        return cityRepository.findAll(spec,pageable);
     }
 
     @Override
