@@ -111,8 +111,13 @@ public class EditorService {
         Editor editor = editorOptional.get();
         User user = editor.getUser();
         if(user != null) {
+            Role editorRole = roleRepository.findByRoleName("EDITOR").orElse(null);
+            if(user.getRoles() != null) {
+                user.getRoles().remove(editorRole);
+                userRepository.save(user);
+            }
             user.setEditor(null);
-            editor.setUser(user);
+            editor.setUser(null);
         }
         editorRepository.delete(editor);
     }

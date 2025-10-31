@@ -77,7 +77,7 @@ public class AdminController {
     }
 
     @PostMapping("/create")
-    public String createAdmin(@Valid AdminCreateDTO adminCreateDTO, BindingResult bindingResult, Model model) {
+    public String createAdmin(@Valid @ModelAttribute("admin") AdminCreateDTO adminCreateDTO, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("users", userService.findAllUsers());
             return "admins/create";
@@ -96,7 +96,7 @@ public class AdminController {
     @PostMapping("/update/{id}")
     public String updateAdmin(@PathVariable Long id, @Valid @ModelAttribute("admin") AdminUpdateDTO adminUpdateDTO, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("admin",adminService.findAdminById(id));
+//            model.addAttribute("admin",adminService.findAdminById(id));
             model.addAttribute("users", userService.findAllUsers());
             return "admins/edit";
         }
