@@ -135,16 +135,5 @@ public class CountryService {
 //        return countryRepository.findAll(spec,pageable);
 //    }
 
-    public List<Country> searchByQueryAll(CountrySearchQuery query){
-        Specification<Country> spec = Specification.where(null);
-        if(query.getFilterList() != null){
-            for(CountrySearchFilter f : query.getFilterList()){
-                Specification<Country> s = CountrySpecification.fromFilter(f);
-                if(s != null) spec = (spec == null)? Specification.where(s) : spec.and(s);
-            }
-        }
-        return countryRepository.findAll(spec);
-    }
-
 }
 

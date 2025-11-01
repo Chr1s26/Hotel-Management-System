@@ -10,6 +10,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchQ
 import com.project.HotelManagementSystem.entity.Country;
 import com.project.HotelManagementSystem.service.CountryService;
 import com.project.HotelManagementSystem.service.excelExport.CountryExportProcess;
+import com.project.HotelManagementSystem.service.search.CountrySearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,7 @@ public class CountryController {
 
     private final CountryService countryService;
     private final CountryExportProcess countryExportProcess;
+    private final CountrySearchService countrySearchService;
 
     @ModelAttribute("query")
     public CountrySearchQuery initQuery() {
@@ -49,7 +51,7 @@ public class CountryController {
 
     @GetMapping
     public String getAllCountries(Model model, @ModelAttribute("query") CountrySearchQuery query) {
-        Page<Country> page = this.countryService.searchByQuery(query);
+        Page<Country> page = this.countrySearchService.searchByQuery(query);
         model.addAttribute("countries", page.getContent());
         model.addAttribute("totalPages",page.getTotalPages());
         model.addAttribute("totalElements",page.getTotalElements());
@@ -58,7 +60,7 @@ public class CountryController {
 
     @PostMapping
     public String searchCountries(Model model, @ModelAttribute("query") CountrySearchQuery query) {
-        Page<Country> countries = this.countryService.searchByQuery(query);
+        Page<Country> countries = this.countrySearchService.searchByQuery(query);
         model.addAttribute("countries", countries.getContent());
         model.addAttribute("totalPages",countries.getTotalPages());
         model.addAttribute("totalElements",countries.getTotalElements());
