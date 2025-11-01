@@ -1,7 +1,6 @@
 package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.dto.country.*;
-import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
 import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchFilter;
 import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchQuery;
 import com.project.HotelManagementSystem.entity.Country;
@@ -10,8 +9,7 @@ import com.project.HotelManagementSystem.entity.specification.CountrySpecificati
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CountryRepository;
-import com.project.HotelManagementSystem.service.excelExport.ColumnSpec;
-import com.project.HotelManagementSystem.service.excelExport.CommonExportProcess;
+import com.project.HotelManagementSystem.service.search.CommonSearchService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -21,9 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +31,7 @@ public class CountryService {
     private final CountryRepository countryRepository;
     private final ModelMapper modelMapper;
     private final AuthService authService;
+    private final CommonSearchService commonSearchService;
 
     public CountryCreateDTO createCountry(CountryCreateDTO countryCreateDTO) {
         Optional<Country> countryOptional = this.countryRepository.findByNameIgnoreCase(countryCreateDTO.getName());
@@ -121,23 +118,23 @@ public class CountryService {
         return countryResponse;
     }
 
-    public Page<Country> searchByQuery(CountrySearchQuery query){
-        int page = (query.getPageNumber() == null || query.getPageNumber() < 0) ? 0 : query.getPageNumber();
-        int size = (query.getPageSize() == null || query.getPageSize() < 1) ? 10 : query.getPageSize();
-        String sortBy = (query.getSortBy() == null || query.getSortBy().isBlank()) ? "createdAt" : query.getSortBy();
-        Sort.Direction dir = (query.getSortDirection() == null || query.getSortDirection() == SortDirection.DESC) ? Sort.Direction.DESC : Sort.Direction.ASC;
-
-        Pageable pageable = PageRequest.of(page,size,Sort.by(dir,sortBy));
-
-        Specification<Country> spec = Specification.where(null);
-        if(query.getFilterList() != null){
-            for(CountrySearchFilter f : query.getFilterList()){
-                Specification<Country> s = CountrySpecification.fromFilter(f);
-                if(s != null) spec = (spec == null)? Specification.where(s) : spec.and(s);
-            }
-        }
-        return countryRepository.findAll(spec,pageable);
-    }
+//    public Page<Country> searchByQuery(CountrySearchQuery query){
+//        int page = (query.getPageNumber() == null || query.getPageNumber() < 0) ? 0 : query.getPageNumber();
+//        int size = (query.getPageSize() == null || query.getPageSize() < 1) ? 10 : query.getPageSize();
+//        String sortBy = (query.getSortBy() == null || query.getSortBy().isBlank()) ? "createdAt" : query.getSortBy();
+//        Sort.Direction dir = (query.getSortDirection() == null || query.getSortDirection() == SortDirection.DESC) ? Sort.Direction.DESC : Sort.Direction.ASC;
+//
+//        Pageable pageable = PageRequest.of(page,size,Sort.by(dir,sortBy));
+//
+//        Specification<Country> spec = Specification.where(null);
+//        if(query.getFilterList() != null){
+//            for(CountrySearchFilter f : query.getFilterList()){
+//                Specification<Country> s = CountrySpecification.fromFilter(f);
+//                if(s != null) spec = (spec == null)? Specification.where(s) : spec.and(s);
+//            }
+//        }
+//        return countryRepository.findAll(spec,pageable);
+//    }
 
     public List<Country> searchByQueryAll(CountrySearchQuery query){
         Specification<Country> spec = Specification.where(null);
@@ -148,6 +145,10 @@ public class CountryService {
             }
         }
         return countryRepository.findAll(spec);
+    }
+
+    public Page<Country> searchByQuery(CountrySearchQuery query) {
+        return commonSearchService.searchByQuery(countryRepository, CountrySpecification::fromFilter, query);
     }
 
 }
