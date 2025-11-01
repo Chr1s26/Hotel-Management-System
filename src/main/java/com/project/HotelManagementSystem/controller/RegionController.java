@@ -95,14 +95,14 @@ public class RegionController {
         return "redirect:/regions";
     }
 
-    @GetMapping("/export/excel")
-    public ResponseEntity<byte[]> exportExcel(Model model) throws IOException {
-        ByteArrayInputStream in = regionService.export();
-        byte[] bytes = in.readAllBytes();
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=regions.xlsx")
-                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-                .body(bytes);
-    }
+//    @GetMapping("/export/excel")
+//    public ResponseEntity<byte[]> exportExcel(Model model) throws IOException {
+//        ByteArrayInputStream in = regionService.export();
+//        byte[] bytes = in.readAllBytes();
+//        return ResponseEntity.ok()
+//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=regions.xlsx")
+//                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+//                .body(bytes);
+//    }
 
 }

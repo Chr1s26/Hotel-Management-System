@@ -30,7 +30,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CountryService extends CommonExportProcess<Country> {
+public class CountryService {
 
     private final CountryRepository countryRepository;
     private final ModelMapper modelMapper;
@@ -150,22 +150,5 @@ public class CountryService extends CommonExportProcess<Country> {
         return countryRepository.findAll(spec);
     }
 
-    @Override
-    public String getSheetName() {
-        return "Countries";
-    }
-
-    @Override
-    public List<Country> fetchData(CountrySearchQuery query) {
-        return searchByQueryAll(query);
-    }
-
-    @Override
-    public List<ColumnSpec<Country>> columns() {
-        return List.of(
-                new ColumnSpec<>("ID", c -> String.valueOf(c.getId()), null),
-                new ColumnSpec<>("Name", Country::getName, null)
-        );
-    }
 }
 

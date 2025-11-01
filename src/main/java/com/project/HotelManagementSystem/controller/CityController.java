@@ -10,6 +10,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.city.CitySearchQuery;
 import com.project.HotelManagementSystem.entity.City;
 import com.project.HotelManagementSystem.service.CityService;
 import com.project.HotelManagementSystem.service.RegionService;
+import com.project.HotelManagementSystem.service.excelExport.CityExportProcess;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,6 +36,7 @@ public class CityController {
 
     private final CityService cityService;
     private final RegionService regionService;
+    private final CityExportProcess cityExportProcess;
 
     @ModelAttribute("query")
     public CitySearchQuery initQuery() {
@@ -62,7 +64,7 @@ public class CityController {
     @PostMapping
     public String searchCities(Model model, @ModelAttribute("query") CitySearchQuery query) {
         Page<City> cities = this.cityService.searchByQuery(query);
-        model.addAttribute("countries", cities.getContent());
+        model.addAttribute("cities", cities.getContent());
         model.addAttribute("totalPages",cities.getTotalPages());
         model.addAttribute("totalElements",cities.getTotalElements());
         return "cities/listing";
@@ -111,9 +113,9 @@ public class CityController {
         return "redirect:/cities";
     }
 
-    @GetMapping("/export/excel")
-    public ResponseEntity<byte[]> exportExcel(Model model) throws IOException {
-        ByteArrayInputStream in = cityService.export();
+    @PostMapping("/export/excel")
+    public ResponseEntity<byte[]> exportExcel(Model model, @ModelAttribute("query") CitySearchQuery query) throws IOException {
+        ByteArrayInputStream in = cityExportProcess.export(query);
         byte[] bytes = in.readAllBytes();
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=cities.xlsx")

@@ -24,7 +24,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class RegionService extends CommonExportProcess<Region> {
+public class RegionService {
 
     private final RegionRepository regionRepository;
     private final ModelMapper modelMapper;
@@ -117,23 +117,4 @@ public class RegionService extends CommonExportProcess<Region> {
         return regionResponse;
     }
 
-
-    @Override
-    public String getSheetName() {
-        return "Regions";
-    }
-
-    @Override
-    public List<Region> fetchData() {
-        return regionRepository.findAll();
-    }
-
-    @Override
-    public List<ColumnSpec<Region>> columns() {
-        return List.of(
-                new ColumnSpec<>("ID", r -> String.valueOf(r.getId()), null),
-                new ColumnSpec<>("Name", Region::getName, null),
-                new ColumnSpec<>("Country", r -> r.getCountry() != null ? r.getCountry().getName() : null, null)
-        );
-    }
 }

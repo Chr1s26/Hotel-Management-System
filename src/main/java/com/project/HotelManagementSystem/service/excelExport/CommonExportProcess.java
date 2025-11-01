@@ -12,17 +12,16 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
-public abstract class CommonExportProcess<T extends MasterData> {
+public abstract class CommonExportProcess<T extends MasterData, Q> {
     public abstract String getSheetName();
-    public abstract List<T> fetchData();
-    public abstract List<T> fetchData(CountrySearchQuery query);
+    public abstract List<T> fetchData(Q query);
     public abstract List<ColumnSpec<T>> columns();
 
     public String fileName(){
         return getSheetName()+".xlsx";
     }
 
-    public ByteArrayInputStream export(CountrySearchQuery query){
+    public ByteArrayInputStream export(Q query){
         try{
             Workbook wb = new XSSFWorkbook();
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -34,7 +33,7 @@ public abstract class CommonExportProcess<T extends MasterData> {
         }
     }
 
-    public void writeSheet(Workbook wb, CountrySearchQuery query){
+    public void writeSheet(Workbook wb, Q query){
         Sheet sheet = wb.createSheet(getSheetName());
 
         CellStyle headerStyle = wb.createCellStyle();

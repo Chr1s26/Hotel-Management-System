@@ -12,19 +12,40 @@
 <div class="container mt-4">
 
     <h2>Cities</h2>
-
-    <form th:action="@{/cities}" method="get" class="row g-3 align-items-end mb-4 no-card">
+    <form th:action="@{/cities}" th:object="${query}" method="post" class="row g-3 align-items-end mb-4 no-card">
 
         <div class="col-md-3">
             <label for="searchName" class="form-label">Name</label>
-            <input type="text" id="searchName" name="name" class="form-control"
-                   th:value="${param.name}" placeholder="Search by name">
+            <input type="hidden" th:name="*{filterList[0].field}" th:value="'NAME'">
+            <input type="hidden" th:name="*{filterList[0].matchType}" th:value="'CONTAINS'">
+            <input type="text" id="searchName" name="name" class="form-control" th:field="*{filterList[0].value}" placeholder="Search by name">
         </div>
 
         <div class="col-md-3">
-            <label for="searchRegion" class="form-label">Region</label>
-            <input type="text" id="searchRegion" name="regionName" class="form-control"
-                   th:value="${param.regionName}" placeholder="Search by region name">
+            <label for="searchStatus" class="form-label">Status</label>
+            <input type="hidden" th:name="*{filterList[1].field}" th:value="'STATUS'">
+            <input type="hidden" th:name="*{filterList[1].matchType}" th:value="'EXACT'">
+            <select th:field="*{filterList[1].value}" id="searchStatus" name="statusType" class="form-select">
+                <option value="">All</option>
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="DELETED">DELETED</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Sort By</label>
+            <select th:field="*{sortBy}" class="form-select" >
+                <option value="name">Name</option>
+                <option value="createdAt">Created Date</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Order</label>
+            <select th:field="*{sortDirection}" class="form-select">
+                <option value="ASC">Ascending</option>
+                <option value="DESC">Descending</option>
+            </select>
         </div>
 
         <div class="col-md-3 d-flex align-items-end">
@@ -33,20 +54,29 @@
         </div>
     </form>
 
-    <a th:href="@{/cities/export/excel}" class="btn btn-primary mb-3">
-        <i class="bi bi-file-earmark-excel"></i> Export to Excel
-    </a>
+    <form th:action="@{/cities/export/excel}" th:object="${query}" method="post" style="border:none;background:transparent;padding:0;margin:0;">
+        <input type="hidden" th:each="f, iStat : ${query.filterList}"
+               th:name="|filterList[${iStat.index}].field|" th:value="${f.field}">
+        <input type="hidden" th:each="f, iStat : ${query.filterList}"
+               th:name="|filterList[${iStat.index}].matchType|" th:value="${f.matchType}">
+        <input type="hidden" th:each="f, iStat : ${query.filterList}"
+               th:name="|filterList[${iStat.index}].value|" th:value="${f.value}">
 
 
-    <div th:if="${success}" class="bg-success text-white px-3 py-2 rounded mb-3" th:text="${success}"></div>
-    <div th:if="${error}" class="bg-danger text-white px-3 py-2 rounded mb-3" th:text="${error}"></div>
+        <input type="hidden" th:field="*{sortBy}">
+        <input type="hidden" th:field="*{sortDirection}">
+
+        <button type="submit" class="btn btn-success mb-3">
+            <i class="bi bi-file-earmark-excel"></i> Export to Excel
+        </button>
+    </form>
 
     <div class="d-flex justify-content-between align-items-center my-3">
 
         <div>
-            Page <span th:text="${response.pageNumber + 1}">1</span> of
-            <span th:text="${response.totalPages}">X</span> —
-            Total: <span th:text="${response.totalElements}">Y</span> cities
+            Page <span th:text="${query.pageNumber + 1}">1</span> of
+            <span th:text="${totalPages}">X</span> —
+            Total: <span th:text="${totalElements}">Y</span> cities
         </div>
 
         <div>
@@ -81,37 +111,37 @@
         <div class="col-md-4">
             <label for="pageSize" class="form-label">Show</label>
             <select id="pageSize" class="form-select d-inline w-auto" name="pageSize" onchange="this.form.submit()">
-                <option th:value="3" th:selected="${response.pageSize == 3}">3</option>
-                <option th:value="6" th:selected="${response.pageSize == 6}">6</option>
-                <option th:value="9" th:selected="${response.pageSize == 9}">9</option>
+                <option th:value="3" th:selected="${query.pageSize == 3}">3</option>
+                <option th:value="6" th:selected="${query.pageSize == 6}">6</option>
+                <option th:value="9" th:selected="${query.pageSize == 9}">9</option>
             </select>
             <span>per page</span>
 
             <!-- Hidden inputs -->
-            <input type="hidden" name="pageNumber" th:value="${response.pageNumber}" />
-            <input type="hidden" name="sortBy" th:value="${sortBy}" />
-            <input type="hidden" name="sortOrder" th:value="${sortOrder}" />
+            <input type="hidden" name="pageNumber" th:value="${query.pageNumber}" />
+            <input type="hidden" name="sortBy" th:value="${query.sortBy}" />
+            <input type="hidden" name="sortDirection" th:value="${query.sortDirection}" />
         </div>
 
         <!-- Pagination links -->
         <div class="col-md-8 text-end">
             <nav class="d-flex justify-content-end mt-2">
                 <ul class="pagination">
-                    <li class="page-item" th:classappend="${response.pageNumber == 0} ? 'disabled'">
+                    <li class="page-item" th:classappend="${query.pageNumber == 0} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/cities(pageNumber=${response.pageNumber - 1}, pageSize=${response.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}">Previous</a>
+                           th:href="@{/cities(pageNumber=${query.pageNumber - 1}, pageSize=${query.pageSize}, sortBy=${query.sortBy}, sortDirection=${query.sortDirection})}">Previous</a>
                     </li>
 
-                    <li class="page-item" th:each="i : ${#numbers.sequence(0, response.totalPages - 1)}"
-                        th:classappend="${i == response.pageNumber} ? 'active'">
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i == query.pageNumber} ? 'active'">
                         <a class="page-link"
-                           th:href="@{/cities(pageNumber=${i}, pageSize=${response.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}"
+                           th:href="@{/cities(pageNumber=${i}, pageSize=${query.pageSize}, sortBy=${query.sortBy}, sortDirection=${query.sortDirection})}"
                            th:text="${i + 1}">1</a>
                     </li>
 
-                    <li class="page-item" th:classappend="${response.pageNumber + 1 >= response.totalPages} ? 'disabled'">
+                    <li class="page-item" th:classappend="${query.pageNumber + 1 >= totalPages} ? 'disabled'">
                         <a class="page-link"
-                           th:href="@{/cities(pageNumber=${response.pageNumber + 1}, pageSize=${response.pageSize}, sortBy=${sortBy}, sortOrder=${sortOrder})}">Next</a>
+                           th:href="@{/cities(pageNumber=${query.pageNumber + 1}, pageSize=${query.pageSize}, sortBy=${query.sortBy}, sortDirection=${query.sortDirection})}">Next</a>
                     </li>
                 </ul>
             </nav>
