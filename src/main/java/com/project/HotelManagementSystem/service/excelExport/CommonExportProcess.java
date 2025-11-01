@@ -1,8 +1,16 @@
 package com.project.HotelManagementSystem.service.excelExport;
 
+import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchQuery;
+import com.project.HotelManagementSystem.entity.ExportListing;
+import com.project.HotelManagementSystem.entity.FileStorage;
 import com.project.HotelManagementSystem.entity.MasterData;
+import com.project.HotelManagementSystem.entity.constants.FileType;
+import com.project.HotelManagementSystem.service.ExportListingService;
+import com.project.HotelManagementSystem.service.FileService;
+import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -11,10 +19,15 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public abstract class CommonExportProcess<T extends MasterData, Q> {
+    public abstract String getRecordType();
+    public abstract FileType getDownloadFileType();
     public abstract String getSheetName();
     public abstract List<T> fetchData(Q query);
     public abstract List<ColumnSpec<T>> columns();
+    private final ExportListingService exportListingService;
+    private final FileService fileService;
 
     public String fileName(){
         return getSheetName()+".xlsx";
@@ -29,6 +42,20 @@ public abstract class CommonExportProcess<T extends MasterData, Q> {
             return new ByteArrayInputStream(out.toByteArray());
         } catch (IOException e) {
             throw new RuntimeException("Excel export failed for sheet " + getSheetName(), e);
+        }
+    }
+
+    @Async
+    public void generateExportFile(Q query){
+        ExportListing exportListing = null;
+        try {
+            ByteArrayInputStream in = export(query);
+            exportListing = exportListingService.saveExportListing(getRecordType(), getDownloadFileType());
+            fileService.saveExportFileWithStatus(in, exportListing);
+        }catch (Exception ex){
+            if(exportListing!=null) {
+                fileService.saveExportFileWithFailStatus(exportListing);
+            }
         }
     }
 

@@ -9,7 +9,8 @@ public enum StatusType implements BaseEnum<Integer>{
     DELETED(0),
     INACTIVE(2),
     COMPLETED(3),
-    PROCESSING(4);
+    PROCESSING(4),
+    FAIL(5);
 
     private final int value;
 

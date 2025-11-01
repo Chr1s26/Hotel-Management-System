@@ -11,6 +11,7 @@ import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.entity.constants.HotelMediaType;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
+import com.project.HotelManagementSystem.repository.ExportListingRepository;
 import com.project.HotelManagementSystem.repository.FileStorageRepository;
 import com.project.HotelManagementSystem.repository.HotelAttachmentRepository;
 import jakarta.servlet.ServletOutputStream;
@@ -53,6 +54,7 @@ public class FileService {
     private String region;
 
     private final FileStorageRepository fileStorageRepository;
+    private final ExportListingRepository exportListingRepository;
     private final AmazonS3 amazonS3;
     @Autowired
     private AuthService authService;
@@ -231,4 +233,8 @@ public class FileService {
         return urls;
     }
 
+    public void saveExportFileWithFailStatus(ExportListing exportListing) {
+        exportListing.setStatus(StatusType.FAIL);
+        exportListingRepository.save(exportListing);
+    }
 }

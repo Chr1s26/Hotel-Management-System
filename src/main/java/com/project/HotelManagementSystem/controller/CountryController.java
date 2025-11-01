@@ -116,9 +116,7 @@ public class CountryController {
 
     @PostMapping("/export/excel")
     public String exportExcelToS3(Model model, @ModelAttribute("query") CountrySearchQuery query) throws IOException {
-        ByteArrayInputStream in = countryExportProcess.export(query);
-        ExportListing exportListing = exportListingService.saveExportListing("COUNTRY",FileType.Country_Listing);
-        FileStorage savedFile = fileService.saveExportFileWithStatus(in, exportListing);
-        return "redirect:/exports";
+        countryExportProcess.generateExportFile(query);
+        return "redirect:/countries";
     }
 }
