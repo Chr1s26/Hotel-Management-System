@@ -2,7 +2,6 @@ package com.project.HotelManagementSystem.service.excelExport;
 
 import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchQuery;
 import com.project.HotelManagementSystem.entity.Country;
-import com.project.HotelManagementSystem.service.CountryService;
 import com.project.HotelManagementSystem.service.search.CountrySearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CountryExportProcess extends CommonExportProcess<Country, CountrySearchQuery>{
-    @Autowired
-    private CountryService countryService;
     @Autowired
     private CountrySearchService countrySearchService;
 

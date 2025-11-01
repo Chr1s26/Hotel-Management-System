@@ -24,6 +24,7 @@ public class AsyncConfig implements AsyncConfigurer {
     @Override
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        //if pool size full, goes into queue capacity. if queue full, goes max pool size.
         executor.setCorePoolSize(5);
         executor.setMaxPoolSize(10);
         executor.setQueueCapacity(100);
@@ -31,7 +32,6 @@ public class AsyncConfig implements AsyncConfigurer {
         executor.initialize();
         return executor;
     }
-
 
     @Bean
     public AsyncUncaughtExceptionHandler customAsyncExceptionHandler(){

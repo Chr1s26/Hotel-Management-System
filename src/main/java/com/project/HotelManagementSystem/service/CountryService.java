@@ -1,15 +1,12 @@
 package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.dto.country.*;
-import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchFilter;
-import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchQuery;
 import com.project.HotelManagementSystem.entity.Country;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.entity.specification.CountrySpecification;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CountryRepository;
-import com.project.HotelManagementSystem.service.search.CommonSearchService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
