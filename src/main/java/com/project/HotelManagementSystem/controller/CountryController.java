@@ -9,6 +9,8 @@ import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchF
 import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchQuery;
 import com.project.HotelManagementSystem.entity.Country;
 import com.project.HotelManagementSystem.service.CountryService;
+import com.project.HotelManagementSystem.service.excelExport.CountryExportProcess;
+import com.project.HotelManagementSystem.service.search.CountrySearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,6 +32,8 @@ import java.util.List;
 public class CountryController {
 
     private final CountryService countryService;
+    private final CountryExportProcess countryExportProcess;
+    private final CountrySearchService countrySearchService;
 
     @ModelAttribute("query")
     public CountrySearchQuery initQuery() {
@@ -47,7 +51,7 @@ public class CountryController {
 
     @GetMapping
     public String getAllCountries(Model model, @ModelAttribute("query") CountrySearchQuery query) {
-        Page<Country> page = this.countryService.searchByQuery(query);
+        Page<Country> page = this.countrySearchService.searchByQuery(query);
         model.addAttribute("countries", page.getContent());
         model.addAttribute("totalPages",page.getTotalPages());
         model.addAttribute("totalElements",page.getTotalElements());
@@ -56,7 +60,7 @@ public class CountryController {
 
     @PostMapping
     public String searchCountries(Model model, @ModelAttribute("query") CountrySearchQuery query) {
-        Page<Country> countries = this.countryService.searchByQuery(query);
+        Page<Country> countries = this.countrySearchService.searchByQuery(query);
         model.addAttribute("countries", countries.getContent());
         model.addAttribute("totalPages",countries.getTotalPages());
         model.addAttribute("totalElements",countries.getTotalElements());
@@ -102,9 +106,9 @@ public class CountryController {
         return "redirect:/countries";
     }
 
-    @GetMapping("/export/excel")
-    public ResponseEntity<byte[]> exportExcel(Model model) throws IOException {
-        ByteArrayInputStream in = countryService.export();
+    @PostMapping("/export/excel")
+    public ResponseEntity<byte[]> exportExcel(Model model, @ModelAttribute("query") CountrySearchQuery query) throws IOException {
+        ByteArrayInputStream in = countryExportProcess.export(query);
         byte[] bytes = in.readAllBytes();
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=countries.xlsx")

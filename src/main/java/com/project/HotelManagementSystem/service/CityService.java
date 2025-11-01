@@ -12,8 +12,6 @@ import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CityRepository;
 import com.project.HotelManagementSystem.repository.RegionRepository;
-import com.project.HotelManagementSystem.service.excelExport.ColumnSpec;
-import com.project.HotelManagementSystem.service.excelExport.CommonExportProcess;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -33,7 +31,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CityService extends CommonExportProcess<City> {
+public class CityService {
 
     private final CityRepository cityRepository;
     private final RegionRepository regionRepository;
@@ -176,25 +174,18 @@ public class CityService extends CommonExportProcess<City> {
                 if(s != null) spec = (spec == null)? Specification.where(s) : spec.and(s);
             }
         }
+        Page<City> cityPage = cityRepository.findAll(spec,pageable);
         return cityRepository.findAll(spec,pageable);
     }
 
-    @Override
-    public String getSheetName() {
-        return "Cities";
-    }
-
-    @Override
-    public List<City> fetchData() {
-        return cityRepository.findAll();
-    }
-
-    @Override
-    public List<ColumnSpec<City>> columns() {
-        return List.of(
-                new ColumnSpec<>("ID", c -> String.valueOf(c.getId()), null),
-                new ColumnSpec<>("Name", City::getName,null),
-                new ColumnSpec<>("Region", c -> c.getRegion() != null ? c.getRegion().getName() : null, null)
-        );
+    public List<City> searchByQueryAll(CitySearchQuery query){
+        Specification<City> spec = Specification.where(null);
+        if(query.getFilterList() != null){
+            for(CitySearchFilter f : query.getFilterList()){
+                Specification<City> s = CitySpecification.fromFilter(f);
+                if(s != null) spec = (spec == null)? Specification.where(s) : spec.and(s);
+            }
+        }
+        return cityRepository.findAll(spec);
     }
 }

@@ -1,7 +1,6 @@
 package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.dto.country.*;
-import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
 import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchFilter;
 import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchQuery;
 import com.project.HotelManagementSystem.entity.Country;
@@ -10,8 +9,7 @@ import com.project.HotelManagementSystem.entity.specification.CountrySpecificati
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CountryRepository;
-import com.project.HotelManagementSystem.service.excelExport.ColumnSpec;
-import com.project.HotelManagementSystem.service.excelExport.CommonExportProcess;
+import com.project.HotelManagementSystem.service.search.CommonSearchService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -28,7 +26,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CountryService extends CommonExportProcess<Country> {
+public class CountryService {
 
     private final CountryRepository countryRepository;
     private final ModelMapper modelMapper;
@@ -119,40 +117,23 @@ public class CountryService extends CommonExportProcess<Country> {
         return countryResponse;
     }
 
-    public Page<Country> searchByQuery(CountrySearchQuery query){
-        int page = (query.getPageNumber() == null || query.getPageNumber() < 0) ? 0 : query.getPageNumber();
-        int size = (query.getPageSize() == null || query.getPageSize() < 1) ? 10 : query.getPageSize();
-        String sortBy = (query.getSortBy() == null || query.getSortBy().isBlank()) ? "createdAt" : query.getSortBy();
-        Sort.Direction dir = (query.getSortDirection() == null || query.getSortDirection() == SortDirection.DESC) ? Sort.Direction.DESC : Sort.Direction.ASC;
+//    public Page<Country> searchByQuery(CountrySearchQuery query){
+//        int page = (query.getPageNumber() == null || query.getPageNumber() < 0) ? 0 : query.getPageNumber();
+//        int size = (query.getPageSize() == null || query.getPageSize() < 1) ? 10 : query.getPageSize();
+//        String sortBy = (query.getSortBy() == null || query.getSortBy().isBlank()) ? "createdAt" : query.getSortBy();
+//        Sort.Direction dir = (query.getSortDirection() == null || query.getSortDirection() == SortDirection.DESC) ? Sort.Direction.DESC : Sort.Direction.ASC;
+//
+//        Pageable pageable = PageRequest.of(page,size,Sort.by(dir,sortBy));
+//
+//        Specification<Country> spec = Specification.where(null);
+//        if(query.getFilterList() != null){
+//            for(CountrySearchFilter f : query.getFilterList()){
+//                Specification<Country> s = CountrySpecification.fromFilter(f);
+//                if(s != null) spec = (spec == null)? Specification.where(s) : spec.and(s);
+//            }
+//        }
+//        return countryRepository.findAll(spec,pageable);
+//    }
 
-        Pageable pageable = PageRequest.of(page,size,Sort.by(dir,sortBy));
-
-        Specification<Country> spec = Specification.where(null);
-        if(query.getFilterList() != null){
-            for(CountrySearchFilter f : query.getFilterList()){
-                Specification<Country> s = CountrySpecification.fromFilter(f);
-                if(s != null) spec = (spec == null)? Specification.where(s) : spec.and(s);
-            }
-        }
-        return countryRepository.findAll(spec,pageable);
-    }
-
-    @Override
-    public String getSheetName() {
-        return "Countries";
-    }
-
-    @Override
-    public List<Country> fetchData() {
-        return countryRepository.findAll();
-    }
-
-    @Override
-    public List<ColumnSpec<Country>> columns() {
-        return List.of(
-                new ColumnSpec<>("ID", c -> String.valueOf(c.getId()), null),
-                new ColumnSpec<>("Name", Country::getName, null)
-        );
-    }
 }
 
