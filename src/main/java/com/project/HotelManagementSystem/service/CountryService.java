@@ -31,7 +31,6 @@ public class CountryService {
     private final CountryRepository countryRepository;
     private final ModelMapper modelMapper;
     private final AuthService authService;
-    private final CommonSearchService commonSearchService;
 
     public CountryCreateDTO createCountry(CountryCreateDTO countryCreateDTO) {
         Optional<Country> countryOptional = this.countryRepository.findByNameIgnoreCase(countryCreateDTO.getName());
@@ -145,10 +144,6 @@ public class CountryService {
             }
         }
         return countryRepository.findAll(spec);
-    }
-
-    public Page<Country> searchByQuery(CountrySearchQuery query) {
-        return commonSearchService.searchByQuery(countryRepository, CountrySpecification::fromFilter, query);
     }
 
 }
