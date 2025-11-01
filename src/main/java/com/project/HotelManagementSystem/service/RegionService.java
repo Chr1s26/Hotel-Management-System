@@ -1,6 +1,9 @@
 package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.dto.region.*;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
+import com.project.HotelManagementSystem.dto.searchFilter.region.RegionSearchFilter;
+import com.project.HotelManagementSystem.dto.searchFilter.region.RegionSearchQuery;
 import com.project.HotelManagementSystem.entity.Region;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.entity.specification.RegionSpecification;
@@ -117,6 +120,23 @@ public class RegionService extends CommonExportProcess<Region> {
         return regionResponse;
     }
 
+    public Page<Region> searchByQuery(RegionSearchQuery query){
+        int page = (query.getPageNumber() == null || query.getPageNumber() <0) ? 0 : query.getPageNumber();
+        int size = (query.getPageSize() == null || query.getPageSize() < 1) ? 10 : query.getPageSize();
+        String sortBy = (query.getSortBy() == null || query.getSortBy().isBlank()) ? "createdAt" : query.getSortBy();
+        Sort.Direction dir = (query.getSortDirection() == null || query.getSortDirection() == SortDirection.DESC) ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(page,size, Sort.by(dir, sortBy));
+
+        Specification<Region> spec = Specification.where(null);
+        if(query.getFilterList() != null) {
+            for(RegionSearchFilter f: query.getFilterList()) {
+                Specification<Region> s = RegionSpecification.fromFilter(f);
+                if(s != null) spec = (spec == null)? Specification.where(s) : spec.and(s);
+            }
+        }
+        return regionRepository.findAll(spec,pageable);
+    }
 
     @Override
     public String getSheetName() {
