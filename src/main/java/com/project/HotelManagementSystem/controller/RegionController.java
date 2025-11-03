@@ -3,10 +3,18 @@ package com.project.HotelManagementSystem.controller;
 import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.region.*;
+import com.project.HotelManagementSystem.dto.searchFilter.MatchType;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
+import com.project.HotelManagementSystem.dto.searchFilter.region.RegionSearchField;
+import com.project.HotelManagementSystem.dto.searchFilter.region.RegionSearchFilter;
+import com.project.HotelManagementSystem.dto.searchFilter.region.RegionSearchQuery;
+import com.project.HotelManagementSystem.entity.Region;
 import com.project.HotelManagementSystem.service.CountryService;
 import com.project.HotelManagementSystem.service.RegionService;
+import com.project.HotelManagementSystem.service.search.RegionSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,29 +34,39 @@ public class RegionController {
 
     private final RegionService regionService;
     private final CountryService countryService;
+    private final RegionSearchService regionSearchService;
+
+    @ModelAttribute("query")
+    public RegionSearchQuery initQuery(){
+        RegionSearchQuery query = new RegionSearchQuery();
+        query.setPageNumber(0);
+        query.setPageSize(6);
+        query.setSortBy("createdAt");
+        query.setSortDirection(SortDirection.DESC);
+        query.setFilterList(List.of(
+                new RegionSearchFilter(RegionSearchField.NAME, MatchType.CONTAINS,""),
+                new RegionSearchFilter(RegionSearchField.STATUS,MatchType.EXACT,"")
+        ));
+        return query;
+    }
 
     @GetMapping
-    public String getAllRegions(Model model,
-                                @RequestParam(required = false) String name,
-                                @RequestParam(required = false,name = "countryName") String countryName,
-                                @RequestParam(defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
-                                @RequestParam(defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
-                                @RequestParam(defaultValue = AppConstants.SORT_BY_Id) String sortBy,
-                                @RequestParam(defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
-        RegionSearchCriteria criteria = new RegionSearchCriteria();
-        criteria.setName(name);
-        criteria.setCountryName(countryName);
-        criteria.setPageNumber(pageNumber);
-        criteria.setPageSize(pageSize);
-        criteria.setSortBy(sortBy);
-        criteria.setSortOrder(sortOrder);
-        RegionResponse regionResponse = this.regionService.search(criteria);
-        List<RegionDTO> regionDTOList = regionResponse.getRegions();
-        model.addAttribute("regions", regionDTOList);
-        model.addAttribute("response", regionResponse);
-        model.addAttribute("sortBy", sortBy);
-        model.addAttribute("sortOrder", sortOrder);
-        model.addAttribute("countryName", countryName);
+    public String getAllRegions(Model model,@ModelAttribute("query") RegionSearchQuery query) {
+        Page<Region> page = regionSearchService.searchByQuery(query);
+        model.addAttribute("regions", page.getContent());
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("totalElements", page.getTotalElements());
+//       model.addAttribute("countryName", countryName);
+        return "regions/listing";
+    }
+
+    @PostMapping
+    private String searchRegions(Model model,@ModelAttribute("query") RegionSearchQuery query) {
+        Page<Region> page = regionSearchService.searchByQuery(query);
+        model.addAttribute("regions", page.getContent());
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("totalElements", page.getTotalElements());
+//       model.addAttribute("countryName", countryName);
         return "regions/listing";
     }
 

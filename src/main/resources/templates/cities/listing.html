@@ -89,7 +89,12 @@
         <tr>
             <th>ID</th>
             <th>Name</th>
-            <th>Regions</th>
+            <th>ctions</th>
+            <th>STATUS</th>
+            <th>CREATED AT</th>
+            <th>UPDATED AT</th>
+            <th>CREATED BY</th>
+            <th>UPDATED BY</th>
             <th>ACTIONS</th>
         </tr>
         </thead>
@@ -98,6 +103,13 @@
             <td th:text="${ct.id}"></td>
             <td th:text="${ct.name}"></td>
             <td th:text="${ct.region}"></td>
+            <td th:text="${ct.status}">ACTIVE</td>
+
+            <td th:text="${ct.createdAt != null ? #temporals.format(ct.createdAt, 'yyyy-MM-dd HH:mm') : '—'}">—</td>
+            <td th:text="${ct.updatedAt != null ? #temporals.format(ct.updatedAt, 'yyyy-MM-dd HH:mm') : '—'}">—</td>
+
+            <td th:text="${ct.createdBy != null ? ct.createdBy.name : '—'}">—</td>
+            <td th:text="${ct.updatedBy != null ? ct.updatedBy.name : '—'}">—</td>
             <td>
                 <a class="btn btn-sm btn-warning" th:href="@{'/cities/edit/' + ${ct.id}}">Edit</a>
                 <a class="btn btn-sm btn-danger" th:href="@{'/cities/delete/' + ${ct.id}}">Delete</a>

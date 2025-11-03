@@ -379,3 +379,14 @@ label.form-label {
     align-items: center;
     min-height: 75vh;
 }
+/* Fix: make selected options visible in multi-select dropdowns */
+.form-select option:checked {
+    background-color: var(--bluegray) !important;
+    color: var(--royal) !important;
+}
+
+/* Optional: improve hover for dropdown items */
+.form-select option:hover {
+    background-color: rgba(136,169,195,0.4);
+    color: #fff;
+}
