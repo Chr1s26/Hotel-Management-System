@@ -47,7 +47,7 @@ public class RoomController {
         query.setSortDirection(SortDirection.DESC);
         query.setFilterList(List.of(
                 new RoomSearchFilter(RoomSearchField.PRICE, MatchType.EXACT,""),
-                new RoomSearchFilter(RoomSearchField.IS_AVAILABLE, MatchType.EXACT,""),
+                new RoomSearchFilter(RoomSearchField.IS_AVAILABLE, MatchType.EXACT,null),
                 new RoomSearchFilter(RoomSearchField.STATUS, MatchType.EXACT,""),
                 new RoomSearchFilter(RoomSearchField.ROOM_TYPE,MatchType.EXACT,""),
                 new RoomSearchFilter(RoomSearchField.MAX_CAPACITY,MatchType.EXACT,"")

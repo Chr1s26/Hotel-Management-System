@@ -53,7 +53,7 @@
         </div>
     </form>
 
-    <form th:action="@{/countries/export/excel}" th:object="${query}" method="post" style="border:none;background:transparent;padding:0;margin:0;">
+    <form th:action="@{/countries/export/excel}" th:object="${query}" method="post" style="all: unset; display: inline;">
         <input type="hidden" th:each="f, iStat : ${query.filterList}"
                th:name="|filterList[${iStat.index}].field|" th:value="${f.field}">
         <input type="hidden" th:each="f, iStat : ${query.filterList}"

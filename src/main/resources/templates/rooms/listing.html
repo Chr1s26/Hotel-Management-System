@@ -25,7 +25,7 @@
             <input type="hidden" th:name="*{filterList[1].field}" th:value="'IS_AVAILABLE'">
             <input type="hidden" th:name="*{filterList[1].matchType}" th:value="'EXACT'">
             <select id="searchAvailable" name="isAvailable" th:field="*{filterList[1].value}" class="form-select">
-                <option th:value="">-- Select --</option>
+                <option th:value="${null}">-- Select --</option>
                 <option th:value="true" th:text="'Yes'"></option>
                 <option th:value="false" th:text="'No'"></option>
             </select>
