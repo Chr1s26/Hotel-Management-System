@@ -2,21 +2,35 @@ package com.project.HotelManagementSystem.service.excelExport;
 
 import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchQuery;
 import com.project.HotelManagementSystem.entity.Country;
-import com.project.HotelManagementSystem.service.CountryService;
+import com.project.HotelManagementSystem.entity.constants.FileType;
+import com.project.HotelManagementSystem.service.ExportListingService;
+import com.project.HotelManagementSystem.service.FileService;
 import com.project.HotelManagementSystem.service.search.CountrySearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class CountryExportProcess extends CommonExportProcess<Country, CountrySearchQuery>{
     @Autowired
-    private CountryService countryService;
-    @Autowired
     private CountrySearchService countrySearchService;
+
+    public CountryExportProcess(ExportListingService exportListingService, FileService fileService) {
+        super(exportListingService, fileService);
+    }
+
+    @Override
+    public String getRecordType() {
+        return Country.class.getSimpleName();
+    }
+
+    @Override
+    public FileType getDownloadFileType() {
+        return FileType.Country_Listing;
+    }
 
     @Override
     public String getSheetName() {

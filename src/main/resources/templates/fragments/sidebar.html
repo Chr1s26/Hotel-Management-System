@@ -71,6 +71,10 @@
                         <a class="nav-link" th:classappend="${requestURI.startsWith('/roles')} ? ' active' : ''"
                            th:href="@{/roles}">Roles</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${requestURI.startsWith('/exports')} ? ' active' : ''"
+                           th:href="@{/exports}">Exported Lists</a>
+                    </li>
                 </ul>
             </nav>
 
