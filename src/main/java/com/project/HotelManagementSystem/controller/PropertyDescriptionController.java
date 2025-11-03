@@ -6,9 +6,17 @@ import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescrip
 import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionDTO;
 import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionResponse;
 import com.project.HotelManagementSystem.dto.propertyDescription.PropertyDescriptionUpdateDTO;
+import com.project.HotelManagementSystem.dto.searchFilter.MatchType;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
+import com.project.HotelManagementSystem.dto.searchFilter.propertyDescription.PropertyDescriptionSearchField;
+import com.project.HotelManagementSystem.dto.searchFilter.propertyDescription.PropertyDescriptionSearchFilter;
+import com.project.HotelManagementSystem.dto.searchFilter.propertyDescription.PropertyDescriptionSearchQuery;
+import com.project.HotelManagementSystem.entity.PropertyDescription;
 import com.project.HotelManagementSystem.service.PropertyDescriptionService;
+import com.project.HotelManagementSystem.service.search.PropertyDescriptionSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,19 +30,38 @@ import java.util.List;
 public class PropertyDescriptionController {
 
     private final PropertyDescriptionService propertyDescriptionService;
+    private final PropertyDescriptionSearchService propertyDescriptionSearchService;
+
+
+    @ModelAttribute("query")
+    public PropertyDescriptionSearchQuery initQuery() {
+        PropertyDescriptionSearchQuery query = new PropertyDescriptionSearchQuery();
+        query.setPageNumber(0);
+        query.setPageSize(6);
+        query.setSortBy("createdAt");
+        query.setSortDirection(SortDirection.DESC);
+        query.setFilterList(List.of(
+                new PropertyDescriptionSearchFilter(PropertyDescriptionSearchField.DESCRIPTION, MatchType.CONTAINS, ""),
+                new PropertyDescriptionSearchFilter(PropertyDescriptionSearchField.STATUS, MatchType.EXACT, "")
+        ));
+        return query;
+    }
 
     @GetMapping
-    public String getAllPropertyDescriptions(Model model,
-                                             @RequestParam(defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
-                                             @RequestParam(defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
-                                             @RequestParam(defaultValue = AppConstants.SORT_BY_Id) String sortBy,
-                                             @RequestParam(defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
-        PropertyDescriptionResponse propertyDescriptionResponse = propertyDescriptionService.findAllPropertyDescriptionsWithPagination(pageNumber,pageSize,sortBy,sortOrder);
-        List<PropertyDescriptionDTO> propertyDescriptionDTOList = propertyDescriptionResponse.getPropertyDescriptions();
-        model.addAttribute("propertyDescriptions", propertyDescriptionDTOList);
-        model.addAttribute("response",propertyDescriptionResponse);
-        model.addAttribute("sortBy", sortBy);
-        model.addAttribute("sortOrder", sortOrder);
+    public String getAllPropertyDescriptions(Model model, @ModelAttribute("query")PropertyDescriptionSearchQuery query) {
+        Page<PropertyDescription> page = this.propertyDescriptionSearchService.searchByQuery(query);
+        model.addAttribute("propertyDescriptions", page.getContent());
+        model.addAttribute("totalPages",page.getTotalPages());
+        model.addAttribute("totalElements",page.getTotalElements());
+        return "propertyDescriptions/listing";
+    }
+
+    @PostMapping
+    public String searchPropertyDescription(Model model, @ModelAttribute("query")PropertyDescriptionSearchQuery query) {
+        Page<PropertyDescription> page = this.propertyDescriptionSearchService.searchByQuery(query);
+        model.addAttribute("propertyDescriptions", page.getContent());
+        model.addAttribute("totalPages",page.getTotalPages());
+        model.addAttribute("totalElements",page.getTotalElements());
         return "propertyDescriptions/listing";
     }
 

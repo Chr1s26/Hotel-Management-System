@@ -6,9 +6,17 @@ import com.project.HotelManagementSystem.dto.amenities.AmenitiesCreateDTO;
 import com.project.HotelManagementSystem.dto.amenities.AmenitiesDTO;
 import com.project.HotelManagementSystem.dto.amenities.AmenitiesResponse;
 import com.project.HotelManagementSystem.dto.amenities.AmenitiesUpdateDTO;
+import com.project.HotelManagementSystem.dto.searchFilter.MatchType;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
+import com.project.HotelManagementSystem.dto.searchFilter.amenities.AmenitiesSearchField;
+import com.project.HotelManagementSystem.dto.searchFilter.amenities.AmenitiesSearchFilter;
+import com.project.HotelManagementSystem.dto.searchFilter.amenities.AmenitiesSearchQuery;
+import com.project.HotelManagementSystem.entity.Amenities;
 import com.project.HotelManagementSystem.service.AmenitiesService;
+import com.project.HotelManagementSystem.service.search.AmenitiesSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,6 +30,21 @@ import java.util.List;
 public class AmenitiesController {
 
     private final AmenitiesService amenitiesService;
+    private final AmenitiesSearchService amenitiesSearchService;
+
+    @ModelAttribute("query")
+    public AmenitiesSearchQuery initQuery() {
+        AmenitiesSearchQuery query = new AmenitiesSearchQuery();
+        query.setPageNumber(0);
+        query.setPageSize(6);
+        query.setSortBy("createdAt");
+        query.setSortDirection(SortDirection.DESC);
+        query.setFilterList(List.of(
+                new AmenitiesSearchFilter(AmenitiesSearchField.NAME, MatchType.CONTAINS,""),
+                new AmenitiesSearchFilter(AmenitiesSearchField.STATUS, MatchType.EXACT,"")
+        ));
+        return query;
+    }
 
     @GetMapping("/new")
     @ActiveRole({"ADMIN", "EDITOR"})
@@ -40,17 +63,20 @@ public class AmenitiesController {
     }
 
     @GetMapping
-    public String getAllAmenities(Model model,
-                                  @RequestParam(defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
-                                  @RequestParam(defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
-                                  @RequestParam(defaultValue = AppConstants.SORT_BY_Id,required = false) String sortBy,
-                                  @RequestParam(defaultValue = AppConstants.SORT_ORDER,required = false) String sortOrder) {
-        AmenitiesResponse amenitiesResponse = this.amenitiesService.findAllAmenitiesWithPagination(pageNumber, pageSize, sortBy, sortOrder);
-        List<AmenitiesDTO> amenitiesDTOS = amenitiesResponse.getAmenities();
-        model.addAttribute("amenities",  amenitiesDTOS);
-        model.addAttribute("response", amenitiesResponse);
-        model.addAttribute("sortBy", sortBy);
-        model.addAttribute("sortOrder", sortOrder);
+    public String getAllAmenities(Model model, @ModelAttribute("query")AmenitiesSearchQuery query) {
+        Page<Amenities> page = this.amenitiesSearchService.searchByQuery(query);
+        model.addAttribute("amenities",  page.getContent());
+        model.addAttribute("totalPages",page.getTotalPages());
+        model.addAttribute("totalElements",page.getTotalElements());
+        return "amenities/listing";
+    }
+
+    @PostMapping
+    public String searchAmenities(Model model, @ModelAttribute("query")AmenitiesSearchQuery query) {
+        Page<Amenities> page = this.amenitiesSearchService.searchByQuery(query);
+        model.addAttribute("amenities",  page.getContent());
+        model.addAttribute("totalPages",page.getTotalPages());
+        model.addAttribute("totalElements",page.getTotalElements());
         return "amenities/listing";
     }
 

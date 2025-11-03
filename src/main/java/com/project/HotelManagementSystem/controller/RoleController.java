@@ -10,9 +10,17 @@ import com.project.HotelManagementSystem.dto.room.RoomCreateDTO;
 import com.project.HotelManagementSystem.dto.room.RoomDTO;
 import com.project.HotelManagementSystem.dto.room.RoomResponse;
 import com.project.HotelManagementSystem.dto.room.RoomUpdateDTO;
+import com.project.HotelManagementSystem.dto.searchFilter.MatchType;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
+import com.project.HotelManagementSystem.dto.searchFilter.role.RoleSearchField;
+import com.project.HotelManagementSystem.dto.searchFilter.role.RoleSearchFilter;
+import com.project.HotelManagementSystem.dto.searchFilter.role.RoleSearchQuery;
+import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.service.RoleService;
+import com.project.HotelManagementSystem.service.search.RoleSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,21 +34,40 @@ import java.util.List;
 public class RoleController {
 
     private final RoleService roleService;
+    private final RoleSearchService roleSearchService;
+
+    @ModelAttribute("query")
+    public RoleSearchQuery initQuery() {
+        RoleSearchQuery query = new RoleSearchQuery();
+        query.setPageNumber(0);
+        query.setPageSize(6);
+        query.setSortBy("createdAt");
+        query.setSortDirection(SortDirection.DESC);
+        query.setFilterList(List.of(
+                new RoleSearchFilter(RoleSearchField.ROLE_NAME, MatchType.CONTAINS,""),
+                new RoleSearchFilter(RoleSearchField.STATUS, MatchType.EXACT, "")
+        ));
+        return query;
+    }
 
     @GetMapping
-    public String getAllRoles(Model model,
-                              @RequestParam(defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
-                              @RequestParam(defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
-                              @RequestParam(defaultValue = AppConstants.SORT_BY_Id) String sortBy,
-                              @RequestParam(defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
-        RoleResponse roleResponse = roleService.findAllRolesWithPagination(pageNumber,pageSize,sortBy,sortOrder);
-        List<RoleDTO> roleDTOList = roleResponse.getRoles();
-        model.addAttribute("roles",roleDTOList);
-        model.addAttribute("response",roleResponse);
-        model.addAttribute("sortBy",sortBy);
-        model.addAttribute("sortOrder",sortOrder);
+    public String getAllRoles(Model model, @ModelAttribute("query") RoleSearchQuery query) {
+        Page<Role> page = this.roleSearchService.searchByQuery(query);
+        model.addAttribute("roles",page.getContent());
+        model.addAttribute("totalPages",page.getTotalPages());
+        model.addAttribute("totalElements",page.getTotalElements());
         return "roles/listing";
     }
+
+    @PostMapping
+    public String searchRoles(Model model, @ModelAttribute("query") RoleSearchQuery query) {
+        Page<Role> page = this.roleSearchService.searchByQuery(query);
+        model.addAttribute("roles",page.getContent());
+        model.addAttribute("totalPages",page.getTotalPages());
+        model.addAttribute("totalElements",page.getTotalElements());
+        return "roles/listing";
+    }
+
     @GetMapping("/new")
     @ActiveRole({"ADMIN", "EDITOR"})
     public String showCreateForm(Model model) {

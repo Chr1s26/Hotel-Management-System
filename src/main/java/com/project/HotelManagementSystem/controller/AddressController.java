@@ -1,15 +1,20 @@
 package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.annotation.ActiveRole;
-import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.address.AddressCreateDTO;
-import com.project.HotelManagementSystem.dto.address.AddressDTO;
-import com.project.HotelManagementSystem.dto.address.AddressResponse;
 import com.project.HotelManagementSystem.dto.address.AddressUpdateDTO;
+import com.project.HotelManagementSystem.dto.searchFilter.MatchType;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
+import com.project.HotelManagementSystem.dto.searchFilter.address.AddressSearchField;
+import com.project.HotelManagementSystem.dto.searchFilter.address.AddressSearchFilter;
+import com.project.HotelManagementSystem.dto.searchFilter.address.AddressSearchQuery;
+import com.project.HotelManagementSystem.entity.Address;
 import com.project.HotelManagementSystem.service.AddressService;
 import com.project.HotelManagementSystem.service.CityService;
+import com.project.HotelManagementSystem.service.search.AddressSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,19 +29,40 @@ public class AddressController {
 
     private final AddressService addressService;
     private final CityService cityService;
+    private final AddressSearchService addressSearchService;
+
+    @ModelAttribute("query")
+    public AddressSearchQuery initQuery() {
+        AddressSearchQuery query = new AddressSearchQuery();
+        query.setPageNumber(0);
+        query.setPageSize(6);
+        query.setSortBy("createdAt");
+        query.setSortDirection(SortDirection.DESC);
+        query.setFilterList(List.of(
+                new AddressSearchFilter(AddressSearchField.LATITUDE, MatchType.EXACT,""),
+                new AddressSearchFilter(AddressSearchField.LONGITUDE, MatchType.EXACT,""),
+                new AddressSearchFilter(AddressSearchField.ROAD, MatchType.CONTAINS,""),
+                new AddressSearchFilter(AddressSearchField.STATUS, MatchType.EXACT,""),
+                new AddressSearchFilter(AddressSearchField.ZIPCODE,MatchType.EXACT,"")
+        ));
+        return query;
+    }
 
     @GetMapping
-    public String getAllAddresses(Model model,
-                                  @RequestParam(defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
-                                  @RequestParam(defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
-                                  @RequestParam(defaultValue = AppConstants.SORT_BY_Id, required = false) String sortBy,
-                                  @RequestParam(defaultValue = AppConstants.SORT_ORDER, required = false) String sortOrder) {
-        AddressResponse addressResponse = addressService.findAllAddressWithPagination(pageNumber, pageSize, sortBy, sortOrder);
-        List<AddressDTO> addressDTOList = addressResponse.getAddresses();
-        model.addAttribute("addresses", addressDTOList);
-        model.addAttribute("response", addressResponse);
-        model.addAttribute("sortBy", sortBy);
-        model.addAttribute("sortOrder", sortOrder);
+    public String getAllAddresses(Model model, @ModelAttribute("query")AddressSearchQuery query) {
+        Page<Address> page = this.addressSearchService.searchByQuery(query);
+        model.addAttribute("addresses", page.getContent());
+        model.addAttribute("totalPages",page.getTotalPages());
+        model.addAttribute("totalElements",page.getTotalElements());
+        return "addresses/listing";
+    }
+
+    @PostMapping
+    public String searchAddress(Model model, @ModelAttribute("query")AddressSearchQuery query) {
+        Page<Address> page = this.addressSearchService.searchByQuery(query);
+        model.addAttribute("addresses", page.getContent());
+        model.addAttribute("totalPages",page.getTotalPages());
+        model.addAttribute("totalElements",page.getTotalElements());
         return "addresses/listing";
     }
 
