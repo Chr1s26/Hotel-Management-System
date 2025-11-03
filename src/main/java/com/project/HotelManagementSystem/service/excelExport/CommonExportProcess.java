@@ -1,8 +1,6 @@
 package com.project.HotelManagementSystem.service.excelExport;
 
-import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchQuery;
 import com.project.HotelManagementSystem.entity.ExportListing;
-import com.project.HotelManagementSystem.entity.FileStorage;
 import com.project.HotelManagementSystem.entity.MasterData;
 import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.service.ExportListingService;
@@ -10,7 +8,6 @@ import com.project.HotelManagementSystem.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -45,7 +42,7 @@ public abstract class CommonExportProcess<T extends MasterData, Q> {
         }
     }
 
-    @Async
+
     public void generateExportFile(Q query){
         ExportListing exportListing = null;
         try {

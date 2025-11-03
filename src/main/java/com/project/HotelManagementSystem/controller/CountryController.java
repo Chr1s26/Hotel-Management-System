@@ -40,8 +40,6 @@ public class CountryController {
     private final CountryService countryService;
     private final CountryExportProcess countryExportProcess;
     private final CountrySearchService countrySearchService;
-    private final FileService fileService;
-    private final ExportListingService exportListingService;
 
     @ModelAttribute("query")
     public CountrySearchQuery initQuery() {

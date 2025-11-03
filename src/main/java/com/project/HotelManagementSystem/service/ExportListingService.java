@@ -1,10 +1,15 @@
 package com.project.HotelManagementSystem.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.project.HotelManagementSystem.entity.ExportListing;
+import com.project.HotelManagementSystem.entity.FileStorage;
 import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.ExportListingRepository;
+import com.project.HotelManagementSystem.repository.FileStorageRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,13 +18,18 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class ExportListingService {
     private final ExportListingRepository exportListingRepository;
     private final AuthService authService;
+    private final FileStorageRepository fileStorageRepository;
+    private final AmazonS3 amazonS3;
 
-    public ExportListingService(ExportListingRepository exportListingRepository, AuthService authService) {
+    public ExportListingService(ExportListingRepository exportListingRepository, AuthService authService, FileStorageRepository fileStorageRepository, AmazonS3 amazonS3) {
         this.exportListingRepository = exportListingRepository;
         this.authService = authService;
+        this.fileStorageRepository = fileStorageRepository;
+        this.amazonS3 = amazonS3;
     }
 
     public ExportListing saveExportListing(String entityName, FileType fileType) {
@@ -40,10 +50,31 @@ public class ExportListingService {
     }
 
     public void deleteExportListing(Long id) {
-        Optional<ExportListing> exportListing = exportListingRepository.findById(id);
-        if (exportListing.isEmpty()) {
-            throw new ResourceNotFoundException("exportListing",exportListing,"id","exports","File with this id cannot be found");
+        Optional<ExportListing> exportListingOp = exportListingRepository.findById(id);
+
+        if (!exportListingOp.isPresent()) {
+             throw new ResourceNotFoundException("export",exportListingOp.get(),"id","/exports","Export listing not found");
         }
-        exportListingRepository.deleteById(id);
+        ExportListing exportListing = exportListingOp.get();
+
+        FileStorage file = fileStorageRepository.findTopByFileIdAndFileTypeOrderByCreatedAtDesc(
+                exportListing.getId(), exportListing.getFileType()
+        );
+
+        if (file != null) {
+            try {
+                amazonS3.deleteObject(new DeleteObjectRequest("hotel-export-report-bucket", file.getKey()));
+                log.info("Deleted file from S3: {}", file.getKey());
+                fileStorageRepository.delete(file);
+            } catch (Exception e) {
+                log.error("Failed to delete file from S3: {}", e.getMessage(), e);
+                throw new RuntimeException("Failed to delete file from S3: " + e.getMessage());
+            }
+        } else {
+            log.warn("No file found for export listing ID {}", id);
+        }
+        exportListingRepository.delete(exportListing);
+        log.info("Deleted ExportListing with ID {}", id);
     }
+
 }

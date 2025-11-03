@@ -32,8 +32,7 @@
       <td th:text="${file.createdBy != null ? file.createdBy.name : '—'}">—</td>
       <td th:text="${file.createdAt != null ? #temporals.format(file.createdAt, 'yyyy-MM-dd HH:mm') : '—'}">—</td>
       <td>
-
-        <form th:action="@{'/exports/download-zip/' + ${file.id}}" method="get" style="display:inline">
+        <form th:action="@{'/exports/download-zip/' + ${file.id}}" method="get" >
           <button type="submit" class="btn btn-success btn-sm" title="Download ZIP">
             <i class="bi bi-download"></i> Download
           </button>

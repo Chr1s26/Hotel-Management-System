@@ -20,4 +20,5 @@ public class ResourceNotFoundException extends RuntimeException {
         this.messageKey = "resourceNotFound";
         this.defaultMessage = defaultMessage;
     }
+
 }
