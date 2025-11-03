@@ -11,6 +11,7 @@ import com.project.HotelManagementSystem.entity.City;
 import com.project.HotelManagementSystem.service.CityService;
 import com.project.HotelManagementSystem.service.RegionService;
 import com.project.HotelManagementSystem.service.excelExport.CityExportProcess;
+import com.project.HotelManagementSystem.service.search.CitySearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,6 +38,7 @@ public class CityController {
     private final CityService cityService;
     private final RegionService regionService;
     private final CityExportProcess cityExportProcess;
+    private final CitySearchService citySearchService;
 
     @ModelAttribute("query")
     public CitySearchQuery initQuery() {
@@ -54,7 +56,7 @@ public class CityController {
 
     @GetMapping
     public String getAllCities(Model model, @ModelAttribute("query") CitySearchQuery query) {
-        Page<City> page = cityService.searchByQuery(query);
+        Page<City> page = citySearchService.searchByQuery(query);
         model.addAttribute("cities", page.getContent());
         model.addAttribute("totalPages", page.getTotalPages());
         model.addAttribute("totalElements", page.getTotalElements());
@@ -63,7 +65,7 @@ public class CityController {
 
     @PostMapping
     public String searchCities(Model model, @ModelAttribute("query") CitySearchQuery query) {
-        Page<City> cities = this.cityService.searchByQuery(query);
+        Page<City> cities = this.citySearchService.searchByQuery(query);
         model.addAttribute("cities", cities.getContent());
         model.addAttribute("totalPages",cities.getTotalPages());
         model.addAttribute("totalElements",cities.getTotalElements());

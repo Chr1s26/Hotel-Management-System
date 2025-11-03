@@ -102,6 +102,7 @@ public class RegionService {
         Pageable pageable = PageRequest.of(criteria.getPageNumber(),criteria.getPageSize(),sortByAndOrder);
 
         Specification<Region> spec = Specification.where(RegionSpecification.findByName(criteria.getName()))
+                .and(RegionSpecification.findByStatus(criteria.getStatus()))
                 .and(RegionSpecification.findByCountry(criteria.getCountryName()));
 
         Page<Region> regionPage = regionRepository.findAll(spec,pageable);

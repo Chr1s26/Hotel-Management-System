@@ -18,7 +18,7 @@ public class RegionSpecification {
         };
     }
 
-    public static Specification<User> findByStatus(StatusType statusType) {
+    public static Specification<Region> findByStatus(StatusType statusType) {
         return (root, query, cb) -> {
             if(statusType == null){
                 return cb.conjunction();

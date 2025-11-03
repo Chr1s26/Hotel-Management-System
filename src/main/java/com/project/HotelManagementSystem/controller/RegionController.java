@@ -11,6 +11,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.region.RegionSearchQue
 import com.project.HotelManagementSystem.entity.Region;
 import com.project.HotelManagementSystem.service.CountryService;
 import com.project.HotelManagementSystem.service.RegionService;
+import com.project.HotelManagementSystem.service.search.RegionSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,7 @@ public class RegionController {
 
     private final RegionService regionService;
     private final CountryService countryService;
+    private final RegionSearchService regionSearchService;
 
     @ModelAttribute("query")
     public RegionSearchQuery initQuery(){
@@ -50,7 +52,7 @@ public class RegionController {
 
     @GetMapping
     public String getAllRegions(Model model,@ModelAttribute("query") RegionSearchQuery query) {
-        Page<Region> page = regionService.searchByQuery(query);
+        Page<Region> page = regionSearchService.searchByQuery(query);
         model.addAttribute("regions", page.getContent());
         model.addAttribute("totalPages", page.getTotalPages());
         model.addAttribute("totalElements", page.getTotalElements());
@@ -60,7 +62,7 @@ public class RegionController {
 
     @PostMapping
     private String searchRegions(Model model,@ModelAttribute("query") RegionSearchQuery query) {
-        Page<Region> page = regionService.searchByQuery(query);
+        Page<Region> page = regionSearchService.searchByQuery(query);
         model.addAttribute("regions", page.getContent());
         model.addAttribute("totalPages", page.getTotalPages());
         model.addAttribute("totalElements", page.getTotalElements());
