@@ -1,8 +1,5 @@
 package com.project.HotelManagementSystem.service;
 
-import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
-import com.project.HotelManagementSystem.dto.searchFilter.user.UserSearchFilter;
-import com.project.HotelManagementSystem.dto.searchFilter.user.UserSearchQuery;
 import com.project.HotelManagementSystem.dto.user.*;
 import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.User;
@@ -27,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -147,21 +143,4 @@ public class UserService {
         return userResponse;
     }
 
-    public Page<User> searchByQuery(UserSearchQuery query) {
-        int page = (query.getPageNumber() == null || query.getPageNumber() < 0) ? 0 : query.getPageNumber();
-        int size = (query.getPageSize() == null || query.getPageSize() < 1) ? 10 : query.getPageSize();
-        String sortBy = (query.getSortBy() == null || query.getSortBy().isBlank()) ? "createdAt" : query.getSortBy();
-        Sort.Direction dir = (query.getSortDirection() == null || query.getSortDirection() == SortDirection.DESC) ? Sort.Direction.DESC : Sort.Direction.ASC;
-
-        Pageable pageable = PageRequest.of(page,size, Sort.by(dir, sortBy));
-
-        Specification<User> spec = Specification.where(null);
-        if(query.getFilterList() != null){
-            for(UserSearchFilter f : query.getFilterList()){
-                Specification<User> s = UserSpecification.fromFilter(f);
-                if (s != null) spec = (spec == null) ? Specification.where(s) : spec.and(s);
-            }
-        }
-        return userRepository.findAll(spec, pageable);
-    }
 }

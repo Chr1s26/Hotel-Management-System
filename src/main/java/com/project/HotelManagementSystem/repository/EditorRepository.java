@@ -6,12 +6,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface EditorRepository extends JpaRepository<Editor,Long> {
+public interface EditorRepository extends JpaRepository<Editor, Long>, JpaSpecificationExecutor<Editor> {
     Optional<Editor> findByNameIgnoreCase(String name);
     Optional<Editor> findByNameIgnoreCaseAndIdNot(String name, Long id);
     Optional<Editor> findEditorByUser(User user);

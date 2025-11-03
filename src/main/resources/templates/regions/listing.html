@@ -91,7 +91,7 @@
             <td th:text="${reg.id}"></td>
             <td th:text="${reg.name}"></td>
             <td th:text="${reg.country}"></td>
-            <td th:text="${reg.status}">ACTIVE</td>
+            <td th:text="${reg.status}"></td>
 
             <td th:text="${reg.createdAt != null ? #temporals.format(reg.createdAt, 'yyyy-MM-dd HH:mm') : '—'}">—</td>
             <td th:text="${reg.updatedAt != null ? #temporals.format(reg.updatedAt, 'yyyy-MM-dd HH:mm') : '—'}">—</td>

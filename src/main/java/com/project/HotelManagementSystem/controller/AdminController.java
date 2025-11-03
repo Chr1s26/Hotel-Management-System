@@ -10,6 +10,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.admin.AdminSearchQuery
 import com.project.HotelManagementSystem.entity.Admin;
 import com.project.HotelManagementSystem.service.AdminService;
 import com.project.HotelManagementSystem.service.UserService;
+import com.project.HotelManagementSystem.service.search.AdminSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ public class AdminController {
     private AdminService adminService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private AdminSearchService adminSearchService;
 
     @ModelAttribute("query")
     public AdminSearchQuery initQuery() {
@@ -52,7 +55,7 @@ public class AdminController {
     @GetMapping
     @ActiveRole("ADMIN")
     public String getAllAdmins(Model model, @ModelAttribute("query") AdminSearchQuery query) {
-        Page<Admin> page = adminService.searchByQuery(query);
+        Page<Admin> page = adminSearchService.searchByQuery(query);
         model.addAttribute("admins", page.getContent());
         model.addAttribute("totalPages", page.getTotalPages());
         model.addAttribute("totalElements", page.getTotalElements());
@@ -62,7 +65,7 @@ public class AdminController {
     @PostMapping
     @ActiveRole("ADMIN")
     public String searchAdmins(Model model, @ModelAttribute("query") AdminSearchQuery query) {
-        Page<Admin> page = adminService.searchByQuery(query);
+        Page<Admin> page = adminSearchService.searchByQuery(query);
         model.addAttribute("admins", page.getContent());
         model.addAttribute("totalPages", page.getTotalPages());
         model.addAttribute("totalElements", page.getTotalElements());

@@ -7,6 +7,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.user.*;
 import com.project.HotelManagementSystem.dto.user.*;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.service.UserService;
+import com.project.HotelManagementSystem.service.search.UserSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final UserSearchService userSearchService;
 
     @ModelAttribute("query")
     public UserSearchQuery initQuery() {
@@ -41,7 +43,7 @@ public class UserController {
 
     @GetMapping
     public String getAllUsers(Model model, @ModelAttribute("query") UserSearchQuery query) {
-        Page<User> page = userService.searchByQuery(query);
+        Page<User> page = this.userSearchService.searchByQuery(query);
         model.addAttribute("users", page.getContent());
         model.addAttribute("totalPages", page.getTotalPages());
         model.addAttribute("totalElements", page.getTotalElements());
@@ -50,7 +52,7 @@ public class UserController {
 
     @PostMapping
     public String searchUsers(Model model, @ModelAttribute("query") UserSearchQuery query) {
-        Page<User> users = userService.searchByQuery(query);
+        Page<User> users = this.userSearchService.searchByQuery(query);
         model.addAttribute("users", users.getContent());
         model.addAttribute("totalPages", users.getTotalPages());
         model.addAttribute("totalElements", users.getTotalElements());
