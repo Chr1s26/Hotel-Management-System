@@ -1,14 +1,19 @@
 package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.annotation.ActiveRole;
-import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.policy.PolicyCreateDTO;
-import com.project.HotelManagementSystem.dto.policy.PolicyDTO;
-import com.project.HotelManagementSystem.dto.policy.PolicyResponse;
 import com.project.HotelManagementSystem.dto.policy.PolicyUpdateDTO;
+import com.project.HotelManagementSystem.dto.searchFilter.MatchType;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
+import com.project.HotelManagementSystem.dto.searchFilter.policy.PolicySearchQuery;
+import com.project.HotelManagementSystem.dto.searchFilter.policy.PolicySearchField;
+import com.project.HotelManagementSystem.dto.searchFilter.policy.PolicySearchFilter;
+import com.project.HotelManagementSystem.entity.Policy;
 import com.project.HotelManagementSystem.service.PolicyService;
+import com.project.HotelManagementSystem.service.search.PolicySearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,19 +27,38 @@ import java.util.List;
 public class PolicyController {
 
     private final PolicyService policyService;
+    private final PolicySearchService policySearchService;
+
+    @ModelAttribute("query")
+    public PolicySearchQuery initQuery() {
+        PolicySearchQuery query = new PolicySearchQuery();
+        query.setPageNumber(0);
+        query.setPageSize(6);
+        query.setSortBy("createdAt");
+        query.setSortDirection(SortDirection.DESC);
+        query.setFilterList(List.of(
+                new PolicySearchFilter(PolicySearchField.TITLE, MatchType.CONTAINS, ""),
+                new PolicySearchFilter(PolicySearchField.APPLICABLE_TO,MatchType.CONTAINS,""),
+                new PolicySearchFilter(PolicySearchField.STATUS,MatchType.EXACT,"")
+        ));
+        return query;
+    }
 
     @GetMapping
-    public String getAllPolicies(Model model,
-                                 @RequestParam(defaultValue = AppConstants.PAGE_NUMBER,required = false) Integer pageNumber,
-                                 @RequestParam(defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
-                                 @RequestParam(defaultValue = AppConstants.SORT_BY_Id,required = false) String sortBy,
-                                 @RequestParam(defaultValue = AppConstants.SORT_ORDER,required = false) String sortOrder) {
-        PolicyResponse response = this.policyService.findAllPoliciesWithPagination(pageNumber,pageSize,sortBy,sortOrder);
-        List<PolicyDTO> policyDTOList = response.getPolicies();
-        model.addAttribute("policies",policyDTOList);
-        model.addAttribute("response",response);
-        model.addAttribute("sortBy",sortBy);
-        model.addAttribute("sortOrder",sortOrder);
+    public String getAllPolicies(Model model, @ModelAttribute("query")PolicySearchQuery query) {
+        Page<Policy> page = this.policySearchService.searchByQuery(query);
+        model.addAttribute("policies", page.getContent());
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("totalElements", page.getTotalElements());
+        return "policies/listing";
+    }
+    
+    @PostMapping
+    public String searchPolicy(Model model, @ModelAttribute("query") PolicySearchQuery query) {
+        Page<Policy> page = this.policySearchService.searchByQuery(query);
+        model.addAttribute("policies", page.getContent());
+        model.addAttribute("totalPages", page.getTotalPages());
+        model.addAttribute("totalElements", page.getTotalElements());
         return "policies/listing";
     }
 

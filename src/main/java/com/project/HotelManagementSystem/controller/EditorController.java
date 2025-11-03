@@ -9,6 +9,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.editor.EditorSearchQue
 import com.project.HotelManagementSystem.entity.Editor;
 import com.project.HotelManagementSystem.service.EditorService;
 import com.project.HotelManagementSystem.service.UserService;
+import com.project.HotelManagementSystem.service.search.EditorSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ public class EditorController {
     private EditorService editorService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private EditorSearchService editorSearchService;
 
     @ModelAttribute("query")
     public EditorSearchQuery initQuery() {
@@ -51,7 +54,7 @@ public class EditorController {
 
     @GetMapping
     public String getAllEditors(Model model,@ModelAttribute("query") EditorSearchQuery query) {
-        Page<Editor> page = editorService.searchByQuery(query);
+        Page<Editor> page = this.editorSearchService.searchByQuery(query);
         model.addAttribute("editors", page.getContent());
         model.addAttribute("totalPages",page.getTotalPages());
         model.addAttribute("totalElements",page.getTotalElements());
@@ -60,7 +63,7 @@ public class EditorController {
 
     @PostMapping
     public String searchEditors(@ModelAttribute("query") EditorSearchQuery query,Model model){
-        Page<Editor> editors = editorService.searchByQuery(query);
+        Page<Editor> editors = this.editorSearchService.searchByQuery(query);
         model.addAttribute("editors", editors.getContent());
         model.addAttribute("totalPages",editors.getTotalPages());
         model.addAttribute("totalElements",editors.getTotalElements());
