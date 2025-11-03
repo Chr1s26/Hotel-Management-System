@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class RegionSearchService extends CommonSearchService{
+public class RegionSearchService {
     
     private final CommonSearchService commonSearchService;
     private final RegionRepository regionRepository;

@@ -6,6 +6,7 @@ import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.service.CityService;
 import com.project.HotelManagementSystem.service.ExportListingService;
 import com.project.HotelManagementSystem.service.FileService;
+import com.project.HotelManagementSystem.service.search.CitySearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +15,16 @@ import java.util.List;
 @Service
 public class CityExportProcess extends CommonExportProcess<City, CitySearchQuery> {
 
-    private final CityService cityService;
+    private final CitySearchService citySearchService;
 
-    public CityExportProcess(ExportListingService exportListingService, FileService fileService, CityService cityService) {
+    public CityExportProcess(ExportListingService exportListingService, FileService fileService, CitySearchService citySearchService) {
         super(exportListingService, fileService);
-        this.cityService = cityService;
+        this.citySearchService = citySearchService;
     }
 
     @Override
     public List<City> fetchData(CitySearchQuery query) {
-        return cityService.searchByQueryAll(query);
+        return citySearchService.searchByQueryAll(query);
     }
 
     @Override

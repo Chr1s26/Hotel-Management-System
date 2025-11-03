@@ -1,20 +1,26 @@
 package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.annotation.ActiveRole;
-import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.hotel.HotelCreateDTO;
-import com.project.HotelManagementSystem.dto.hotel.HotelDTO;
-import com.project.HotelManagementSystem.dto.hotel.HotelResponse;
 import com.project.HotelManagementSystem.dto.hotel.HotelUpdateDTO;
+import com.project.HotelManagementSystem.dto.searchFilter.MatchType;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
+import com.project.HotelManagementSystem.dto.searchFilter.hotel.HotelSearchField;
+import com.project.HotelManagementSystem.dto.searchFilter.hotel.HotelSearchFilter;
+import com.project.HotelManagementSystem.dto.searchFilter.hotel.HotelSearchQuery;
+import com.project.HotelManagementSystem.entity.Hotel;
 import com.project.HotelManagementSystem.service.*;
+import com.project.HotelManagementSystem.service.search.HotelSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 
 @Controller
 @RequiredArgsConstructor
@@ -26,19 +32,41 @@ public class HotelController {
     private final PropertyDescriptionService propertyDescriptionService;
     private final PromotionService promotionService;
     private final PolicyService policyService;
+    private final HotelSearchService hotelSearchService;
+
+    @ModelAttribute("query")
+    public HotelSearchQuery initQuery() {
+        HotelSearchQuery query = new HotelSearchQuery();
+        query.setPageNumber(0);
+        query.setPageSize(6);
+        query.setSortBy("createdAt");
+        query.setSortDirection(SortDirection.DESC);
+        query.setFilterList(List.of(
+                new HotelSearchFilter(HotelSearchField.NAME, MatchType.CONTAINS,""),
+                new HotelSearchFilter(HotelSearchField.PHONE, MatchType.CONTAINS, ""),
+                new HotelSearchFilter(HotelSearchField.EMAIL, MatchType.CONTAINS, ""),
+                new HotelSearchFilter(HotelSearchField.STATUS, MatchType.EXACT, ""),
+                new HotelSearchFilter(HotelSearchField.RATING, MatchType.EXACT, ""),
+                new HotelSearchFilter(HotelSearchField.HOTEL_TYPE, MatchType.EXACT, "")
+        ));
+        return query;
+    }
 
     @GetMapping
-    public String getAllHotels(Model model,
-                               @RequestParam(defaultValue = AppConstants.PAGE_NUMBER,required = false) Integer pageNumber,
-                               @RequestParam(defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
-                               @RequestParam(defaultValue = AppConstants.SORT_BY_Id,required = false) String sortBy,
-                               @RequestParam(defaultValue = AppConstants.SORT_ORDER,required = false) String sortOrder) {
-        HotelResponse response = this.hotelService.findAllHotelsWithPagination(pageNumber,pageSize,sortBy,sortOrder);
-        List<HotelDTO> hotels = response.getHotels();
-        model.addAttribute("hotels", hotels);
-        model.addAttribute("response",response);
-        model.addAttribute("sortBy",sortBy);
-        model.addAttribute("sortOrder",sortOrder);
+    public String getAllHotels(Model model, @ModelAttribute("query") HotelSearchQuery query) {
+        Page<Hotel> page = this.hotelSearchService.searchByQuery(query);
+        model.addAttribute("hotels", page.getContent());
+        model.addAttribute("totalPages",page.getTotalPages());
+        model.addAttribute("totalElements",page.getTotalElements());
+        return "hotels/listing";
+    }
+
+    @PostMapping
+    public String searchHotels(Model model, @ModelAttribute("query") HotelSearchQuery query) {
+        Page<Hotel> hotels = this.hotelSearchService.searchByQuery(query);
+        model.addAttribute("hotels", hotels.getContent());
+        model.addAttribute("totalPages",hotels.getTotalPages());
+        model.addAttribute("totalElements",hotels.getTotalElements());
         return "hotels/listing";
     }
 

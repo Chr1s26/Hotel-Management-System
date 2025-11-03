@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class CitySearchService extends CommonSearchService{
+public class CitySearchService {
 
     private final CommonSearchService commonSearchService;
     private final CityRepository cityRepository;

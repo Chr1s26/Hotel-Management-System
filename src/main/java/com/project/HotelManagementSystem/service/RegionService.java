@@ -81,22 +81,6 @@ public class RegionService {
         return regions.stream().map(region -> modelMapper.map(region,RegionDTO.class)).toList();
     }
 
-    public RegionResponse findAllRegionWithPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
-        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        Pageable pageable = PageRequest.of(pageNumber,pageSize,sortByAndOrder);
-        Page<Region> regionPage = regionRepository.findAll(pageable);
-        List<Region> regions = regionPage.getContent();
-        List<RegionDTO> regionDTOList = regions.stream().map(region -> modelMapper.map(region,RegionDTO.class)).toList();
-        RegionResponse regionResponse = new RegionResponse();
-        regionResponse.setRegions(regionDTOList);
-        regionResponse.setPageNumber(regionPage.getNumber());
-        regionResponse.setPageSize(regionPage.getSize());
-        regionResponse.setTotalElements(regionPage.getTotalElements());
-        regionResponse.setTotalPages(regionPage.getTotalPages());
-        regionResponse.setLastPage(regionPage.isLast());
-        return regionResponse;
-    }
-
     public RegionResponse search(RegionSearchCriteria criteria) {
         Sort sortByAndOrder = criteria.getSortOrder().equalsIgnoreCase("asc") ? Sort.by(criteria.getSortBy()).ascending() : Sort.by(criteria.getSortBy()).descending();
         Pageable pageable = PageRequest.of(criteria.getPageNumber(),criteria.getPageSize(),sortByAndOrder);

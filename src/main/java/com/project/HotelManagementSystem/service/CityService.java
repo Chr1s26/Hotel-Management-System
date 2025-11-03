@@ -159,33 +159,4 @@ public class CityService {
         }
     }
 
-    public Page<City> searchByQuery(CitySearchQuery query){
-        int page = (query.getPageNumber() == null || query.getPageNumber() < 0) ? 0 : query.getPageNumber();
-        int size = (query.getPageSize() == null || query.getPageSize() < 1) ? 10 : query.getPageSize();
-        String sortBy = (query.getSortBy() == null || query.getSortBy().isBlank()) ? "createdAt" : query.getSortBy();
-        Sort.Direction dir = (query.getSortDirection() == null || query.getSortDirection() == SortDirection.DESC) ? Sort.Direction.DESC : Sort.Direction.ASC;
-
-        Pageable pageable = PageRequest.of(page,size,Sort.by(dir,sortBy));
-
-        Specification<City> spec = Specification.where(null);
-        if(query.getFilterList() != null){
-            for(CitySearchFilter f : query.getFilterList()){
-                Specification<City> s = CitySpecification.fromFilter(f);
-                if(s != null) spec = (spec == null)? Specification.where(s) : spec.and(s);
-            }
-        }
-        Page<City> cityPage = cityRepository.findAll(spec,pageable);
-        return cityRepository.findAll(spec,pageable);
-    }
-
-    public List<City> searchByQueryAll(CitySearchQuery query){
-        Specification<City> spec = Specification.where(null);
-        if(query.getFilterList() != null){
-            for(CitySearchFilter f : query.getFilterList()){
-                Specification<City> s = CitySpecification.fromFilter(f);
-                if(s != null) spec = (spec == null)? Specification.where(s) : spec.and(s);
-            }
-        }
-        return cityRepository.findAll(spec);
-    }
 }
