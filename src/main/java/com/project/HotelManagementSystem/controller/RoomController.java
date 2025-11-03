@@ -6,12 +6,20 @@ import com.project.HotelManagementSystem.dto.room.RoomCreateDTO;
 import com.project.HotelManagementSystem.dto.room.RoomDTO;
 import com.project.HotelManagementSystem.dto.room.RoomResponse;
 import com.project.HotelManagementSystem.dto.room.RoomUpdateDTO;
+import com.project.HotelManagementSystem.dto.searchFilter.MatchType;
+import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
+import com.project.HotelManagementSystem.dto.searchFilter.room.RoomSearchField;
+import com.project.HotelManagementSystem.dto.searchFilter.room.RoomSearchFilter;
+import com.project.HotelManagementSystem.dto.searchFilter.room.RoomSearchQuery;
+import com.project.HotelManagementSystem.entity.Room;
 import com.project.HotelManagementSystem.service.AmenitiesService;
 import com.project.HotelManagementSystem.service.HotelService;
 import com.project.HotelManagementSystem.service.PromotionService;
 import com.project.HotelManagementSystem.service.RoomService;
+import com.project.HotelManagementSystem.service.search.RoomSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,21 +36,43 @@ public class RoomController {
     private final HotelService hotelService;
     private final AmenitiesService amenitiesService;
     private final PromotionService promotionService;
+    private final RoomSearchService roomSearchService;
+
+    @ModelAttribute("query")
+    public RoomSearchQuery initQuery() {
+        RoomSearchQuery query = new RoomSearchQuery();
+        query.setPageNumber(0);
+        query.setPageSize(6);
+        query.setSortBy("createdAt");
+        query.setSortDirection(SortDirection.DESC);
+        query.setFilterList(List.of(
+                new RoomSearchFilter(RoomSearchField.PRICE, MatchType.EXACT,""),
+                new RoomSearchFilter(RoomSearchField.IS_AVAILABLE, MatchType.EXACT,""),
+                new RoomSearchFilter(RoomSearchField.STATUS, MatchType.EXACT,""),
+                new RoomSearchFilter(RoomSearchField.ROOM_TYPE,MatchType.EXACT,""),
+                new RoomSearchFilter(RoomSearchField.MAX_CAPACITY,MatchType.EXACT,"")
+        ));
+        return query;
+    }
 
     @GetMapping
-    public String getAllRooms(Model model,
-                              @RequestParam(defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
-                              @RequestParam(defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
-                              @RequestParam(defaultValue = AppConstants.SORT_BY_Id) String sortBy,
-                              @RequestParam(defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
-        RoomResponse roomResponse = roomService.findAllRoomsWithPagination(pageNumber,pageSize,sortBy,sortOrder);
-        List<RoomDTO> roomDTOList = roomResponse.getRooms();
-        model.addAttribute("rooms",roomDTOList);
-        model.addAttribute("response",roomResponse);
-        model.addAttribute("sortBy",sortBy);
-        model.addAttribute("sortOrder",sortOrder);
+    public String getAllRooms(Model model, @ModelAttribute("query") RoomSearchQuery query) {
+        Page<Room> page = roomSearchService.searchByQuery(query);
+        model.addAttribute("rooms",page.getContent());
+        model.addAttribute("totalPages",page.getTotalPages());
+        model.addAttribute("totalElements",page.getTotalElements());
         return "rooms/listing";
     }
+
+    @PostMapping
+    public String searchRooms(Model model, @ModelAttribute("query") RoomSearchQuery query) {
+        Page<Room> page = roomSearchService.searchByQuery(query);
+        model.addAttribute("rooms",page.getContent());
+        model.addAttribute("totalPages",page.getTotalPages());
+        model.addAttribute("totalElements",page.getTotalElements());
+        return "rooms/listing";
+    }
+
     @GetMapping("/new")
     @ActiveRole({"ADMIN", "EDITOR"})
     public String showCreateForm(Model model) {
