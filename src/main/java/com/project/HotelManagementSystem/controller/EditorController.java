@@ -9,7 +9,9 @@ import com.project.HotelManagementSystem.dto.searchFilter.editor.EditorSearchQue
 import com.project.HotelManagementSystem.entity.Editor;
 import com.project.HotelManagementSystem.service.EditorService;
 import com.project.HotelManagementSystem.service.UserService;
+import com.project.HotelManagementSystem.service.excelExport.EditorExportProcess;
 import com.project.HotelManagementSystem.service.search.EditorSearchService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,8 @@ public class EditorController {
     private UserService userService;
     @Autowired
     private EditorSearchService editorSearchService;
+    @Autowired
+    private EditorExportProcess editorExportProcess;
 
     @ModelAttribute("query")
     public EditorSearchQuery initQuery() {
@@ -97,7 +101,7 @@ public class EditorController {
     @PostMapping("/update/{id}")
     public String updateEditor(@PathVariable Long id, @Valid @ModelAttribute("editor") EditorUpdateDTO editorUpdateDTO, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("editor", editorService.findEditorById(id));
+//            model.addAttribute("editor", editorService.findEditorById(id));
             model.addAttribute("users", userService.findAllUsers());
             return "editors/edit";
         }
@@ -111,6 +115,12 @@ public class EditorController {
     @GetMapping("/delete/{id}")
     public String deleteEditor(@PathVariable Long id) {
         editorService.deleteEditor(id);
+        return "redirect:/editors";
+    }
+
+    @PostMapping("/export/excel")
+    public String exportExcel(Model model,@ModelAttribute("query") EditorSearchQuery query) {
+        editorExportProcess.generateExportFile(query);
         return "redirect:/editors";
     }
 }

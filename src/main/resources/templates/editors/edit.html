@@ -101,7 +101,7 @@
                                 <option th:each="user : ${users}"
                                         th:value="${user.id}"
                                         th:text="${user.name + ' (' + user.email + ')'}"
-                                        th:selected="${editor.user != null && editor.user.id == user.id}"></option>
+                                        th:selected="${editor.user != null && editor.user == user.id}"></option>
                             </select>
                         </div>
                     </div>

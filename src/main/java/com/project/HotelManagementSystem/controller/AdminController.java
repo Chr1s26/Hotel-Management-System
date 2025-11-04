@@ -10,6 +10,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.admin.AdminSearchQuery
 import com.project.HotelManagementSystem.entity.Admin;
 import com.project.HotelManagementSystem.service.AdminService;
 import com.project.HotelManagementSystem.service.UserService;
+import com.project.HotelManagementSystem.service.excelExport.AdminExportProcess;
 import com.project.HotelManagementSystem.service.search.AdminSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,8 @@ public class AdminController {
     private UserService userService;
     @Autowired
     private AdminSearchService adminSearchService;
+    @Autowired
+    private AdminExportProcess adminExportProcess;
 
     @ModelAttribute("query")
     public AdminSearchQuery initQuery() {
@@ -110,6 +113,12 @@ public class AdminController {
     @GetMapping("/delete/{id}")
     public String deleteAdmin(@PathVariable Long id) {
         adminService.deleteAdmin(id);
+        return "redirect:/admins";
+    }
+
+    @PostMapping("/export/excel")
+    public String exportExcel(Model model, @ModelAttribute("query") AdminSearchQuery query) {
+        adminExportProcess.generateExportFile(query);
         return "redirect:/admins";
     }
 }

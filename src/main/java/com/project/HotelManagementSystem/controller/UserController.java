@@ -7,6 +7,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.user.*;
 import com.project.HotelManagementSystem.dto.user.*;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.service.UserService;
+import com.project.HotelManagementSystem.service.excelExport.UserExportProcess;
 import com.project.HotelManagementSystem.service.search.UserSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class UserController {
 
     private final UserService userService;
     private final UserSearchService userSearchService;
+    private final UserExportProcess userExportProcess;
 
     @ModelAttribute("query")
     public UserSearchQuery initQuery() {
@@ -93,6 +95,12 @@ public class UserController {
     @ActiveRole("ADMIN")
     public String deleteUser(@PathVariable Long id) {
         this.userService.deleteUser(id);
+        return "redirect:/users";
+    }
+
+    @PostMapping("/export/excel")
+    public String exportExcel(Model model, @ModelAttribute("query") UserSearchQuery query) {
+        userExportProcess.generateExportFile(query);
         return "redirect:/users";
     }
 }

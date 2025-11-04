@@ -11,6 +11,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.region.RegionSearchQue
 import com.project.HotelManagementSystem.entity.Region;
 import com.project.HotelManagementSystem.service.CountryService;
 import com.project.HotelManagementSystem.service.RegionService;
+import com.project.HotelManagementSystem.service.excelExport.RegionExportProceess;
 import com.project.HotelManagementSystem.service.search.RegionSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.List;
 
 @Controller
@@ -35,6 +37,7 @@ public class RegionController {
     private final RegionService regionService;
     private final CountryService countryService;
     private final RegionSearchService regionSearchService;
+    private final RegionExportProceess regionExportProceess;
 
     @ModelAttribute("query")
     public RegionSearchQuery initQuery(){
@@ -110,6 +113,12 @@ public class RegionController {
     @ActiveRole({"ADMIN", "EDITOR"})
     public String deleteRegion(@PathVariable Long id){
         regionService.deleteRegion(id);
+        return "redirect:/regions";
+    }
+
+    @PostMapping("/export/excel")
+    public String exportExcelToS3(Model model, @ModelAttribute("query") RegionSearchQuery query) throws IOException {
+        regionExportProceess.generateExportFile(query);
         return "redirect:/regions";
     }
 

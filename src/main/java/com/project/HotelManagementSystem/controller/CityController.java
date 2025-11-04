@@ -115,15 +115,22 @@ public class CityController {
         return "redirect:/cities";
     }
 
+//    @PostMapping("/export/excel")
+//    public ResponseEntity<byte[]> exportExcel(Model model, @ModelAttribute("query") CitySearchQuery query) throws IOException {
+//        ByteArrayInputStream in = cityExportProcess.export(query);
+//        byte[] bytes = in.readAllBytes();
+//        return ResponseEntity.ok()
+//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=cities.xlsx")
+//                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+//                .body(bytes);
+//    }
+
     @PostMapping("/export/excel")
-    public ResponseEntity<byte[]> exportExcel(Model model, @ModelAttribute("query") CitySearchQuery query) throws IOException {
-        ByteArrayInputStream in = cityExportProcess.export(query);
-        byte[] bytes = in.readAllBytes();
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=cities.xlsx")
-                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-                .body(bytes);
+    public String exportExcelToS3(Model model, @ModelAttribute("query") CitySearchQuery query) throws IOException {
+        cityExportProcess.generateExportFile(query);
+        return "redirect:/cities";
     }
+
 
     @PostMapping("/import/excel")
     public String importCitiesFromExcel(@RequestParam("file") MultipartFile file,

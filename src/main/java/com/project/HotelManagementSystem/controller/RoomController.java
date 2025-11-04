@@ -16,6 +16,7 @@ import com.project.HotelManagementSystem.service.AmenitiesService;
 import com.project.HotelManagementSystem.service.HotelService;
 import com.project.HotelManagementSystem.service.PromotionService;
 import com.project.HotelManagementSystem.service.RoomService;
+import com.project.HotelManagementSystem.service.excelExport.RoomExportProcess;
 import com.project.HotelManagementSystem.service.search.RoomSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class RoomController {
     private final AmenitiesService amenitiesService;
     private final PromotionService promotionService;
     private final RoomSearchService roomSearchService;
+    private final RoomExportProcess roomExportProcess;
 
     @ModelAttribute("query")
     public RoomSearchQuery initQuery() {
@@ -121,6 +123,12 @@ public class RoomController {
     @ActiveRole({"ADMIN", "EDITOR"})
     public String deleteRoom(@PathVariable Long id) {
         roomService.deleteRoom(id);
+        return "redirect:/rooms";
+    }
+
+    @PostMapping("/export/excel")
+    public String exportExcel(Model model, @ModelAttribute("query") RoomSearchQuery query) {
+        roomExportProcess.generateExportFile(query);
         return "redirect:/rooms";
     }
 }
