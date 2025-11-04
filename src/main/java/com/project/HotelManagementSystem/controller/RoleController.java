@@ -17,6 +17,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.role.RoleSearchFilter;
 import com.project.HotelManagementSystem.dto.searchFilter.role.RoleSearchQuery;
 import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.service.RoleService;
+import com.project.HotelManagementSystem.service.excelExport.RoleExportProcess;
 import com.project.HotelManagementSystem.service.search.RoleSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class RoleController {
 
     private final RoleService roleService;
     private final RoleSearchService roleSearchService;
+    private final RoleExportProcess roleExportProcess;
 
     @ModelAttribute("query")
     public RoleSearchQuery initQuery() {
@@ -104,6 +106,12 @@ public class RoleController {
     @ActiveRole({"ADMIN", "EDITOR"})
     public String deleteRole(@PathVariable Long id) {
         roleService.deleteRole(id);
+        return "redirect:/roles";
+    }
+
+    @PostMapping("/export/excel")
+    public String exportExcelToS3(Model model, @ModelAttribute("query") RoleSearchQuery query) {
+        roleExportProcess.generateExportFile(query);
         return "redirect:/roles";
     }
 }

@@ -11,6 +11,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.address.AddressSearchQ
 import com.project.HotelManagementSystem.entity.Address;
 import com.project.HotelManagementSystem.service.AddressService;
 import com.project.HotelManagementSystem.service.CityService;
+import com.project.HotelManagementSystem.service.excelExport.AddressExportProcess;
 import com.project.HotelManagementSystem.service.search.AddressSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class AddressController {
     private final AddressService addressService;
     private final CityService cityService;
     private final AddressSearchService addressSearchService;
+    private final AddressExportProcess addressExportProcess;
 
     @ModelAttribute("query")
     public AddressSearchQuery initQuery() {
@@ -108,6 +110,12 @@ public class AddressController {
     @ActiveRole({"ADMIN", "EDITOR"})
     public String deleteAddress(@PathVariable Long id) {
         addressService.deleteAddress(id);
+        return "redirect:/addresses";
+    }
+
+    @PostMapping("/export/excel")
+    public String exportExcelToS3(Model model, @ModelAttribute("query") AddressSearchQuery query) {
+        addressExportProcess.generateExportFile(query);
         return "redirect:/addresses";
     }
 }

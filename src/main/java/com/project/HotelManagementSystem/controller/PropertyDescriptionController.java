@@ -13,6 +13,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.propertyDescription.Pr
 import com.project.HotelManagementSystem.dto.searchFilter.propertyDescription.PropertyDescriptionSearchQuery;
 import com.project.HotelManagementSystem.entity.PropertyDescription;
 import com.project.HotelManagementSystem.service.PropertyDescriptionService;
+import com.project.HotelManagementSystem.service.excelExport.PropertyDescriptionExportProcess;
 import com.project.HotelManagementSystem.service.search.PropertyDescriptionSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class PropertyDescriptionController {
 
     private final PropertyDescriptionService propertyDescriptionService;
     private final PropertyDescriptionSearchService propertyDescriptionSearchService;
+    private final PropertyDescriptionExportProcess propertyDescriptionExportProcess;
 
 
     @ModelAttribute("query")
@@ -101,6 +103,12 @@ public class PropertyDescriptionController {
     @ActiveRole({"ADMIN", "EDITOR"})
     public String deletePropertyDescription(@PathVariable Long id) {
         this.propertyDescriptionService.deletePropertyDescription(id);
+        return "redirect:/propertyDescriptions";
+    }
+
+    @PostMapping("/export/excel")
+    public String exportExcelToS3(Model model, PropertyDescriptionSearchQuery query) {
+        propertyDescriptionExportProcess.generateExportFile(query);
         return "redirect:/propertyDescriptions";
     }
 }

@@ -10,6 +10,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.hotel.HotelSearchFilte
 import com.project.HotelManagementSystem.dto.searchFilter.hotel.HotelSearchQuery;
 import com.project.HotelManagementSystem.entity.Hotel;
 import com.project.HotelManagementSystem.service.*;
+import com.project.HotelManagementSystem.service.excelExport.HotelExportProcess;
 import com.project.HotelManagementSystem.service.search.HotelSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class HotelController {
     private final PromotionService promotionService;
     private final PolicyService policyService;
     private final HotelSearchService hotelSearchService;
+    private final HotelExportProcess hotelExportProcess;
 
     @ModelAttribute("query")
     public HotelSearchQuery initQuery() {
@@ -121,6 +123,12 @@ public class HotelController {
     @ActiveRole({"ADMIN", "EDITOR"})
     public String deleteHotel(@PathVariable Long id) {
         this.hotelService.deleteHotel(id);
+        return "redirect:/hotels";
+    }
+
+    @PostMapping("/export/excel")
+    public String exportExcelToS3(Model model, @ModelAttribute("query") HotelSearchQuery query) {
+        hotelExportProcess.generateExportFile(query);
         return "redirect:/hotels";
     }
 }

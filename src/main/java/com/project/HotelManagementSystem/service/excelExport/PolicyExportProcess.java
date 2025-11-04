@@ -1,52 +1,54 @@
 package com.project.HotelManagementSystem.service.excelExport;
 
-import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchQuery;
-import com.project.HotelManagementSystem.entity.Country;
+import com.project.HotelManagementSystem.dto.searchFilter.policy.PolicySearchQuery;
+import com.project.HotelManagementSystem.entity.ExportListing;
+import com.project.HotelManagementSystem.entity.Policy;
 import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.service.ExportListingService;
 import com.project.HotelManagementSystem.service.FileService;
-import com.project.HotelManagementSystem.service.search.CountrySearchService;
-import lombok.RequiredArgsConstructor;
+import com.project.HotelManagementSystem.service.search.PolicySearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
 import java.util.List;
 
 @Service
-public class CountryExportProcess extends CommonExportProcess<Country, CountrySearchQuery>{
-    @Autowired
-    private CountrySearchService countrySearchService;
+public class PolicyExportProcess extends CommonExportProcess<Policy, PolicySearchQuery> {
 
-    public CountryExportProcess(ExportListingService exportListingService, FileService fileService) {
+    @Autowired
+    private PolicySearchService policySearchService;
+
+    public PolicyExportProcess(ExportListingService exportListingService, FileService fileService) {
         super(exportListingService, fileService);
     }
 
     @Override
     public String getRecordType() {
-        return Country.class.getSimpleName();
+        return Policy.class.getSimpleName();
     }
 
     @Override
     public FileType getDownloadFileType() {
-        return FileType.Country_Listing;
+        return FileType.Policy_Listing;
     }
 
     @Override
     public String getSheetName() {
-        return "Countries";
+        return "Policies";
     }
 
     @Override
-    public List<Country> fetchData(CountrySearchQuery query) {
-        return countrySearchService.searchByQueryAll(query);
+    public List<Policy> fetchData(PolicySearchQuery query) {
+        return policySearchService.searchByQueryAll(query);
     }
 
     @Override
-    public List<ColumnSpec<Country>> columns() {
+    public List<ColumnSpec<Policy>> columns() {
         return List.of(
-                new ColumnSpec<>("ID", c -> String.valueOf(c.getId()), null),
-                new ColumnSpec<>("Name", Country::getName, null),
+                new ColumnSpec<>("ID", c -> String.valueOf(c.getId()),null),
+                new ColumnSpec<>("Policy Title", Policy::getTitle,null),
+                new ColumnSpec<>("Description", Policy::getDescription,null),
+                new ColumnSpec<>("Applicable To", Policy::getApplicableTo,null),
                 new ColumnSpec<>("Status", c -> c.getStatus() != null ? c.getStatus().name() : "", null),
                 new ColumnSpec<>("Created at", c ->
                         c.getCreatedAt() != null ? c.getCreatedAt().toString() : "", null),

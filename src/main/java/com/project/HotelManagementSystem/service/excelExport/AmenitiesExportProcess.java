@@ -1,52 +1,52 @@
 package com.project.HotelManagementSystem.service.excelExport;
 
-import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchQuery;
-import com.project.HotelManagementSystem.entity.Country;
+import com.project.HotelManagementSystem.dto.searchFilter.amenities.AmenitiesSearchQuery;
+import com.project.HotelManagementSystem.entity.Amenities;
 import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.service.ExportListingService;
 import com.project.HotelManagementSystem.service.FileService;
-import com.project.HotelManagementSystem.service.search.CountrySearchService;
-import lombok.RequiredArgsConstructor;
+import com.project.HotelManagementSystem.service.search.AmenitiesSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
 import java.util.List;
 
 @Service
-public class CountryExportProcess extends CommonExportProcess<Country, CountrySearchQuery>{
-    @Autowired
-    private CountrySearchService countrySearchService;
+public class AmenitiesExportProcess extends CommonExportProcess<Amenities, AmenitiesSearchQuery> {
 
-    public CountryExportProcess(ExportListingService exportListingService, FileService fileService) {
+    @Autowired
+    private AmenitiesSearchService amenitiesSearchService;
+
+    public AmenitiesExportProcess(ExportListingService exportListingService, FileService fileService) {
         super(exportListingService, fileService);
     }
 
     @Override
     public String getRecordType() {
-        return Country.class.getSimpleName();
+        return Amenities.class.getSimpleName();
     }
 
     @Override
     public FileType getDownloadFileType() {
-        return FileType.Country_Listing;
+        return FileType.Amenities_Listing;
     }
 
     @Override
     public String getSheetName() {
-        return "Countries";
+        return "Amenities";
     }
 
     @Override
-    public List<Country> fetchData(CountrySearchQuery query) {
-        return countrySearchService.searchByQueryAll(query);
+    public List<Amenities> fetchData(AmenitiesSearchQuery query) {
+        return amenitiesSearchService.searchByQueryAll(query);
     }
 
     @Override
-    public List<ColumnSpec<Country>> columns() {
+    public List<ColumnSpec<Amenities>> columns() {
         return List.of(
-                new ColumnSpec<>("ID", c -> String.valueOf(c.getId()), null),
-                new ColumnSpec<>("Name", Country::getName, null),
+                new ColumnSpec<>("ID", c -> String.valueOf(c.getId()),null),
+                new ColumnSpec<>("Amenities Name", Amenities::getName,null),
+                new ColumnSpec<>("Description", Amenities::getDescription,null),
                 new ColumnSpec<>("Status", c -> c.getStatus() != null ? c.getStatus().name() : "", null),
                 new ColumnSpec<>("Created at", c ->
                         c.getCreatedAt() != null ? c.getCreatedAt().toString() : "", null),

@@ -10,6 +10,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.policy.PolicySearchFie
 import com.project.HotelManagementSystem.dto.searchFilter.policy.PolicySearchFilter;
 import com.project.HotelManagementSystem.entity.Policy;
 import com.project.HotelManagementSystem.service.PolicyService;
+import com.project.HotelManagementSystem.service.excelExport.PolicyExportProcess;
 import com.project.HotelManagementSystem.service.search.PolicySearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class PolicyController {
 
     private final PolicyService policyService;
     private final PolicySearchService policySearchService;
+    private final PolicyExportProcess policyExportProcess;
 
     @ModelAttribute("query")
     public PolicySearchQuery initQuery() {
@@ -98,6 +100,12 @@ public class PolicyController {
     @ActiveRole({"ADMIN", "EDITOR"})
     public String deletePolicy(@PathVariable Long id) {
         policyService.deletePolicy(id);
+        return "redirect:/policies";
+    }
+
+    @PostMapping("/export/excel")
+    public String exportExcelToS3(Model model, @ModelAttribute("query") PolicySearchQuery query) {
+        policyExportProcess.generateExportFile(query);
         return "redirect:/policies";
     }
 }

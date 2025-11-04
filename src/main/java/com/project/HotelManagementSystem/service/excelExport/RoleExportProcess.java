@@ -1,52 +1,51 @@
 package com.project.HotelManagementSystem.service.excelExport;
 
-import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchQuery;
-import com.project.HotelManagementSystem.entity.Country;
+import com.project.HotelManagementSystem.dto.searchFilter.role.RoleSearchQuery;
+import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.service.ExportListingService;
 import com.project.HotelManagementSystem.service.FileService;
-import com.project.HotelManagementSystem.service.search.CountrySearchService;
-import lombok.RequiredArgsConstructor;
+import com.project.HotelManagementSystem.service.search.RoleSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
 import java.util.List;
 
 @Service
-public class CountryExportProcess extends CommonExportProcess<Country, CountrySearchQuery>{
-    @Autowired
-    private CountrySearchService countrySearchService;
+public class RoleExportProcess extends CommonExportProcess<Role, RoleSearchQuery> {
 
-    public CountryExportProcess(ExportListingService exportListingService, FileService fileService) {
+    @Autowired
+    private RoleSearchService roleSearchService;
+
+    public RoleExportProcess(ExportListingService exportListingService, FileService fileService) {
         super(exportListingService, fileService);
     }
 
     @Override
     public String getRecordType() {
-        return Country.class.getSimpleName();
+        return Role.class.getSimpleName();
     }
 
     @Override
     public FileType getDownloadFileType() {
-        return FileType.Country_Listing;
+        return FileType.Role_Listing;
     }
 
     @Override
     public String getSheetName() {
-        return "Countries";
+        return "Roles";
     }
 
     @Override
-    public List<Country> fetchData(CountrySearchQuery query) {
-        return countrySearchService.searchByQueryAll(query);
+    public List<Role> fetchData(RoleSearchQuery query) {
+        return roleSearchService.searchByQueryAll(query);
     }
 
     @Override
-    public List<ColumnSpec<Country>> columns() {
+    public List<ColumnSpec<Role>> columns() {
         return List.of(
-                new ColumnSpec<>("ID", c -> String.valueOf(c.getId()), null),
-                new ColumnSpec<>("Name", Country::getName, null),
+                new ColumnSpec<>("ID", c -> String.valueOf(c.getId()),null),
+                new ColumnSpec<>("Role Name", Role::getRoleName,null),
                 new ColumnSpec<>("Status", c -> c.getStatus() != null ? c.getStatus().name() : "", null),
                 new ColumnSpec<>("Created at", c ->
                         c.getCreatedAt() != null ? c.getCreatedAt().toString() : "", null),

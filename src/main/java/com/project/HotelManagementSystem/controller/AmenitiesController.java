@@ -13,6 +13,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.amenities.AmenitiesSea
 import com.project.HotelManagementSystem.dto.searchFilter.amenities.AmenitiesSearchQuery;
 import com.project.HotelManagementSystem.entity.Amenities;
 import com.project.HotelManagementSystem.service.AmenitiesService;
+import com.project.HotelManagementSystem.service.excelExport.AmenitiesExportProcess;
 import com.project.HotelManagementSystem.service.search.AmenitiesSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class AmenitiesController {
 
     private final AmenitiesService amenitiesService;
     private final AmenitiesSearchService amenitiesSearchService;
+    private final AmenitiesExportProcess amenitiesExportProcess;
 
     @ModelAttribute("query")
     public AmenitiesSearchQuery initQuery() {
@@ -100,6 +102,12 @@ public class AmenitiesController {
     @ActiveRole({"ADMIN", "EDITOR"})
     public String deleteAmenities(@PathVariable("id") Long id) {
         this.amenitiesService.deleteAmenities(id);
+        return "redirect:/amenities";
+    }
+
+    @PostMapping("/export/excel")
+    public String exportExcelToS3(Model model, @ModelAttribute("query") AmenitiesSearchQuery query) {
+        amenitiesExportProcess.generateExportFile(query);
         return "redirect:/amenities";
     }
 

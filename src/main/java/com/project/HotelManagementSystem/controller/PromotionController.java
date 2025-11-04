@@ -16,6 +16,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.user.UserSearchFilter;
 import com.project.HotelManagementSystem.dto.searchFilter.user.UserSearchQuery;
 import com.project.HotelManagementSystem.entity.Promotion;
 import com.project.HotelManagementSystem.service.PromotionService;
+import com.project.HotelManagementSystem.service.excelExport.PromotionExportProcess;
 import com.project.HotelManagementSystem.service.search.PromotionSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class PromotionController {
 
     private final PromotionService promotionService;
     private final PromotionSearchService promotionSearchService;
+    private final PromotionExportProcess promotionExportProcess;
 
     @ModelAttribute("query")
     public PromotionSearchQuery initQuery() {
@@ -108,6 +110,12 @@ public class PromotionController {
     @ActiveRole({"ADMIN", "EDITOR"})
     public String deletePromotion(@PathVariable Long id) {
         this.promotionService.deletePromotion(id);
+        return "redirect:/promotions";
+    }
+
+    @PostMapping("/export/excel")
+    public String exportExcelToS3(Model model,@ModelAttribute("query")PromotionSearchQuery query) {
+        promotionExportProcess.generateExportFile(query);
         return "redirect:/promotions";
     }
 }

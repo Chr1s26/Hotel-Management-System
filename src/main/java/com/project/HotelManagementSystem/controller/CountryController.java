@@ -19,7 +19,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -103,7 +102,7 @@ public class CountryController {
     }
 
     @PostMapping("/export/excel")
-    public String exportExcelToS3(Model model, @ModelAttribute("query") CountrySearchQuery query) throws IOException {
+    public String exportExcelToS3(Model model, @ModelAttribute("query") CountrySearchQuery query)  {
         countryExportProcess.generateExportFile(query);
         return "redirect:/countries";
     }

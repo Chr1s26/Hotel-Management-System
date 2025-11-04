@@ -75,6 +75,21 @@
         </div>
     </form>
 
+    <form th:action="@{/addresses/export/excel}" th:object="${query}" method="post" style="all: unset; display: inline;">
+        <input type="hidden" th:each="f, iStat : ${query.filterList}"
+               th:name="|filterList[${iStat.index}].field|" th:value="${f.field}">
+        <input type="hidden" th:each="f, iStat : ${query.filterList}"
+               th:name="|filterList[${iStat.index}].matchType|" th:value="${f.matchType}">
+        <input type="hidden" th:each="f, iStat : ${query.filterList}"
+               th:name="|filterList[${iStat.index}].value|" th:value="${f.value}">
+        <input type="hidden" th:field="*{sortBy}">
+        <input type="hidden" th:field="*{sortDirection}">
+
+        <button type="submit" class="btn btn-success mb-3">
+            <i class="bi bi-file-earmark-excel"></i> Export to Excel
+        </button>
+    </form>
+
     <div class="d-flex justify-content-between align-items-center my-3">
 
         <div>
