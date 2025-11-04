@@ -28,7 +28,7 @@ public class OtpService {
     public void isOtpValid(String email, String otp) {
         Optional<User> userOptional = userRepository.findByEmail(email);
         if(userOptional.isEmpty()){
-            throw new ResourceNotFoundException("user",userOptional,"email","hotels","User with the email address does not exist");
+            throw new ResourceNotFoundException("user",userOptional,"email","login","User with the email address does not exist");
         }
         User user = userOptional.get();
         Long otpGeneratedAt = user.getOtpGeneratedAt();

@@ -23,7 +23,7 @@ import java.util.Collections;
 @Service
 public class UserDetailsServiceImpl implements AbstractService{
     @Autowired
-    private final PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
     @Autowired
     private UserRepository userRepository;
     @Autowired
