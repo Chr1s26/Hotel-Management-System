@@ -114,6 +114,7 @@ public class HotelController {
             model.addAttribute("propertyDescriptions", this.propertyDescriptionService.findAllPropertyDescriptions());
             model.addAttribute("promotions", this.promotionService.findAllPromotions());
             model.addAttribute("policies", this.policyService.findAllPolicies());
+            return "hotels/edit";
         }
         this.hotelService.updateHotel(id, hotelUpdateDTO);
         return "redirect:/hotels";

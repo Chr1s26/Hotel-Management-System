@@ -54,7 +54,7 @@
         </div>
         <div class="mb-3">
             <label class="form-label">Amenities</label>
-            <select class="form-select" id="amenities-select" name="amenityIds" multiple>
+            <select class="form-select" id="amenities-select" name="amenityIds" th:field="*{amenityIds}" multiple>
                 <option value="" disabled selected>-- Select Amenity --</option>
                 <option th:each="am : ${amenities}"
                         th:value="${am.id}"
@@ -62,10 +62,11 @@
                         th:selected="${room.amenityIds.contains(am.id)}">
                 </option>
             </select>
+            <div class="text-danger" th:if="${#fields.hasErrors('amenityIds')}" th:errors="*{amenityIds}"></div>
         </div>
         <div class="mb-3">
             <label class="form-label">Promotions</label>
-            <select class="form-select" id="promotions-select" name="promotionIds" multiple>
+            <select class="form-select" id="promotions-select" name="promotionIds" th:field="*{promotionIds}" multiple>
                 <option value="" disabled selected>-- Select Promotion --</option>
                 <option th:each="promo : ${promotions}"
                         th:value="${promo.id}"
@@ -73,6 +74,7 @@
                         th:selected="${room.promotionIds.contains(promo.id)}">
                 </option>
             </select>
+<!--            <div class="text-danger" th:if="${#fields.hasErrors('promotionIds')}" th:errors="*{promotionIds}"></div>-->
         </div>
         <div class="mb-3">
             <label class="form-label">Media Type</label>

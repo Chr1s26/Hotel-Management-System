@@ -69,14 +69,13 @@ public class EditorService {
         return dto;
     }
 
-    @Transactional
     public EditorUpdateDTO updateEditor(Long id, EditorUpdateDTO editorUpdateDTO) {
         Optional<Editor> editorOp = editorRepository.findByNameIgnoreCaseAndIdNot(editorUpdateDTO.getName(),id);
         if (editorOp.isPresent()) {
             throw new DuplicateException("editor",editorUpdateDTO,"name","editors/edit","An editor with the same name already exists");
         }
         validateIdsUniqueOrThrow(id, editorUpdateDTO.getPassportNumber(), editorUpdateDTO.getNationalIdNumber());
-        Long userId = editorUpdateDTO.getUser();
+//        Long userId = editorUpdateDTO.getUser();
         Editor savedEditor = editorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("editor",editorUpdateDTO,"id","editors/edit","An editor with the id cannot be found"));
         Editor editor = modelMapper.map(editorUpdateDTO, Editor.class);
         savedEditor.setName(editor.getName());

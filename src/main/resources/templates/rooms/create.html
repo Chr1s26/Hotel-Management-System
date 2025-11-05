@@ -61,8 +61,9 @@
                         th:text="${am.name}">
                 </option>
             </select>
-            <!--        <div class="text-danger" th:if="${#fields.hasErrors('amenityIds')}" th:errors="*{amenityIds}"></div>-->
+                    <div class="text-danger" th:if="${#fields.hasErrors('amenityIds')}" th:errors="*{amenityIds}"></div>
         </div>
+
         <div class="mb-3">
             <label class="form-label">Promotions</label>
             <select class="form-select" id="promotions-select" th:field="*{promotionIds}" multiple>
@@ -72,8 +73,9 @@
                         th:text="${promo.code}">
                 </option>
             </select>
-            <!--        <div class="text-danger" th:if="${#fields.hasErrors('promotionIds')}" th:errors="*{promotionIds}"></div>-->
+<!--                    <div class="text-danger" th:if="${#fields.hasErrors('promotionIds')}" th:errors="*{promotionIds}"></div>-->
         </div>
+
         <div class="mb-3">
             <label class="form-label">Media Type</label>
             <select id="mediaType-select" th:field="*{roomMediaType}" class="form-select">
@@ -81,7 +83,7 @@
                         th:value="${h}"
                         th:text="${h.name()}">Media Type</option>
             </select>
-            <div class="text-danger" th:if="${#fields.hasErrors('roomMediaType')}" th:errors="*{roomMediaType}"></div>
+<!--            <div class="text-danger" th:if="${#fields.hasErrors('roomMediaType')}" th:errors="*{roomMediaType}"></div>-->
         </div>
         <div class="mb-3">
             <label class="form-label">File Upload</label>

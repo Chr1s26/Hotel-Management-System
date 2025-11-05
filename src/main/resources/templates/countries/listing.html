@@ -85,17 +85,12 @@
 
     <table class="table table-bordered">
         <thead>
-        <tr><th>ID</th><th>Name</th><th>ACTIONS</th><th>STATUS</th><th>CREATED AT</th><th>UPDATED AT</th><th>CREATED BY</th><th>UPDATED BY</th></tr>
+        <tr><th>ID</th><th>Name</th><th>STATUS</th><th>CREATED AT</th><th>UPDATED AT</th><th>CREATED BY</th><th>UPDATED BY</th><th>ACTIONS</th></tr>
         </thead>
         <tbody>
         <tr th:each="coun : ${countries}">
             <td th:text="${coun.id}"></td>
             <td th:text="${coun.name}"></td>
-            <td>
-                <a class="btn btn-sm btn-warning" th:href="@{'/countries/edit/' + ${coun.id}}">Edit</a>
-                <a class="btn btn-sm btn-danger" th:href="@{'/countries/delete/' + ${coun.id}}">Delete</a>
-            </td>
-
             <td th:text="${coun.status}">ACTIVE</td>
 
             <td th:text="${coun.createdAt != null ? #temporals.format(coun.createdAt, 'yyyy-MM-dd HH:mm') : '—'}">—</td>
@@ -103,6 +98,10 @@
 
             <td th:text="${coun.createdBy != null ? coun.createdBy.name : '—'}">—</td>
             <td th:text="${coun.updatedBy != null ? coun.updatedBy.name : '—'}">—</td>
+            <td>
+                <a class="btn btn-sm btn-warning" th:href="@{'/countries/edit/' + ${coun.id}}">Edit</a>
+                <a class="btn btn-sm btn-danger" th:href="@{'/countries/delete/' + ${coun.id}}">Delete</a>
+            </td>
         </tr>
         </tbody>
     </table>

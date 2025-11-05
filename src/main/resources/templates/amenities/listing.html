@@ -90,6 +90,11 @@
             <th>ID</th>
             <th>Name</th>
             <th>Description</th>
+            <th>STATUS</th>
+            <th>CREATED AT</th>
+            <th>UPDATED AT</th>
+            <th>CREATED BY</th>
+            <th>UPDATED BY</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -98,6 +103,14 @@
             <td th:text="${am.id}">1</td>
             <td th:text="${am.name}">Name</td>
             <td th:text="${am.description}">Description</td>
+            <td th:text="${am.status}">ACTIVE</td>
+
+            <td th:text="${am.createdAt != null ? #temporals.format(am.createdAt, 'yyyy-MM-dd HH:mm') : '—'}">—</td>
+            <td th:text="${am.updatedAt != null ? #temporals.format(am.updatedAt, 'yyyy-MM-dd HH:mm') : '—'}">—</td>
+
+            <td th:text="${am.createdBy != null ? am.createdBy.name : '—'}">—</td>
+            <td th:text="${am.updatedBy != null ? am.updatedBy.name : '—'}">—</td>
+
             <td>
                 <a class="btn btn-sm btn-warning" th:href="@{'/amenities/edit/' + ${am.id}}">Edit</a>
                 <a class="btn btn-sm btn-danger" th:href="@{'/amenities/delete/' + ${am.id}}">Delete</a>

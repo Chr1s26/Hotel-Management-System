@@ -85,7 +85,19 @@
 
     <table class="table table-bordered">
         <thead>
-        <tr><th>ID</th><th>Description</th><th>Opening Date</th><th>Renovation Date</th><th>Number Of Rooms</th><th>ACTIONS</th></tr>
+        <tr>
+            <th>ID</th>
+            <th>Description</th>
+            <th>Opening Date</th>
+            <th>Renovation Date</th>
+            <th>Number Of Rooms</th>
+            <th>STATUS</th>
+            <th>CREATED AT</th>
+            <th>UPDATED AT</th>
+            <th>CREATED BY</th>
+            <th>UPDATED BY</th>
+            <th>ACTIONS</th>
+        </tr>
         </thead>
         <tbody>
         <tr th:each="pro : ${propertyDescriptions}">
@@ -94,6 +106,13 @@
             <td th:text="${pro.openingDate}"></td>
             <td th:text="${pro.renovationDate}"></td>
             <td th:text="${pro.numberOfRooms}"></td>
+            <td th:text="${pro.status}">ACTIVE</td>
+
+            <td th:text="${pro.createdAt != null ? #temporals.format(pro.createdAt, 'yyyy-MM-dd HH:mm') : '—'}">—</td>
+            <td th:text="${pro.updatedAt != null ? #temporals.format(pro.updatedAt, 'yyyy-MM-dd HH:mm') : '—'}">—</td>
+
+            <td th:text="${pro.createdBy != null ? pro.createdBy.name : '—'}">—</td>
+            <td th:text="${pro.updatedBy != null ? pro.updatedBy.name : '—'}">—</td>
             <td>
                 <a class="btn btn-sm btn-warning" th:href="@{'/propertyDescriptions/edit/' + ${pro.id}}">Edit</a>
                 <a class="btn btn-sm btn-danger" th:href="@{'/propertyDescriptions/delete/' + ${pro.id}}">Delete</a>
