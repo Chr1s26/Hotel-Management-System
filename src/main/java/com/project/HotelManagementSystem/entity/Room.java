@@ -39,9 +39,8 @@ public class Room extends MasterData {
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "booking_id")
-    private Booking booking;
+    @ManyToMany(mappedBy = "rooms")
+    private Set<Booking> bookings = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "room_amenities",

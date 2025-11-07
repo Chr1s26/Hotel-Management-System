@@ -28,6 +28,6 @@ public class City extends MasterData {
 
     @Override
     public String toString() {
-        return name;
+        return region == null ? name : name + " (" + region.getName() + ")";
     }
 }

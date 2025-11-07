@@ -31,7 +31,7 @@ public class RegionService {
     private final AuthService authService;
 
     public RegionCreateDTO createRegion(RegionCreateDTO regionCreateDTO) {
-        Optional<Region> regionOp = regionRepository.findByNameIgnoreCase(regionCreateDTO.getName());
+        Optional<Region> regionOp = regionRepository.findByNameIgnoreCaseAndCountryId(regionCreateDTO.getName(),regionCreateDTO.getCountry().getId());
         if(regionOp.isPresent()) {
             throw new DuplicateException("region",regionCreateDTO,"name","regions/create","A region with this name already exists");
         }
@@ -44,7 +44,7 @@ public class RegionService {
     }
 
     public RegionUpdateDTO updateRegion(Long id, RegionUpdateDTO regionUpdateDTO) {
-        Optional<Region> regionOp = regionRepository.findByNameIgnoreCaseAndIdNot(regionUpdateDTO.getName(),id);
+        Optional<Region> regionOp = regionRepository.findByNameIgnoreCaseAndCountryIdAndIdNot(regionUpdateDTO.getName(),regionUpdateDTO.getCountry().getId(),id);
         if(regionOp.isPresent() && !regionOp.get().getId().equals(id)) {
             throw new DuplicateException("region",regionUpdateDTO,"name","regions/edit","A region with this name already exists");
         }

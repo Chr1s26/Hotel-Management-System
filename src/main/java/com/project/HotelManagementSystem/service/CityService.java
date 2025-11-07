@@ -39,7 +39,7 @@ public class CityService {
     private final AuthService authService;
 
     public CityCreateDTO createCity(CityCreateDTO cityCreateDTO) {
-        Optional<City> cityOp = this.cityRepository.findByNameIgnoreCase(cityCreateDTO.getName());
+        Optional<City> cityOp = this.cityRepository.findByNameIgnoreCaseAndRegion(cityCreateDTO.getName(),cityCreateDTO.getRegion());
         if(cityOp.isPresent()) {
             throw new DuplicateException("city",cityCreateDTO,"name","cities/create","An city with this name already exists");
         }
@@ -52,7 +52,7 @@ public class CityService {
     }
 
     public CityUpdateDTO updateCity(Long id, CityUpdateDTO cityUpdateDTO) {
-        Optional<City> cityOptional = this.cityRepository.findByNameIgnoreCaseAndIdNot(cityUpdateDTO.getName(),cityUpdateDTO.getId());
+        Optional<City> cityOptional = this.cityRepository.findByNameIgnoreCaseAndRegionAndIdNot(cityUpdateDTO.getName(),cityUpdateDTO.getRegion(),cityUpdateDTO.getId());
         if(cityOptional.isPresent() && !cityOptional.get().getId().equals(id)) {
             throw new DuplicateException("city",cityUpdateDTO,"name","cities/edit","An city with this name already exists");
         }

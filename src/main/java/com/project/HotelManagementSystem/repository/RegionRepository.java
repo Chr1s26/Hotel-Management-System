@@ -1,5 +1,6 @@
 package com.project.HotelManagementSystem.repository;
 
+import com.project.HotelManagementSystem.entity.Country;
 import com.project.HotelManagementSystem.entity.Region;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -16,6 +17,8 @@ import java.util.Optional;
 @Repository
 public interface RegionRepository extends JpaRepository<Region,Long>, JpaSpecificationExecutor<Region> {
     Optional<Region> findByNameIgnoreCase(String name);
+    Optional<Region> findByNameIgnoreCaseAndCountryId(String name, Long countryId);
+    Optional<Region> findByNameIgnoreCaseAndCountryIdAndIdNot(String name, Long countryId, Long id);
     Page<Region> findAll(Specification<Region> spec, Pageable pageable);
     Optional<Region> findByNameIgnoreCaseAndIdNot(String name, Long id);
 }

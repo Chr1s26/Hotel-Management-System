@@ -11,10 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Data
-@Table(name = "regions")
+@Table(name = "regions",uniqueConstraints = @UniqueConstraint(columnNames = {"name", "country_id"}))
 public class Region extends MasterData {
 
-    @Column(nullable = false, unique = true)
     private String name;
 
     @OneToMany(mappedBy="region")
@@ -26,6 +25,6 @@ public class Region extends MasterData {
 
     @Override
     public String toString() {
-        return name;
+        return "Region: " + name+". Country: " + country.getName();
     }
 }

@@ -24,6 +24,10 @@
     <div th:if="${otpMessage}" class="bg-yellow-200 bg-opacity-70 border border-yellow-400 text-yellow-900 px-4 py-3 rounded mb-4">
         <p th:text="${otpMessage}"></p>
     </div>
+    <div th:if="${alertMessage}"
+         class="bg-red-200 bg-opacity-70 border border-red-400 text-red-900 px-4 py-3 rounded mb-4">
+        <p th:text="${alertMessage}"></p>
+    </div>
 
     <!-- Form -->
     <form th:action="@{/authenticateTheUser}" method="POST" class="space-y-5">
@@ -55,4 +59,7 @@
     </p>
 </div>
 </body>
+<script th:if="${alertMessage != null}">
+    alert([[${alertMessage}]]);
+</script>
 </html>

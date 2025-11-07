@@ -11,7 +11,9 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -66,8 +68,12 @@ public class Booking extends MasterData {
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
 
-    @OneToMany(mappedBy = "booking")
-    private List<Room> rooms = new ArrayList<>();
+    @ManyToMany(fetch =  FetchType.LAZY)
+    @JoinTable(name = "booking_room",
+            joinColumns = @JoinColumn(name = "booking_id"),
+            inverseJoinColumns = @JoinColumn(name = "room_id"))
+    private Set<Room> rooms = new HashSet<>();
+
 
     @OneToOne(mappedBy = "booking",cascade = CascadeType.ALL)
     private Invoice invoice;
