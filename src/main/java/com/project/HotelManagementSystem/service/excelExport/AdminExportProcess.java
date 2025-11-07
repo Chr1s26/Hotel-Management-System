@@ -64,4 +64,9 @@ public class AdminExportProcess extends CommonExportProcess<Admin, AdminSearchQu
 
         );
     }
+
+    @Override
+    public String getListingRoute() {
+        return "/admins";
+    }
 }

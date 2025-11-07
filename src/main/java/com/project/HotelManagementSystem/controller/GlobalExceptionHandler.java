@@ -1,9 +1,6 @@
 package com.project.HotelManagementSystem.controller;
 
-import com.project.HotelManagementSystem.exception.DuplicateException;
-import com.project.HotelManagementSystem.exception.InvalidRoleException;
-import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
-import com.project.HotelManagementSystem.exception.UserNameNotFoundException;
+import com.project.HotelManagementSystem.exception.*;
 import com.project.HotelManagementSystem.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanWrapperImpl;
@@ -102,6 +99,15 @@ public class GlobalExceptionHandler {
         model.addAttribute("requestURI", "/login");
         redirectAttributes.addFlashAttribute("alertMessage", "Authentication failed");
         return "redirect:/login";
+    }
+
+    @ExceptionHandler(ExportFailedException.class)
+    public String handleExportFailed(ExportFailedException ex, RedirectAttributes redirectAttributes) {
+
+        redirectAttributes.addFlashAttribute("exportError",
+                ex.getDefaultMessage() != null ? ex.getDefaultMessage() : "Export failed.");
+
+        return "redirect:" + (ex.getView() != null ? ex.getView() : "");
     }
 
     public void addAttributes(String object, Model model) {

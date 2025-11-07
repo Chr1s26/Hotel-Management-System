@@ -59,4 +59,9 @@ public class CityExportProcess extends CommonExportProcess<City, CitySearchQuery
                         c.getUpdatedBy() != null ? c.getUpdatedBy().getName() : "", null)
         );
     }
+
+    @Override
+    public String getListingRoute() {
+        return "/cities";
+    }
 }

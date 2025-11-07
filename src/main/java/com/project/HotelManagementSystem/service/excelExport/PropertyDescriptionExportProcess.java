@@ -60,4 +60,9 @@ public class PropertyDescriptionExportProcess extends CommonExportProcess<Proper
                         c.getUpdatedBy() != null ? c.getUpdatedBy().getName() : "", null)
         );
     }
+
+    @Override
+    public String getListingRoute() {
+        return "/propertyDescriptions";
+    }
 }

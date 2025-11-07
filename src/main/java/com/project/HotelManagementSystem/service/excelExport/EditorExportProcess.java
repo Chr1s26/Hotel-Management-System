@@ -61,4 +61,9 @@ public class EditorExportProcess extends CommonExportProcess<Editor, EditorSearc
                         e.getUpdatedBy() != null ? e.getUpdatedBy().getName() : "", null)
         );
     }
+
+    @Override
+    public String getListingRoute() {
+        return "/editors";
+    }
 }

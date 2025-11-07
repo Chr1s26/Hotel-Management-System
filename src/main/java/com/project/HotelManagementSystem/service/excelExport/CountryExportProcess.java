@@ -58,4 +58,9 @@ public class CountryExportProcess extends CommonExportProcess<Country, CountrySe
                         c.getUpdatedBy() != null ? c.getUpdatedBy().getName() : "", null)
         );
     }
+
+    @Override
+    public String getListingRoute() {
+        return "/countries";
+    }
 }

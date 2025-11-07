@@ -61,4 +61,9 @@ public class AddressExportProcess extends CommonExportProcess<Address, AddressSe
                         c.getUpdatedBy() != null ? c.getUpdatedBy().getName() : "", null)
         );
     }
+
+    @Override
+    public String getListingRoute() {
+        return "/addresses";
+    }
 }

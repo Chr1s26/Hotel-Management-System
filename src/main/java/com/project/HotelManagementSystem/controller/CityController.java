@@ -11,6 +11,7 @@ import com.project.HotelManagementSystem.entity.City;
 import com.project.HotelManagementSystem.service.CityService;
 import com.project.HotelManagementSystem.service.RegionService;
 import com.project.HotelManagementSystem.service.excelExport.CityExportProcess;
+import com.project.HotelManagementSystem.service.excelImport.CityImportProcess;
 import com.project.HotelManagementSystem.service.search.CitySearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class CityController {
     private final RegionService regionService;
     private final CityExportProcess cityExportProcess;
     private final CitySearchService citySearchService;
+    private final CityImportProcess cityImportProcess;
 
     @ModelAttribute("query")
     public CitySearchQuery initQuery() {
@@ -115,15 +117,6 @@ public class CityController {
         return "redirect:/cities";
     }
 
-//    @PostMapping("/export/excel")
-//    public ResponseEntity<byte[]> exportExcel(Model model, @ModelAttribute("query") CitySearchQuery query) throws IOException {
-//        ByteArrayInputStream in = cityExportProcess.export(query);
-//        byte[] bytes = in.readAllBytes();
-//        return ResponseEntity.ok()
-//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=cities.xlsx")
-//                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-//                .body(bytes);
-//    }
 
     @PostMapping("/export/excel")
     public String exportExcelToS3(Model model, @ModelAttribute("query") CitySearchQuery query) throws IOException {
@@ -136,7 +129,7 @@ public class CityController {
     public String importCitiesFromExcel(@RequestParam("file") MultipartFile file,
                                         RedirectAttributes redirectAttributes) {
         try {
-            cityService.importCitiesFromExcel(file);
+            cityImportProcess.importExcel(file);
             redirectAttributes.addFlashAttribute("success", "Cities imported successfully!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Failed to import cities: " + e.getMessage());

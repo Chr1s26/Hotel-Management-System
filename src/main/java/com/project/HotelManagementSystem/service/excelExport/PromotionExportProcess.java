@@ -65,4 +65,9 @@ public class PromotionExportProcess extends CommonExportProcess<Promotion, Promo
 
         );
     }
+
+    @Override
+    public String getListingRoute() {
+        return "/promotions";
+    }
 }

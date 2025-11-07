@@ -126,37 +126,37 @@ public class CityService {
         return cityResponse;
     }
 
-    public void importCitiesFromExcel(MultipartFile file) {
-        try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
-            Sheet sheet = workbook.getSheetAt(0);
-            int rowCount = sheet.getPhysicalNumberOfRows();
-
-            for (int i = 1; i < rowCount; i++) {
-                Row row = sheet.getRow(i);
-                if (row == null) continue;
-
-                String cityName = row.getCell(1).getStringCellValue();
-                String regionName = row.getCell(2) != null ? row.getCell(2).getStringCellValue() : null;
-
-                Optional<Region> regionOp = regionRepository.findByNameIgnoreCase(regionName);
-
-
-                if (cityRepository.findByNameIgnoreCase(cityName).isPresent()) continue;
-                if (regionOp.isEmpty()) continue;
-
-                City city = new City();
-                city.setName(cityName);
-                city.setRegion(regionOp.get());
-                city.setStatus(StatusType.ACTIVE);
-                city.setCreatedAt(LocalDateTime.now());
-                city.setCreatedBy(authService.getCurrentUser());
-
-                cityRepository.save(city);
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to import Excel file: " + e.getMessage());
-        }
-    }
+//    public void importCitiesFromExcel(MultipartFile file) {
+//        try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
+//            Sheet sheet = workbook.getSheetAt(0);
+//            int rowCount = sheet.getPhysicalNumberOfRows();
+//
+//            for (int i = 1; i < rowCount; i++) {
+//                Row row = sheet.getRow(i);
+//                if (row == null) continue;
+//
+//                String cityName = row.getCell(1).getStringCellValue();
+//                String regionName = row.getCell(2) != null ? row.getCell(2).getStringCellValue() : null;
+//
+//                Optional<Region> regionOp = regionRepository.findByNameIgnoreCase(regionName);
+//
+//
+//                if (cityRepository.findByNameIgnoreCase(cityName).isPresent()) continue;
+//                if (regionOp.isEmpty()) continue;
+//
+//                City city = new City();
+//                city.setName(cityName);
+//                city.setRegion(regionOp.get());
+//                city.setStatus(StatusType.ACTIVE);
+//                city.setCreatedAt(LocalDateTime.now());
+//                city.setCreatedBy(authService.getCurrentUser());
+//
+//                cityRepository.save(city);
+//            }
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException("Failed to import Excel file: " + e.getMessage());
+//        }
+//    }
 
 }

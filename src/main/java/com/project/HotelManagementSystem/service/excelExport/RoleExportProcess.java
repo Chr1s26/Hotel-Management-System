@@ -57,4 +57,9 @@ public class RoleExportProcess extends CommonExportProcess<Role, RoleSearchQuery
                         c.getUpdatedBy() != null ? c.getUpdatedBy().getName() : "", null)
         );
     }
+
+    @Override
+    public String getListingRoute() {
+        return "/roles";
+    }
 }

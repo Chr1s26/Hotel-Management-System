@@ -60,4 +60,9 @@ public class RoomExportProcess extends CommonExportProcess<Room, RoomSearchQuery
                 new ColumnSpec<>("Updated by", r -> r.getUpdatedBy() != null ? r.getUpdatedBy().getName() : "", null)
         );
     }
+
+    @Override
+    public String getListingRoute() {
+        return "/rooms";
+    }
 }

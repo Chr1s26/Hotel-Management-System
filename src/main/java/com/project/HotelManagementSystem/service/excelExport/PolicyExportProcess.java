@@ -60,4 +60,9 @@ public class PolicyExportProcess extends CommonExportProcess<Policy, PolicySearc
                         c.getUpdatedBy() != null ? c.getUpdatedBy().getName() : "", null)
         );
     }
+
+    @Override
+    public String getListingRoute() {
+        return "/policies";
+    }
 }

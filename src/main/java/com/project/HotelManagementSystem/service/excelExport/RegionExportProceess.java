@@ -62,4 +62,9 @@ public class RegionExportProceess extends CommonExportProcess<Region, RegionSear
                         c.getUpdatedBy() != null ? c.getUpdatedBy().getName() : "", null)
         );
     }
+
+    @Override
+    public String getListingRoute() {
+        return "/regions";
+    }
 }

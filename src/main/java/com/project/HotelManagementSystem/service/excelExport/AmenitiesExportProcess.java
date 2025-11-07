@@ -58,4 +58,9 @@ public class AmenitiesExportProcess extends CommonExportProcess<Amenities, Ameni
                         c.getUpdatedBy() != null ? c.getUpdatedBy().getName() : "", null)
         );
     }
+
+    @Override
+    public String getListingRoute() {
+        return "/amenities";
+    }
 }

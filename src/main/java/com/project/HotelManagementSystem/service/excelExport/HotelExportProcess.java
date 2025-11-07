@@ -61,4 +61,9 @@ public class HotelExportProcess extends CommonExportProcess<Hotel, HotelSearchQu
                         c.getUpdatedBy() != null ? c.getUpdatedBy().getName() : "", null)
         );
     }
+
+    @Override
+    public String getListingRoute() {
+        return "/hotels";
+    }
 }

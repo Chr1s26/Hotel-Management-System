@@ -61,4 +61,9 @@ public class UserExportProcess extends CommonExportProcess<User, UserSearchQuery
                         c.getUpdatedBy() != null ? c.getUpdatedBy().getName() : "", null)
         );
     }
+
+    @Override
+    public String getListingRoute() {
+        return "/users";
+    }
 }
