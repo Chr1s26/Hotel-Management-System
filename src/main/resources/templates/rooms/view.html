@@ -10,6 +10,12 @@
 <body class="royal-form-page">
 <div th:replace="fragments/sidebar :: sidebar"></div>
 
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <a th:href="@{/rooms}" class="btn btn-secondary">
+    <- Back
+  </a>
+</div>
+
 <div class="container mt-4">
   <h2 class="page-title">This room is from hotel </h2><h2 class="page-title" th:text="${hotel.name}"></h2>
 
