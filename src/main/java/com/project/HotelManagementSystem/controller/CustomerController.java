@@ -121,4 +121,10 @@ public class CustomerController {
         customerExportProcess.generateExportFile(query);
         return "redirect:/customers";
     }
+
+    @GetMapping("/view/{id}")
+    public String viewCustomer(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("customer", customerService.findCustomerById(id));
+        return "customers/view";
+    }
 }

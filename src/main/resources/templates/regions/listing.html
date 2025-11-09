@@ -117,6 +117,7 @@
             <td th:text="${reg.updatedBy != null ? reg.updatedBy.name : '—'}">—</td>
 
             <td>
+                <a class="btn btn-sm btn-view" th:href="@{'/regions/view/' + ${reg.id}}">View</a>
                 <a class="btn btn-sm btn-warning" th:href="@{'/regions/edit/' + ${reg.id}}">Edit</a>
                 <a class="btn btn-sm btn-danger" th:href="@{'/regions/delete/' + ${reg.id}}">Delete</a>
             </td>

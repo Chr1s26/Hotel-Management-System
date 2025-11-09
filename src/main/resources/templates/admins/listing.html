@@ -168,6 +168,7 @@
             <td th:text="${admin.createdAt != null ? #temporals.format(admin.createdAt, 'yyyy-MM-dd HH:mm') : '—'}">—</td>
             <td th:text="${admin.updatedAt != null ? #temporals.format(admin.updatedAt, 'yyyy-MM-dd HH:mm') : '—'}">—</td>
             <td>
+                <a class="btn btn-sm btn-view" th:href="@{'/admins/view/' + ${admin.id}}">View</a>
                 <a class="btn btn-sm btn-warning" th:href="@{'/admins/edit/' + ${admin.id}}">Edit</a>
                 <a class="btn btn-sm btn-danger" th:href="@{'/admins/delete/' + ${admin.id}}">Delete</a>
             </td>

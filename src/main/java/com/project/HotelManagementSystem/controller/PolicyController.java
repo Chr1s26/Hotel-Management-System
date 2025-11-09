@@ -2,6 +2,7 @@ package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.dto.policy.PolicyCreateDTO;
+import com.project.HotelManagementSystem.dto.policy.PolicyDTO;
 import com.project.HotelManagementSystem.dto.policy.PolicyUpdateDTO;
 import com.project.HotelManagementSystem.dto.searchFilter.MatchType;
 import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
@@ -107,5 +108,12 @@ public class PolicyController {
     public String exportExcelToS3(Model model, @ModelAttribute("query") PolicySearchQuery query) {
         policyExportProcess.generateExportFile(query);
         return "redirect:/policies";
+    }
+
+    @GetMapping("/view/{id}")
+    public String viewPolicy(@PathVariable Long id, Model model) {
+        PolicyDTO policy = policyService.findPolicyById(id);
+        model.addAttribute("policy", policy);
+        return "policies/view";
     }
 }

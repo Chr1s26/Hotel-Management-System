@@ -122,14 +122,11 @@ public class RegionController {
         return "redirect:/regions";
     }
 
-//    @GetMapping("/export/excel")
-//    public ResponseEntity<byte[]> exportExcel(Model model) throws IOException {
-//        ByteArrayInputStream in = regionService.export();
-//        byte[] bytes = in.readAllBytes();
-//        return ResponseEntity.ok()
-//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=regions.xlsx")
-//                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-//                .body(bytes);
-//    }
+    @GetMapping("/view/{id}")
+    public String viewRegion(@PathVariable Long id, Model model){
+        RegionDTO regionDTO = regionService.findRegionById(id);
+        model.addAttribute("region", regionDTO);
+        return "regions/view";
+    }
 
 }

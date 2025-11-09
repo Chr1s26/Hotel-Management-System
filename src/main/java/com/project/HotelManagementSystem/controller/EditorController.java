@@ -123,4 +123,10 @@ public class EditorController {
         editorExportProcess.generateExportFile(query);
         return "redirect:/editors";
     }
+
+    @GetMapping("/view/{id}")
+    public String viewEditor(@PathVariable Long id, Model model) {
+        model.addAttribute("editor", editorService.findEditorById(id));
+        return "editors/view";
+    }
 }

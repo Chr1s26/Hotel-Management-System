@@ -79,7 +79,7 @@ public class AddressService {
         if(address.isEmpty()){
             throw new ResourceNotFoundException("address",address,"id","addresses","An address with the id cannot be found");
         }
-        return modelMapper.map(address,AddressDTO.class);
+        return toDTO(address.get());
     }
 
     public AddressResponse findAllAddressWithPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
@@ -101,5 +101,21 @@ public class AddressService {
     public List<AddressDTO> findAllAddress(){
         List<Address> addressList = addressRepository.findAll();
         return addressList.stream().map(address -> modelMapper.map(address, AddressDTO.class)).toList();
+    }
+
+    private AddressDTO toDTO(Address address) {
+        AddressDTO addressDTO = new AddressDTO();
+        addressDTO.setId(address.getId());
+        addressDTO.setLatitude(address.getLatitude());
+        addressDTO.setLongitude(address.getLongitude());
+        addressDTO.setRoad(address.getRoad());
+        addressDTO.setCity(address.getCity());
+        addressDTO.setZipCode(address.getZipCode());
+        addressDTO.setStatus(address.getStatus());
+        addressDTO.setCreatedAt(address.getCreatedAt());
+        addressDTO.setCreatedBy(address.getCreatedBy());
+        addressDTO.setUpdatedAt(address.getUpdatedAt());
+        addressDTO.setUpdatedBy(address.getUpdatedBy());
+        return addressDTO;
     }
 }

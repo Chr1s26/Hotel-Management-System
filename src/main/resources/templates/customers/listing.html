@@ -132,6 +132,7 @@
             <td th:text="${customer.createdAt != null ? #temporals.format(customer.createdAt,'yyyy-MM-dd HH:mm') : '—'}">—</td>
             <td th:text="${customer.updatedAt != null ? #temporals.format(customer.updatedAt,'yyyy-MM-dd HH:mm') : '—'}">—</td>
             <td>
+                <a class="btn btn-sm btn-view" th:href="@{'/customers/view/' + ${customer.id}}">View</a>
                 <a class="btn btn-sm btn-warning" th:href="@{'/customers/edit/' + ${customer.id}}">Edit</a>
                 <a class="btn btn-sm btn-danger" th:href="@{'/customers/delete/' + ${customer.id}}">Delete</a>
             </td>

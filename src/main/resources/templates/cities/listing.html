@@ -115,6 +115,7 @@
             <td th:text="${ct.createdBy != null ? ct.createdBy.name : '—'}">—</td>
             <td th:text="${ct.updatedBy != null ? ct.updatedBy.name : '—'}">—</td>
             <td>
+                <a class="btn btn-sm btn-view" th:href="@{'/cities/view/' + ${ct.id}}">View</a>
                 <a class="btn btn-sm btn-warning" th:href="@{'/cities/edit/' + ${ct.id}}">Edit</a>
                 <a class="btn btn-sm btn-danger" th:href="@{'/cities/delete/' + ${ct.id}}">Delete</a>
             </td>

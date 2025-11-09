@@ -182,6 +182,7 @@
             <td th:text="${editor.updatedAt != null ? #temporals.format(editor.updatedAt, 'yyyy-MM-dd HH:mm') : '—'}">—</td>
 
             <td>
+                <a class="btn btn-sm btn-view" th:href="@{'/editors/view/' + ${editor.id}}">View</a>
                 <a class="btn btn-sm btn-warning" th:href="@{'/editors/edit/' + ${editor.id}}">Edit</a>
                 <a class="btn btn-sm btn-danger" th:href="@{'/editors/delete/' + ${editor.id}}">Delete</a>
             </td>

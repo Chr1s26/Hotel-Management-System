@@ -136,4 +136,11 @@ public class CityController {
         }
         return "redirect:/cities";
     }
+
+    @GetMapping("/view/{id}")
+    public String viewCity(@PathVariable Long id, Model model) {
+        CityDTO cityDTO = cityService.findCityById(id);
+        model.addAttribute("city", cityDTO);
+        return "cities/view";
+    }
 }

@@ -73,7 +73,7 @@ public class PolicyService {
         if (policyOp.isEmpty()) {
             throw new ResourceNotFoundException("policy",policyOp,"id","policies","An account with this id cannot be found");
         }
-        return modelMapper.map(policyOp,PolicyDTO.class);
+        return toDTO(policyOp.get());
     }
 
     public PolicyResponse findAllPoliciesWithPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
@@ -94,5 +94,19 @@ public class PolicyService {
     public List<PolicyDTO> findAllPolicies() {
         List<Policy> policies = policyRepository.findAll();
         return policies.stream().map(p -> modelMapper.map(p, PolicyDTO.class)).collect(Collectors.toList());
+    }
+
+    private PolicyDTO toDTO(Policy policy) {
+        PolicyDTO policyDTO = new  PolicyDTO();
+        policyDTO.setId(policy.getId());
+        policyDTO.setTitle(policy.getTitle());
+        policyDTO.setDescription(policy.getDescription());
+        policyDTO.setApplicableTo(policy.getApplicableTo());
+        policyDTO.setStatus(policy.getStatus());
+        policyDTO.setCreatedAt(policy.getCreatedAt());
+        policyDTO.setUpdatedAt(policy.getUpdatedAt());
+        policyDTO.setCreatedBy(policy.getCreatedBy());
+        policyDTO.setUpdatedBy(policy.getUpdatedBy());
+        return policyDTO;
     }
 }

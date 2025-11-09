@@ -121,4 +121,11 @@ public class AdminController {
         adminExportProcess.generateExportFile(query);
         return "redirect:/admins";
     }
+
+    @GetMapping("/view/{id}")
+    public String viewAdmin(@PathVariable Long id, Model model) {
+        AdminDTO adminDTO = adminService.findAdminById(id);
+        model.addAttribute("admin", adminDTO);
+        return "admins/view";
+    }
 }

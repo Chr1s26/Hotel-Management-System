@@ -85,6 +85,33 @@ public class PromotionService {
         return modelMapper.map(promotionOp,PromotionUpdateDTO.class);
     }
 
+    public PromotionDTO findById(Long id) {
+        Optional<Promotion> promotionOp = promotionRepository.findById(id);
+        if(promotionOp.isEmpty()){
+            throw new ResourceNotFoundException("promotion",promotionOp,"id","promotions","A promotion with this id cannot be found");
+        }
+        return toDTO(promotionOp.get());
+    }
+
+    private PromotionDTO toDTO(Promotion promotion) {
+        PromotionDTO promotionDTO = new PromotionDTO();
+        promotionDTO.setId(promotion.getId());
+        promotionDTO.setCode(promotion.getCode());
+        promotionDTO.setDiscountType(promotion.getDiscountType());
+        promotionDTO.setDiscountAmount(promotion.getDiscountAmount());
+        promotionDTO.setStartDate(promotion.getStartDate());
+        promotionDTO.setEndDate(promotion.getEndDate());
+        promotionDTO.setPointAmount(promotion.getPointAmount());
+        promotionDTO.setUsageLimit(promotion.getUsageLimit());
+        promotionDTO.setTimesUsed(promotion.getTimesUsed());
+        promotionDTO.setCreatedBy(promotion.getCreatedBy());
+        promotionDTO.setUpdatedBy(promotion.getUpdatedBy());
+        promotionDTO.setUpdatedAt(promotion.getUpdatedAt());
+        promotionDTO.setUpdatedBy(promotion.getUpdatedBy());
+        promotionDTO.setStatus(promotion.getStatus());
+        return promotionDTO;
+    }
+
     public PromotionResponse findAllPromotionsWithPagination(Integer pageNumber, Integer pageSize, String sortBy,String sortOrder) {
         Sort sortByAndSortOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNumber,pageSize,sortByAndSortOrder);

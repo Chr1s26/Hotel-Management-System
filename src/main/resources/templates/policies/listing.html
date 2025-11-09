@@ -125,6 +125,7 @@
             <td th:text="${pol.createdBy != null ? pol.createdBy.name : '—'}">—</td>
             <td th:text="${pol.updatedBy != null ? pol.updatedBy.name : '—'}">—</td>
             <td>
+                <a class="btn btn-sm btn-view" th:href="@{'/policies/view/' + ${pol.id}}">View</a>
                 <a class="btn btn-sm btn-warning" th:href="@{'/policies/edit/' + ${pol.id}}">Edit</a>
                 <a class="btn btn-sm btn-danger" th:href="@{'/policies/delete/' + ${pol.id}}">Delete</a>
             </td>
