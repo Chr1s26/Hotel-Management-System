@@ -390,3 +390,9 @@ label.form-label {
     background-color: rgba(136,169,195,0.4);
     color: #fff;
 }
+.media-type-photo-size {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+}

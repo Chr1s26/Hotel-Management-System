@@ -9,6 +9,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.hotel.HotelSearchField
 import com.project.HotelManagementSystem.dto.searchFilter.hotel.HotelSearchFilter;
 import com.project.HotelManagementSystem.dto.searchFilter.hotel.HotelSearchQuery;
 import com.project.HotelManagementSystem.entity.Hotel;
+import com.project.HotelManagementSystem.entity.constants.HotelMediaType;
 import com.project.HotelManagementSystem.service.*;
 import com.project.HotelManagementSystem.service.excelExport.HotelExportProcess;
 import com.project.HotelManagementSystem.service.search.HotelSearchService;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -35,6 +37,7 @@ public class HotelController {
     private final PolicyService policyService;
     private final HotelSearchService hotelSearchService;
     private final HotelExportProcess hotelExportProcess;
+    private final FileService fileService;
 
     @ModelAttribute("query")
     public HotelSearchQuery initQuery() {
@@ -132,4 +135,48 @@ public class HotelController {
         hotelExportProcess.generateExportFile(query);
         return "redirect:/hotels";
     }
+
+    @GetMapping("/profile/{id}")
+    public String showProfile(@PathVariable Long id, Model model) {
+        Hotel hotel = this.hotelService.findById(id);
+        model.addAttribute("hotel", hotel);
+        model.addAttribute("address", hotel.getAddress());
+        model.addAttribute("profilePhotos", fileService.getHotelPhotos(id, HotelMediaType.PROFILE));
+        model.addAttribute("coverPhotos", fileService.getHotelPhotos(id, HotelMediaType.COVER_PHOTO));
+        model.addAttribute("servicePhotos", fileService.getHotelPhotos(id, HotelMediaType.SERVICE));
+        model.addAttribute("otherPhotos", fileService.getHotelPhotos(id, HotelMediaType.OTHER));
+        return "hotels/profile";
+    }
+
+    @PostMapping("/{id}/photos/delete")
+    public String deletePhotos(@PathVariable Long id,
+                               @RequestParam(value="selectedPhotos",required = false) List<Long> photoIds,
+                               @RequestParam("mediaType") HotelMediaType mediaType) {
+//        for(Long photoId : photoIds) {
+//            fileService.deleteHotelAttachmentAndFiles(photoId);
+//        }
+//        return "redirect:/hotels/profile/" + id;
+        if (photoIds == null || photoIds.isEmpty()) {
+            return "redirect:/hotels/profile/" + id + "?error=NoPhotosSelected";
+        }
+
+        for (Long photoId : photoIds) {
+            fileService.deleteHotelAttachmentAndFiles(photoId);
+        }
+
+        return "redirect:/hotels/profile/" + id + "?success=PhotosDeleted";
+    }
+
+    @PostMapping("/{id}/photos/add")
+    public String addPhotos(@PathVariable Long id,
+                            @RequestParam("files")List<MultipartFile> files,
+                            @RequestParam("mediaType") HotelMediaType mediaType) {
+        if(files == null || files.isEmpty()) {
+            return "redirect:/hotels/profile/" + id + "?error=NoPhotosSelected";
+        }
+        hotelService.addAttachment(files, id, mediaType);
+        return "redirect:/hotels/profile/" + id + "?success=PhotosAdded";
+    }
+
+
 }

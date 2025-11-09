@@ -3,6 +3,7 @@ package com.project.HotelManagementSystem.service;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
+import com.project.HotelManagementSystem.dto.hotel.HotelPhotoDTO;
 import com.project.HotelManagementSystem.entity.ExportListing;
 import com.project.HotelManagementSystem.entity.FileStorage;
 import com.project.HotelManagementSystem.entity.HotelAttachment;
@@ -231,6 +232,33 @@ public class FileService {
             urls.addAll(fileUrls);
         }
         return urls;
+    }
+
+    public List<HotelPhotoDTO> getHotelPhotos(Long hotelId, HotelMediaType hotelMediaType) {
+        List<HotelAttachment> hotelAttachments = hotelAttachmentRepository.findByHotelIdAndHotelMediaType(hotelId, hotelMediaType);
+        List<HotelPhotoDTO> hotelPhotos = new ArrayList<>();
+        for(HotelAttachment attachment : hotelAttachments){
+            List<String> fileUrls = getFileNames(FileType.HOTEL_ATTACHMENT, attachment.getId());
+            for(String url : fileUrls){
+                hotelPhotos.add(new HotelPhotoDTO(attachment.getId(), url));
+            }
+        }
+        return hotelPhotos;
+    }
+
+    public void deleteHotelAttachmentAndFiles(Long attachmentId) {
+        List<FileStorage> files = fileStorageRepository.findAllByFileTypeAndFileIdOrderByCreatedAtDesc(FileType.HOTEL_ATTACHMENT, attachmentId);
+        for(FileStorage file : files) {
+            try{
+                if("S3".equalsIgnoreCase(file.getServiceName())){
+                    amazonS3.deleteObject(new DeleteObjectRequest(s3BucketName, file.getKey()));
+                }
+                fileStorageRepository.delete(file);
+            }catch (Exception e){
+                throw new RuntimeException("Failed to delete hotel file: " + e.getMessage());
+            }
+        }
+        hotelAttachmentRepository.deleteById(attachmentId);
     }
 
     public void saveExportFileWithFailStatus(ExportListing exportListing) {
