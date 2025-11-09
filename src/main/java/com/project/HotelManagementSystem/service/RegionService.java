@@ -73,7 +73,7 @@ public class RegionService {
         if(regionOp.isEmpty()) {
             throw new ResourceNotFoundException("regions",regionOp,"id","regions","A region with this id cannot be found");
         }
-        return modelMapper.map(regionOp, RegionDTO.class);
+        return toDTO(regionOp.get());
     }
 
     public List<RegionDTO> findAllRegion() {
@@ -100,6 +100,19 @@ public class RegionService {
         regionResponse.setTotalPages(regionPage.getTotalPages());
         regionResponse.setLastPage(regionPage.isLast());
         return regionResponse;
+    }
+
+    private RegionDTO toDTO(Region region) {
+        RegionDTO regionDTO = new RegionDTO();
+        regionDTO.setId(region.getId());
+        regionDTO.setName(region.getName());
+        regionDTO.setCountry(region.getCountry());
+        regionDTO.setStatus(region.getStatus());
+        regionDTO.setCreatedAt(region.getCreatedAt());
+        regionDTO.setUpdatedAt(region.getUpdatedAt());
+        regionDTO.setUpdatedBy(region.getUpdatedBy());
+        regionDTO.setCreatedBy(region.getCreatedBy());
+        return regionDTO;
     }
 
 }

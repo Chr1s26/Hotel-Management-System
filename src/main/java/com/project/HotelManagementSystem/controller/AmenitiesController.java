@@ -111,4 +111,11 @@ public class AmenitiesController {
         return "redirect:/amenities";
     }
 
+    @GetMapping("/view/{id}")
+    public String showView(@PathVariable Long id, Model model) {
+        AmenitiesDTO amenities = this.amenitiesService.findAmenitiesById(id);
+        model.addAttribute("amenities", amenities);
+        return "amenities/view";
+    }
+
 }

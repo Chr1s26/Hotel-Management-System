@@ -118,4 +118,11 @@ public class PromotionController {
         promotionExportProcess.generateExportFile(query);
         return "redirect:/promotions";
     }
+
+    @GetMapping("/view/{id}")
+    public String viewPromotion(@PathVariable Long id, Model model) {
+        PromotionDTO promotionDTO = this.promotionService.findById(id);
+        model.addAttribute("promotion",promotionDTO);
+        return "promotions/view";
+    }
 }

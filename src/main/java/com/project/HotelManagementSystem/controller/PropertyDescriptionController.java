@@ -111,4 +111,11 @@ public class PropertyDescriptionController {
         propertyDescriptionExportProcess.generateExportFile(query);
         return "redirect:/propertyDescriptions";
     }
+
+    @GetMapping("/view/{id}")
+    public String viewPropertyDescription(@PathVariable Long id, Model model) {
+        PropertyDescriptionDTO propertyDescriptionDTO = this.propertyDescriptionService.findPropertyDescriptionById(id);
+        model.addAttribute("propertyDescription", propertyDescriptionDTO);
+        return "propertyDescriptions/view";
+    }
 }

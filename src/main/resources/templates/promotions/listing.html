@@ -146,6 +146,7 @@
             <td th:text="${pro.timesUsed}"></td>
             <td th:text="${pro.status}"></td>
             <td>
+                <a class="btn btn-sm btn-view" th:href="@{'/promotions/view/' + ${pro.id}}">View</a>
                 <a class="btn btn-sm btn-warning" th:href="@{'/promotions/edit/' + ${pro.id}}">Edit</a>
                 <a class="btn btn-sm btn-danger" th:href="@{'/promotions/delete/' + ${pro.id}}">Delete</a>
             </td>

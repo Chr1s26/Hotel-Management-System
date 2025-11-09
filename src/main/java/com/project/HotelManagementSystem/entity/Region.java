@@ -25,6 +25,7 @@ public class Region extends MasterData {
 
     @Override
     public String toString() {
-        return "Region: " + name+". Country: " + country.getName();
+        return country == null? name : name + " (" + country.getName() + ")";
     }
+
 }

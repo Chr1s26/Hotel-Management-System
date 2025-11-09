@@ -106,4 +106,11 @@ public class CountryController {
         countryExportProcess.generateExportFile(query);
         return "redirect:/countries";
     }
+
+    @GetMapping("/view/{id}")
+    public String showView(@PathVariable Long id, Model model) {
+        CountryDTO countryDTO = this.countryService.findCountryById(id);
+        model.addAttribute("country", countryDTO);
+        return "countries/view";
+    }
 }

@@ -104,8 +104,8 @@ public class CustomerService {
         customerDTO.setVipStatus(customer.isVipStatus());
         customerDTO.setStatus(customer.getStatus());
         customerDTO.setUser(customer.getUser());
-        customerDTO.setCreateAt(customer.getCreatedAt());
-        customerDTO.setUpdateAt(customer.getUpdatedAt());
+        customerDTO.setCreatedAt(customer.getCreatedAt());
+        customerDTO.setUpdatedAt(customer.getUpdatedAt());
         customerDTO.setCreatedBy(customer.getCreatedBy());
         customerDTO.setUpdatedBy(customer.getUpdatedBy());
         return customerDTO;

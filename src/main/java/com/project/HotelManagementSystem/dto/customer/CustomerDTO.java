@@ -21,8 +21,8 @@ public class CustomerDTO {
     private User user;
     private boolean vipStatus;
     private StatusType status;
-    private LocalDateTime createAt;
-    private LocalDateTime updateAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private User createdBy;
     private User updatedBy;
 }

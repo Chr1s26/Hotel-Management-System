@@ -2,6 +2,7 @@ package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.dto.address.AddressCreateDTO;
+import com.project.HotelManagementSystem.dto.address.AddressDTO;
 import com.project.HotelManagementSystem.dto.address.AddressUpdateDTO;
 import com.project.HotelManagementSystem.dto.searchFilter.MatchType;
 import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
@@ -117,5 +118,12 @@ public class AddressController {
     public String exportExcelToS3(Model model, @ModelAttribute("query") AddressSearchQuery query) {
         addressExportProcess.generateExportFile(query);
         return "redirect:/addresses";
+    }
+
+    @GetMapping("/view/{id}")
+    public String showView(@PathVariable Long id, Model model) {
+        AddressDTO addressDTO = addressService.findAddressById(id);
+        model.addAttribute("address", addressDTO);
+        return "addresses/view";
     }
 }

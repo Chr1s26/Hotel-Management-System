@@ -79,8 +79,22 @@ public class PropertyDescriptionService {
         if(propertyDescription.isEmpty()){
             throw new ResourceNotFoundException("propertyDescription",propertyDescription,"id","propertyDescriptions/edit","A property with this id cannot be found");
         }
-        return modelMapper.map(propertyDescription, PropertyDescriptionDTO.class);
+        return toDTO(propertyDescription.get());
+    }
 
+    private PropertyDescriptionDTO toDTO(PropertyDescription propertyDescription) {
+        PropertyDescriptionDTO propertyDescriptionDTO = new PropertyDescriptionDTO();
+        propertyDescriptionDTO.setId(propertyDescription.getId());
+        propertyDescriptionDTO.setDescription(propertyDescription.getDescription());
+        propertyDescriptionDTO.setOpeningDate(propertyDescription.getOpeningDate());
+        propertyDescriptionDTO.setRenovationDate(propertyDescription.getRenovationDate());
+        propertyDescriptionDTO.setNumberOfRooms(propertyDescription.getNumberOfRooms());
+        propertyDescriptionDTO.setUpdatedAt(propertyDescription.getUpdatedAt());
+        propertyDescriptionDTO.setUpdatedBy(propertyDescription.getUpdatedBy());
+        propertyDescriptionDTO.setStatus(propertyDescription.getStatus());
+        propertyDescriptionDTO.setCreatedAt(propertyDescription.getCreatedAt());
+        propertyDescriptionDTO.setCreatedBy(propertyDescription.getCreatedBy());
+        return propertyDescriptionDTO;
     }
 
     public List<PropertyDescriptionDTO> findAllPropertyDescriptions() {

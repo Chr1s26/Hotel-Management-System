@@ -121,6 +121,7 @@
             <td th:text="${addr.city}"></td>
             <td th:text="${addr.zipCode}"></td>
             <td>
+                <a class="btn btn-sm btn-view" th:href="@{'/addresses/view/' + ${addr.id}}">View</a>
                 <a class="btn btn-sm btn-warning" th:href="@{'/addresses/edit/' + ${addr.id}}">Edit</a>
                 <a class="btn btn-sm btn-danger" th:href="@{'/addresses/delete/' + ${addr.id}}">Delete</a>
             </td>

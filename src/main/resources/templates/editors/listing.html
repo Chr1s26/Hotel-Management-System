@@ -113,7 +113,7 @@
         <span th:text="${exportError}"></span>
     </div>
 
-    <form th:action="@{/editors/export/excel}" th:object="${query}" method="post" style="border:none;background:transparent;padding:0;margin:0;">
+    <form th:action="@{/editors/export/excel}" th:object="${query}" method="post" style="all: unset; display: inline;">
         <input type="hidden" th:each="f, iStat : ${query.filterList}"
                th:name="|filterList[${iStat.index}].field|" th:value="${f.field}">
         <input type="hidden" th:each="f, iStat : ${query.filterList}"
@@ -182,6 +182,7 @@
             <td th:text="${editor.updatedAt != null ? #temporals.format(editor.updatedAt, 'yyyy-MM-dd HH:mm') : '—'}">—</td>
 
             <td>
+                <a class="btn btn-sm btn-view" th:href="@{'/editors/view/' + ${editor.id}}">View</a>
                 <a class="btn btn-sm btn-warning" th:href="@{'/editors/edit/' + ${editor.id}}">Edit</a>
                 <a class="btn btn-sm btn-danger" th:href="@{'/editors/delete/' + ${editor.id}}">Delete</a>
             </td>

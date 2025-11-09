@@ -103,6 +103,7 @@
             <td th:text="${coun.createdBy != null ? coun.createdBy.name : '—'}">—</td>
             <td th:text="${coun.updatedBy != null ? coun.updatedBy.name : '—'}">—</td>
             <td>
+                <a class="btn btn-sm btn-view" th:href="@{'/countries/view/' + ${coun.id}}">View</a>
                 <a class="btn btn-sm btn-warning" th:href="@{'/countries/edit/' + ${coun.id}}">Edit</a>
                 <a class="btn btn-sm btn-danger" th:href="@{'/countries/delete/' + ${coun.id}}">Delete</a>
             </td>

@@ -70,7 +70,7 @@ public class CountryService {
         if(country.isEmpty()){
             throw new ResourceNotFoundException("country",country,"id","countries"," A Country with the id cannot be found");
         }
-        return modelMapper.map(country,CountryDTO.class);
+        return toDTO(country.get());
     }
 
     public CountryResponse findAllCountriesWithPagination(Integer pageNumber,Integer pageSize,String sortBy, String sortOrder){
@@ -112,6 +112,18 @@ public class CountryService {
         countryResponse.setTotalPages(countryPage.getTotalPages());
         countryResponse.setLastPage(countryPage.isLast());
         return countryResponse;
+    }
+
+    private CountryDTO toDTO(Country country) {
+        CountryDTO countryDTO = new CountryDTO();
+        countryDTO.setId(country.getId());
+        countryDTO.setName(country.getName());
+        countryDTO.setUpdatedAt(country.getUpdatedAt());
+        countryDTO.setUpdatedBy(country.getUpdatedBy());
+        countryDTO.setStatus(country.getStatus());
+        countryDTO.setCreatedAt(country.getCreatedAt());
+        countryDTO.setCreatedBy(country.getCreatedBy());
+        return countryDTO;
     }
 
 //    public Page<Country> searchByQuery(CountrySearchQuery query){

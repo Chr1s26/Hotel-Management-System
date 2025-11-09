@@ -71,7 +71,7 @@ public class AmenitiesService {
         if(amenities.isEmpty()){
             throw new ResourceNotFoundException("amenities",amenities,"id","amenities"," Amenities with the id cannot be found");
         }
-        return modelMapper.map(amenities, AmenitiesDTO.class);
+        return toDTO(amenities.get());
     }
 
     public AmenitiesResponse findAllAmenitiesWithPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
@@ -93,6 +93,19 @@ public class AmenitiesService {
     public List<AmenitiesDTO> findAllAmenities(){
         List<Amenities> amenitiesList = this.amenitiesRepository.findAll();
         return amenitiesList.stream().map(a -> modelMapper.map(a, AmenitiesDTO.class)).toList();
+    }
+
+    private AmenitiesDTO toDTO(Amenities amenities) {
+        AmenitiesDTO amenitiesDTO = new AmenitiesDTO();
+        amenitiesDTO.setId(amenities.getId());
+        amenitiesDTO.setName(amenities.getName());
+        amenitiesDTO.setDescription(amenities.getDescription());
+        amenitiesDTO.setStatus(amenities.getStatus());
+        amenitiesDTO.setCreatedAt(amenities.getCreatedAt());
+        amenitiesDTO.setUpdatedAt(amenities.getUpdatedAt());
+        amenitiesDTO.setCreatedBy(amenities.getCreatedBy());
+        amenitiesDTO.setUpdatedBy(amenities.getUpdatedBy());
+        return amenitiesDTO;
     }
 
 }
