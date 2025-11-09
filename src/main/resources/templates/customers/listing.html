@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Customers</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/form-theme.css}">
+</head>
+<body class="royal-form-page">
+<div th:replace="fragments/sidebar :: sidebar"></div>
+
+<div class="container mt-4">
+    <h2>Customers</h2>
+
+    <!-- Search Filters -->
+    <form th:action="@{/customers}" th:object="${query}" method="post" class="row g-3 align-items-end mb-4 no-card">
+        <div class="col-md-3">
+            <label class="form-label">Name</label>
+            <input type="hidden" th:name="*{filterList[0].field}" th:value="'NAME'">
+            <input type="hidden" th:name="*{filterList[0].matchType}" th:value="'CONTAINS'">
+            <input name="name" th:field="*{filterList[0].value}" class="form-control" placeholder="Search by name">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Phone</label>
+            <input type="hidden" th:name="*{filterList[1].field}" th:value="'PHONE'">
+            <input type="hidden" th:name="*{filterList[1].matchType}" th:value="'CONTAINS'">
+            <input name="phone" th:field="*{filterList[1].value}" class="form-control" placeholder="Search by phone">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Nationality</label>
+            <input type="hidden" th:name="*{filterList[2].field}" th:value="'NATIONALITY'">
+            <input type="hidden" th:name="*{filterList[2].matchType}" th:value="'CONTAINS'">
+            <input name="nationality" th:field="*{filterList[2].value}" class="form-control" placeholder="Search by nationality">
+        </div>
+        <div class="col-md-3">
+            <label for="dobSearch" class="form-label">Date of Birth</label>
+            <input type="hidden" th:name="*{filterList[3].field}" th:value="'DATE_OF_BIRTH'">
+            <input type="hidden" th:name="*{filterList[3].matchType}" th:value="'EXACT'">
+            <input type="date" id="dobSearch" name="dateOfBirth" class="form-control" th:field="*{filterList[3].value}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">VIP Status</label>
+            <input type="hidden" th:name="*{filterList[4].field}" th:value="'VIP_STATUS'">
+            <input type="hidden" th:name="*{filterList[4].matchType}" th:value="'EXACT'">
+            <select th:field="*{filterList[4].value}" class="form-select">
+                <option value="">All</option>
+                <option value="true">VIP</option>
+                <option value="false">Normal</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Status</label>
+            <input type="hidden" th:name="*{filterList[5].field}" th:value="'STATUS'">
+            <input type="hidden" th:name="*{filterList[5].matchType}" th:value="'EXACT'">
+            <select th:field="*{filterList[5].value}" class="form-select">
+                <option value="">All</option>
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="DELETED">DELETED</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Sort By</label>
+            <select th:field="*{sortBy}" class="form-select">
+                <option value="name">Name</option>
+                <option value="phone">Phone</option>
+                <option value="nationality">Nationality</option>
+                <option value="dateOfBirth">Date of Birth</option>
+                <option value="createdAt">Created Date</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Order</label>
+            <select th:field="*{sortDirection}" class="form-select">
+                <option value="ASC">Ascending</option>
+                <option value="DESC">Descending</option>
+            </select>
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+            <button class="btn btn-primary me-2">Search</button>
+            <a th:href="@{/customers}" class="btn btn-secondary">Reset</a>
+        </div>
+    </form>
+
+    <!-- Export to Excel -->
+    <form th:action="@{/customers/export/excel}" th:object="${query}" method="post" style="all: unset; display: inline;">
+        <input type="hidden" th:each="f, iStat : ${query.filterList}" th:name="|filterList[${iStat.index}].field|" th:value="${f.field}">
+        <input type="hidden" th:each="f, iStat : ${query.filterList}" th:name="|filterList[${iStat.index}].matchType|" th:value="${f.matchType}">
+        <input type="hidden" th:each="f, iStat : ${query.filterList}" th:name="|filterList[${iStat.index}].value|" th:value="${f.value}">
+        <input type="hidden" th:field="*{sortBy}">
+        <input type="hidden" th:field="*{sortDirection}">
+        <button type="submit" class="btn btn-success mb-3">Export to Excel</button>
+    </form>
+
+    <!-- Pagination & Add Customer Button -->
+    <div class="d-flex justify-content-between align-items-center my-3">
+        <div>
+            Page <span th:text="${query.pageNumber + 1}">1</span> of <span th:text="${totalPages}">X</span> —
+            Total: <span th:text="${totalElements}">Y</span> customers
+        </div>
+        <div>
+            <a class="btn btn-primary btn-lg" th:href="@{/customers/new}">Add Customer</a>
+        </div>
+    </div>
+
+    <!-- Customers Table -->
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>NAME</th>
+            <th>PHONE</th>
+            <th>DATE OF BIRTH</th>
+            <th>NATIONALITY</th>
+            <th>VIP STATUS</th>
+            <th>STATUS</th>
+            <th>CREATED AT</th>
+            <th>UPDATED AT</th>
+            <th>ACTIONS</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="customer : ${customers}">
+            <td th:text="${customer.id}">1</td>
+            <td th:text="${customer.name}">John Doe</td>
+            <td th:text="${customer.phone}">+123456789</td>
+            <td th:text="${customer.dateOfBirth != null ? #temporals.format(customer.dateOfBirth,'yyyy-MM-dd') : '—'}">—</td>
+            <td th:text="${customer.nationality}">American</td>
+            <td th:text="${customer.vipStatus == true ? 'VIP' : 'Normal'}">VIP</td>
+            <td th:text="${customer.status}">ACTIVE</td>
+            <td th:text="${customer.createdAt != null ? #temporals.format(customer.createdAt,'yyyy-MM-dd HH:mm') : '—'}">—</td>
+            <td th:text="${customer.updatedAt != null ? #temporals.format(customer.updatedAt,'yyyy-MM-dd HH:mm') : '—'}">—</td>
+            <td>
+                <a class="btn btn-sm btn-warning" th:href="@{'/customers/edit/' + ${customer.id}}">Edit</a>
+                <a class="btn btn-sm btn-danger" th:href="@{'/customers/delete/' + ${customer.id}}">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Pagination Controls -->
+    <form th:action="@{/customers}" method="get" class="row align-items-center justify-content-between mt-4 mb-3 no-card">
+        <div class="col-md-4">
+            <label for="pageSize" class="form-label">Show</label>
+            <select id="pageSize" class="form-select d-inline w-auto" name="pageSize" onchange="this.form.submit()">
+                <option th:value="3" th:selected="${query.pageSize == 3}">3</option>
+                <option th:value="6" th:selected="${query.pageSize == 6}">6</option>
+                <option th:value="9" th:selected="${query.pageSize == 9}">9</option>
+            </select>
+            <span>per page</span>
+            <input type="hidden" name="pageNumber" th:value="${query.pageNumber}" />
+            <input type="hidden" name="sortBy" th:value="${query.sortBy}" />
+            <input type="hidden" name="sortDirection" th:value="${query.sortDirection}" />
+        </div>
+
+        <div class="col-md-8 text-end">
+            <nav class="d-flex justify-content-end mt-2">
+                <ul class="pagination">
+                    <li class="page-item" th:classappend="${query.pageNumber == 0} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/customers(pageNumber=${query.pageNumber - 1}, pageSize=${query.pageSize}, sortBy=${query.sortBy}, sortDirection=${query.sortDirection})}">Previous</a>
+                    </li>
+
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i == query.pageNumber} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/customers(pageNumber=${i}, pageSize=${query.pageSize}, sortBy=${query.sortBy}, sortDirection=${query.sortDirection})}"
+                           th:text="${i + 1}">1</a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${query.pageNumber + 1 >= totalPages} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/customers(pageNumber=${query.pageNumber + 1}, pageSize=${query.pageSize}, sortBy=${query.sortBy}, sortDirection=${query.sortDirection})}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function() {
+        const toggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('appSidebar');
+        const body = document.querySelector('body');
+
+        if (!sidebar) return;
+        const savedState = localStorage.getItem("sidebar-collapsed") === "true";
+
+        function setCollapsed(collapsed) {
+            if (collapsed) {
+                sidebar.classList.add('sidebar-collapsed');
+                body.classList.remove('content-with-sidebar');
+                body.classList.add('content-no-sidebar');
+            } else {
+                sidebar.classList.remove('sidebar-collapsed');
+                body.classList.remove('content-no-sidebar');
+                body.classList.add('content-with-sidebar');
+            }
+            try { localStorage.setItem('sidebarCollapsed', collapsed ? '1' : '0'); } catch(e) {}
+        }
+
+        const saved = localStorage.getItem('sidebarCollapsed');
+        setCollapsed(saved === '1');
+
+        if (toggle) {
+            toggle.addEventListener('click', function () {
+                const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
+                setCollapsed(!isCollapsed);
+            });
+        }
+
+        // close sidebar on small screens when clicking outside
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 991.98) {
+                if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                    setCollapsed(true);
+                }
+            }
+        });
+    })();
+</script>
+</body>
+</html>

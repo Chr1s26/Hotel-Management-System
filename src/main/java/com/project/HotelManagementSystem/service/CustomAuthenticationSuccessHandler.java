@@ -55,7 +55,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             session.setAttribute("activeRole", "ROLE_NORMAL_USER");
             response.sendRedirect("/home");
         } else {
-            response.sendRedirect("/");
+            response.sendRedirect("/login?authorization=true");
         }
 
     }

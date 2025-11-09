@@ -38,9 +38,11 @@ public class SelectRoleController {
                 return "redirect:/home";
             }else if("ROLE_NORMAL_USER".equalsIgnoreCase(selectedRole)){
                 return "redirect:/home";
+            }else{
+                return "redirect:/login?authorization=true";
             }
         }
 
-        return "redirect:/select-role?error=invalid_selection";
+        return "redirect:/login?authorization=true";
     }
 }

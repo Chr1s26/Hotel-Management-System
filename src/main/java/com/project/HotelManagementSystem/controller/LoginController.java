@@ -10,6 +10,7 @@ public class LoginController {
     public String login(@RequestParam(value = "error", required = false, defaultValue = "false") String error,
                         @RequestParam(value = "registered", required = false, defaultValue = "false") String registered,
                         @RequestParam(value = "otpMessage", required = false, defaultValue = "false") String otpMessage,
+                        @RequestParam(value = "authorization", required = false, defaultValue = "false") String authorization,
                         Model model) {
         if(error.equalsIgnoreCase("true")) {
             model.addAttribute("errorMessage", "Invalid username or password");
@@ -19,6 +20,9 @@ public class LoginController {
         }
         if(otpMessage.equalsIgnoreCase("true")) {
             model.addAttribute("otpMessage", "You've verified OTP successfully");
+        }
+        if(authorization.equalsIgnoreCase("true")) {
+            model.addAttribute("authorization", "Sorry, You're not authorized to use this website !!");
         }
 
         return "login";

@@ -154,19 +154,19 @@
         <ul class="pagination">
           <li class="page-item" th:classappend="${query.pageNumber == 0} ? 'disabled'">
             <a class="page-link"
-               th:href="@{/hotels(pageNumber=${query.pageNumber - 1}, pageSize=${query.pageSize}, sortBy=${query.sortBy}, sortDirection=${query.sortDirection})}">Previous</a>
+               th:href="@{/exports(pageNumber=${query.pageNumber - 1}, pageSize=${query.pageSize}, sortBy=${query.sortBy}, sortDirection=${query.sortDirection})}">Previous</a>
           </li>
 
           <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
               th:classappend="${i == query.pageNumber} ? 'active'">
             <a class="page-link"
-               th:href="@{/hotels(pageNumber=${i}, pageSize=${query.pageSize}, sortBy=${query.sortBy}, sortDirection=${query.sortDirection})}"
+               th:href="@{/exports(pageNumber=${i}, pageSize=${query.pageSize}, sortBy=${query.sortBy}, sortDirection=${query.sortDirection})}"
                th:text="${i + 1}">1</a>
           </li>
 
           <li class="page-item" th:classappend="${query.pageNumber + 1 >= totalPages} ? 'disabled'">
             <a class="page-link"
-               th:href="@{/hotels(pageNumber=${query.pageNumber + 1}, pageSize=${query.pageSize}, sortBy=${query.sortBy}, sortDirection=${query.sortDirection})}">Next</a>
+               th:href="@{/exports(pageNumber=${query.pageNumber + 1}, pageSize=${query.pageSize}, sortBy=${query.sortBy}, sortDirection=${query.sortDirection})}">Next</a>
           </li>
         </ul>
       </nav>

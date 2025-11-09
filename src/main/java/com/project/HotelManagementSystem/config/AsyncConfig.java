@@ -40,8 +40,4 @@ public class AsyncConfig implements AsyncConfigurer {
         };
     }
 
-    @PostConstruct
-    public void enableInheritableThreadLocal() {
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-    }
 }

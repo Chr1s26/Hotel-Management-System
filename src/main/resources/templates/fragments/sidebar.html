@@ -28,6 +28,10 @@
                            th:href="@{/editors}">Editors</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" th:classappend="${requestURI.startsWith('/customers')} ? ' active' : ''"
+                           th:href="@{/customers}">Customers</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" th:classappend="${requestURI.startsWith('/hotels')} ? ' active' : ''"
                            th:href="@{/hotels}">Hotels</a>
                     </li>

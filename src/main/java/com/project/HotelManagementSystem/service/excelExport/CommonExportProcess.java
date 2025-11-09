@@ -9,7 +9,9 @@ import com.project.HotelManagementSystem.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -32,6 +34,7 @@ public abstract class CommonExportProcess<T extends MasterData, Q> {
         return getSheetName()+".xlsx";
     }
 
+    @Transactional(readOnly = true)
     public ByteArrayInputStream export(Q query){
         try{
             Workbook wb = new XSSFWorkbook();
@@ -44,7 +47,8 @@ public abstract class CommonExportProcess<T extends MasterData, Q> {
         }
     }
 
-
+    @Async
+    @Transactional
     public void generateExportFile(Q query){
         ExportListing exportListing = null;
         ByteArrayInputStream in = export(query);
@@ -53,6 +57,7 @@ public abstract class CommonExportProcess<T extends MasterData, Q> {
             exportListing = exportListingService.saveExportListing(getRecordType(), getDownloadFileType());
             fileService.saveExportFileWithStatus(in, exportListing);
         } catch (Exception ex){
+            ex.printStackTrace();
             if(exportListing!=null) {
                 fileService.saveExportFileWithFailStatus(exportListing);
             }else{

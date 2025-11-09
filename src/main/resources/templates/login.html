@@ -21,6 +21,9 @@
     <div th:if="${registeredMessage}" class="bg-green-200 bg-opacity-70 border border-green-400 text-green-900 px-4 py-3 rounded mb-4">
         <p th:text="${registeredMessage}"></p>
     </div>
+    <div th:if="${authorization}" class="bg-red-200 bg-opacity-70 border border-green-400 text-green-900 px-4 py-3 rounded mb-4">
+        <p th:text="${authorization}"></p>
+    </div>
     <div th:if="${otpMessage}" class="bg-yellow-200 bg-opacity-70 border border-yellow-400 text-yellow-900 px-4 py-3 rounded mb-4">
         <p th:text="${otpMessage}"></p>
     </div>

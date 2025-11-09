@@ -2,6 +2,7 @@ package com.project.HotelManagementSystem.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.HotelManagementSystem.entity.User;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Getter
 public class UserDetailsImpl implements UserDetails {
 
     private static final long serialVersionUID = 1L;

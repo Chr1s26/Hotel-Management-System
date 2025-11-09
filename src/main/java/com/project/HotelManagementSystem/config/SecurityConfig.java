@@ -3,6 +3,7 @@ package com.project.HotelManagementSystem.config;
 import com.project.HotelManagementSystem.service.AbstractService;
 import com.project.HotelManagementSystem.service.CustomAuthenticationFailureHandler;
 import com.project.HotelManagementSystem.service.CustomAuthenticationSuccessHandler;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -42,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/admins/**").hasRole("ADMIN")
                         .requestMatchers("/editors/**").hasAnyRole("EDITOR", "ADMIN")
                         .requestMatchers("/users/**").hasAnyRole("EDITOR", "ADMIN")
+                        .requestMatchers("/customers/**").hasAnyRole("EDITOR", "ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/login?error=false")
@@ -51,6 +54,11 @@ public class SecurityConfig {
                         .permitAll())
                 .exceptionHandling(exception -> exception.accessDeniedPage("/access_denied"));
         return http.build();
+    }
+
+    @PostConstruct
+    public void enableInheritableThreadLocal() {
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
 }
