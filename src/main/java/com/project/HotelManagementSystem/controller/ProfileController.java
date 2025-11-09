@@ -62,7 +62,4 @@ public class ProfileController {
         profileService.uploadProfile(profileRequest);
         return "redirect:/profiles";
     }
-
-
-
 }

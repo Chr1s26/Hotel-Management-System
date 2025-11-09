@@ -148,6 +148,7 @@
                 </ul>
             </td>
             <td>
+                <a class="btn btn-sm btn-view" th:href="@{'/rooms/view/' + ${room.id}}"> View </a>
                 <a class="btn btn-sm btn-warning" th:href="@{'/rooms/edit/' + ${room.id}}">Edit</a>
                 <a class="btn btn-sm btn-danger" th:href="@{'/rooms/delete/' + ${room.id}}">Delete</a>
             </td>

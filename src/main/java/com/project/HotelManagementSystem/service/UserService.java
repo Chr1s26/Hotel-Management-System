@@ -1,8 +1,10 @@
 package com.project.HotelManagementSystem.service;
 
+import com.project.HotelManagementSystem.dto.profile.ProfileRequest;
 import com.project.HotelManagementSystem.dto.user.*;
 import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.User;
+import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.entity.specification.UserSpecification;
 import com.project.HotelManagementSystem.exception.DuplicateException;
@@ -21,7 +23,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.OpenOption;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -41,6 +45,8 @@ public class UserService {
     private AuthService authService;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private FileService fileService;
 
     public UserCreateDTO createUser(UserCreateDTO userCreateDTO) {
         if(userRepository.existsByName(userCreateDTO.getName())) throw new DuplicateException("user",userCreateDTO,"name","users/create","An account with this name already exists");
@@ -92,12 +98,29 @@ public class UserService {
         return modelMapper.map(user, UserUpdateDTO.class);
     }
 
-    public Optional<User> findById(Long id) {
+    public UserDTO findById(Long id) {
         Optional<User> user = this.userRepository.findById(id);
         if(user.isEmpty()){
-            throw new ResourceNotFoundException("user",user,"id","users/edit","An account with this id cannot be found");
+            throw new ResourceNotFoundException("user",user,"id","users","An account with this id cannot be found");
         }
-        return user;
+        return toDto(user.get());
+    }
+
+    private UserDTO toDto(User user) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setName(user.getName());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setConfirmedAt(user.getConfirmedAt());
+        userDTO.setRoles(user.getRoles());
+        userDTO.setStatus(user.getStatus());
+        userDTO.setCreatedAt(user.getCreatedAt());
+        userDTO.setUpdatedAt(user.getUpdatedAt());
+        userDTO.setCreatedBy(user.getCreatedBy());
+        userDTO.setUpdatedBy(user.getUpdatedBy());
+        String url = fileService.getFileName(FileType.USER, user.getId());
+        userDTO.setProfileUrl(url);
+        return userDTO;
     }
 
     public List<UserDTO> findAllUsers() {
@@ -143,4 +166,8 @@ public class UserService {
         return userResponse;
     }
 
+    public void uploadPicture(ProfileRequest profileRequest, Long id) {
+        MultipartFile file = profileRequest.getFile();
+        fileService.handleFileUpload(file, FileType.USER,id,"S3");
+    }
 }

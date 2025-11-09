@@ -12,6 +12,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.room.RoomSearchField;
 import com.project.HotelManagementSystem.dto.searchFilter.room.RoomSearchFilter;
 import com.project.HotelManagementSystem.dto.searchFilter.room.RoomSearchQuery;
 import com.project.HotelManagementSystem.entity.Room;
+import com.project.HotelManagementSystem.entity.constants.RoomMediaType;
 import com.project.HotelManagementSystem.service.AmenitiesService;
 import com.project.HotelManagementSystem.service.HotelService;
 import com.project.HotelManagementSystem.service.PromotionService;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -130,5 +132,41 @@ public class RoomController {
     public String exportExcel(Model model, @ModelAttribute("query") RoomSearchQuery query) {
         roomExportProcess.generateExportFile(query);
         return "redirect:/rooms";
+    }
+
+    @GetMapping("/view/{id}")
+    public String showView(@PathVariable Long id, Model model) {
+        RoomDTO room = this.roomService.findById(id);
+        model.addAttribute("room", room);
+        model.addAttribute("hotel", room.getHotel());
+        model.addAttribute("profilePhotos",roomService.getRoomPhotos(id, RoomMediaType.PROFILE));
+        model.addAttribute("coverPhotos",roomService.getRoomPhotos(id, RoomMediaType.COVER_PHOTO));
+        model.addAttribute("servicePhotos",roomService.getRoomPhotos(id, RoomMediaType.SERVICE));
+        model.addAttribute("otherPhotos",roomService.getRoomPhotos(id, RoomMediaType.OTHER));
+        return "rooms/view";
+    }
+
+    @PostMapping("/photos/delete/{id}")
+    public String deletePhotos(@PathVariable Long id,
+                               @RequestParam(value = "selectedPhotos", required = false)List<Long> photoIds) {
+        if(photoIds == null || photoIds.isEmpty()){
+            return "redirect:/rooms/view/" + id + "?error=NoPhotosSelected";
+        }
+        for (Long photoId : photoIds) {
+            roomService.deleteRoomAttachmentAndFiles(photoId);
+        }
+        return "redirect:/rooms/view/" + id + "?success=PhotosDeleted";
+    }
+
+    @PostMapping("/photos/add/{id}")
+    public String addPhotos(@PathVariable Long id,
+                            @RequestParam("files")List<MultipartFile> files,
+                            @RequestParam("mediaType")RoomMediaType roomMediaType) {
+        if(files == null || files.isEmpty()){
+            return "redirect:/rooms/view/" + id + "?error=NoPhotosSelected";
+        }
+        RoomDTO room = this.roomService.findById(id);
+        roomService.addAttachment(files,id,roomMediaType,room.getHotel().getId());
+        return "redirect:/rooms/view/" + id + "?success=PhotosAdded";
     }
 }

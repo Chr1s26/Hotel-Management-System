@@ -141,6 +141,17 @@ th, td {
     background-color: #bb2d3b;
 }
 
+.btn-view {
+    background-color: var(--bluegray);
+    border: none;
+    color: var(--royal);
+    font-weight: 600;
+}
+.btn-view:hover {
+    background-color: #9db8cf;
+    border-color: #9db8cf;
+    color: var(--royal);
+}
 /* ===== Pagination ===== */
 .pagination .page-item.active .page-link {
     background-color: var(--bluegray);

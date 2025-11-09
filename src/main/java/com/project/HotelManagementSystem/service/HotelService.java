@@ -100,36 +100,36 @@
             return hotelUpdateDTO;
         }
 
-        public Hotel findById(Long id) {
+        public HotelDTO findById(Long id) {
             Optional<Hotel> optionalHotel = hotelRepository.findById(id);
             if(optionalHotel.isEmpty()) {
                 throw new ResourceNotFoundException("hotels",optionalHotel,"id","hotels"," A hotel with the id cannot be found");
             }
-            return optionalHotel.get();
+            return toDTO(optionalHotel.get());
         }
 
-        public HotelResponse findAllHotelsWithPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
-            Sort sortByAndSortOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-            Pageable pageable = PageRequest.of(pageNumber,pageSize,sortByAndSortOrder);
-            Page<Hotel> page = this.hotelRepository.findAll(pageable);
-            List<HotelDTO> hotelDTOS = page.getContent().stream().map(hotel -> modelMapper.map(hotel, HotelDTO.class)).toList();
-            HotelResponse hotelResponse = new HotelResponse();
-            hotelResponse.setHotels(hotelDTOS);
-            hotelResponse.setPageNumber(page.getNumber());
-            hotelResponse.setPageSize(page.getSize());
-            hotelResponse.setTotalPages(page.getTotalPages());
-            hotelResponse.setTotalElements(page.getTotalElements());
-            hotelResponse.setLastPage(page.isLast());
-            return hotelResponse;
-        }
+//        public HotelResponse findAllHotelsWithPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+//            Sort sortByAndSortOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+//            Pageable pageable = PageRequest.of(pageNumber,pageSize,sortByAndSortOrder);
+//            Page<Hotel> page = this.hotelRepository.findAll(pageable);
+//            List<HotelDTO> hotelDTOS = page.getContent().stream().map(hotel -> modelMapper.map(hotel, HotelDTO.class)).toList();
+//            HotelResponse hotelResponse = new HotelResponse();
+//            hotelResponse.setHotels(hotelDTOS);
+//            hotelResponse.setPageNumber(page.getNumber());
+//            hotelResponse.setPageSize(page.getSize());
+//            hotelResponse.setTotalPages(page.getTotalPages());
+//            hotelResponse.setTotalElements(page.getTotalElements());
+//            hotelResponse.setLastPage(page.isLast());
+//            return hotelResponse;
+//        }
 
         public List<HotelDTO> findAllHotels() {
             List<Hotel> hotels = this.hotelRepository.findAll();
-            List<HotelDTO> hotelDTOs = hotels.stream().map(h -> modelMapper.map(h, HotelDTO.class)).toList();
+            List<HotelDTO> hotelDTOs = hotels.stream().map(this::toDTO).toList();
             return hotelDTOs;
         }
 
-        public List<HotelPhotoDTO> getHotelPhotos(Long hotelId, HotelMediaType hotelMediaType) {
+        public List<HotelPhotoDTO> getHotelPhotos(Long hotelId, HotelMediaType hotelMediaType)  {
             List<HotelAttachment> hotelAttachments = hotelAttachmentRepository.findByHotelIdAndHotelMediaType(hotelId, hotelMediaType);
             List<HotelPhotoDTO> hotelPhotos = new ArrayList<>();
             for(HotelAttachment attachment : hotelAttachments){
@@ -175,6 +175,27 @@
                 hotelAttachment = hotelAttachmentRepository.save(hotelAttachment);
                 fileService.handleFileUpload(multipartFile, FileType.HOTEL_ATTACHMENT, hotelAttachment.getId(), "s3");
             }
+        }
+
+        private HotelDTO toDTO(Hotel hotel) {
+            HotelDTO hotelDTO = new HotelDTO();
+            hotelDTO.setId(hotel.getId());
+            hotelDTO.setName(hotel.getName());
+            hotelDTO.setPhoneNumber(hotel.getPhoneNumber());
+            hotelDTO.setEmail(hotel.getEmail());
+            hotelDTO.setDescription(hotel.getDescription());
+            hotelDTO.setRating(hotel.getRating());
+            hotelDTO.setHotelType(hotel.getHotelType());
+            hotelDTO.setAddress(hotel.getAddress());
+            hotelDTO.setPropertyDescription(hotel.getPropertyDescription());
+            hotelDTO.setPromotions(hotel.getPromotions());
+            hotelDTO.setPolicies(hotel.getPolicies());
+            hotelDTO.setCreatedBy(hotel.getCreatedBy());
+            hotelDTO.setCreatedAt(hotel.getCreatedAt());
+            hotelDTO.setUpdatedAt(hotel.getUpdatedAt());
+            hotelDTO.setUpdatedBy(hotel.getUpdatedBy());
+            hotelDTO.setStatus(hotel.getStatus());
+            return hotelDTO;
         }
 
     }

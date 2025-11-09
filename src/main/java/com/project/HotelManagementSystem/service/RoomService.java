@@ -1,9 +1,9 @@
 package com.project.HotelManagementSystem.service;
 
-import com.project.HotelManagementSystem.dto.room.RoomCreateDTO;
-import com.project.HotelManagementSystem.dto.room.RoomDTO;
-import com.project.HotelManagementSystem.dto.room.RoomResponse;
-import com.project.HotelManagementSystem.dto.room.RoomUpdateDTO;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.project.HotelManagementSystem.dto.room.*;
+import com.project.HotelManagementSystem.entity.FileStorage;
 import com.project.HotelManagementSystem.entity.Hotel;
 import com.project.HotelManagementSystem.entity.Room;
 import com.project.HotelManagementSystem.entity.RoomAttachment;
@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +49,10 @@ public class RoomService {
     private RoomAttachmentRepository roomAttachmentRepository;
     @Autowired
     private FileService fileService;
+    @Autowired
+    private FileStorageRepository fileStorageRepository;
+    @Autowired
+    private AmazonS3 amazonS3;
 
     public RoomCreateDTO createRoom(RoomCreateDTO roomCreateDTO) {
         Room room = modelMapper.map(roomCreateDTO, Room.class);
@@ -75,7 +80,7 @@ public class RoomService {
         return modelMapper.map(savedRoom, RoomUpdateDTO.class);
     }
 
-    private void addAttachment(List<MultipartFile> files, Long roomId, @NotNull(message = "Media type must be selected") RoomMediaType roomMediaType,long hotelId) {
+    public void addAttachment(List<MultipartFile> files, Long roomId, RoomMediaType roomMediaType,long hotelId) {
         if(files==null || files.isEmpty()) return ;
 
         Optional<Room> optionalRoom = roomRepository.findById(roomId);
@@ -96,8 +101,6 @@ public class RoomService {
         }
     }
 
-
-
     public void deleteRoom(Long id) {
         Optional<Room> roomOp = roomRepository.findById(id);
         if (roomOp.isEmpty()) {
@@ -114,24 +117,76 @@ public class RoomService {
         return modelMapper.map(roomOp, RoomUpdateDTO.class);
     }
 
+    public RoomDTO findById(Long id) {
+        Optional<Room> roomOp = roomRepository.findById(id);
+        if (roomOp.isEmpty()) {
+            throw new ResourceNotFoundException("room",roomOp,"id","rooms","A room with this id cannot be found");
+        }
+        return toDTO(roomOp.get());
+    }
+
+    private RoomDTO toDTO(Room room) {
+        RoomDTO roomDTO = new RoomDTO();
+        roomDTO.setId(room.getId());
+        roomDTO.setPrice(room.getPrice());
+        roomDTO.setAvailable(room.isAvailable());
+        roomDTO.setDescription(room.getDescription());
+        roomDTO.setRoomType(String.valueOf(room.getRoomType()));
+        roomDTO.setMaxCapacity(room.getMaxCapacity());
+        roomDTO.setHotel(room.getHotel());
+        roomDTO.setAmenities(room.getAmenities());
+        roomDTO.setPromotions(room.getPromotions());
+        roomDTO.setStatus(room.getStatus());
+        roomDTO.setCreatedAt(room.getCreatedAt());
+        roomDTO.setCreatedBy(room.getCreatedBy());
+        roomDTO.setUpdatedAt(room.getUpdatedAt());
+        roomDTO.setUpdatedBy(room.getUpdatedBy());
+        return roomDTO;
+    }
+
+    public List<RoomPhotoDTO> getRoomPhotos(Long roomId,RoomMediaType roomMediaType) {
+        List<RoomAttachment> roomAttachments = roomAttachmentRepository.findByRoomIdAndRoomMediaType(roomId,roomMediaType);
+        List<RoomPhotoDTO> roomPhotos = new ArrayList<>();
+        for(RoomAttachment attachment : roomAttachments){
+            List<String> fileUrls = fileService.getFileNames(FileType.ROOM_ATTACHMENT, attachment.getId());
+            for(String url : fileUrls){
+                roomPhotos.add(new RoomPhotoDTO(attachment.getId(),url));
+            }
+        }
+        return roomPhotos;
+    }
+
+    public void deleteRoomAttachmentAndFiles(Long attachmentId){
+        List<FileStorage> files = fileStorageRepository.findAllByFileTypeAndFileIdOrderByCreatedAtDesc(FileType.ROOM_ATTACHMENT,attachmentId);
+        for(FileStorage file : files){
+            try{
+                if("S3".equalsIgnoreCase(file.getServiceName())) amazonS3.deleteObject(new DeleteObjectRequest(fileService.getBucketName(), file.getKey()));
+                fileStorageRepository.delete(file);
+            }catch (Exception e){
+                throw new RuntimeException("Failed to delete file",e);
+            }
+        }
+        roomAttachmentRepository.deleteById(attachmentId);
+    }
+
     public List<RoomDTO> findAllRooms() {
         List<Room> rooms = roomRepository.findAll();
         return rooms.stream().map(room -> modelMapper.map(room, RoomDTO.class)).collect(Collectors.toList());
     }
 
-    public RoomResponse findAllRoomsWithPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
-        Sort sortByAndSortOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        Pageable pageable = PageRequest.of(pageNumber,pageSize,sortByAndSortOrder);
-        Page<Room> roomPage = roomRepository.findAll(pageable);
-        List<Room> roomList = roomPage.getContent();
-        List<RoomDTO> roomDTOList = roomList.stream().map(room -> modelMapper.map(room, RoomDTO.class)).toList();
-        RoomResponse roomResponse = new RoomResponse();
-        roomResponse.setRooms(roomDTOList);
-        roomResponse.setPageNumber(roomPage.getNumber());
-        roomResponse.setPageSize(roomPage.getSize());
-        roomResponse.setTotalPages(roomPage.getTotalPages());
-        roomResponse.setTotalElements(roomPage.getTotalElements());
-        roomResponse.setLastPage(roomPage.isLast());
-        return  roomResponse;
-    }
+//    public RoomResponse findAllRoomsWithPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+//        Sort sortByAndSortOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+//        Pageable pageable = PageRequest.of(pageNumber,pageSize,sortByAndSortOrder);
+//        Page<Room> roomPage = roomRepository.findAll(pageable);
+//        List<Room> roomList = roomPage.getContent();
+//        List<RoomDTO> roomDTOList = roomList.stream().map(room -> modelMapper.map(room, RoomDTO.class)).toList();
+//        RoomResponse roomResponse = new RoomResponse();
+//        roomResponse.setRooms(roomDTOList);
+//        roomResponse.setPageNumber(roomPage.getNumber());
+//        roomResponse.setPageSize(roomPage.getSize());
+//        roomResponse.setTotalPages(roomPage.getTotalPages());
+//        roomResponse.setTotalElements(roomPage.getTotalElements());
+//        roomResponse.setLastPage(roomPage.isLast());
+//        return  roomResponse;
+//    }
 }
