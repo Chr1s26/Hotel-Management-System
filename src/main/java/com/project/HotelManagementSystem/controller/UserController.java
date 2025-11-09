@@ -1,6 +1,7 @@
 package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.annotation.ActiveRole;
+import com.project.HotelManagementSystem.dto.profile.ProfileRequest;
 import com.project.HotelManagementSystem.dto.searchFilter.MatchType;
 import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
 import com.project.HotelManagementSystem.dto.searchFilter.user.*;
@@ -102,5 +103,20 @@ public class UserController {
     public String exportExcel(Model model, @ModelAttribute("query") UserSearchQuery query) {
         userExportProcess.generateExportFile(query);
         return "redirect:/users";
+    }
+
+    @GetMapping("/view/{id}")
+    public String showView(@PathVariable("id") Long id, Model model) {
+        UserDTO user = this.userService.findById(id);
+        model.addAttribute("user", user);
+        model.addAttribute("request",new ProfileRequest());
+        return "users/view";
+    }
+
+    @PostMapping("/{id}/updatePicture")
+    @ActiveRole({"ADMIN","EDITOR"})
+    public String updateProfilePicture(@ModelAttribute("request") ProfileRequest profileRequest,@PathVariable("id") Long userId) {
+        userService.uploadPicture(profileRequest,userId);
+        return "redirect:/users/view/" + userId;
     }
 }

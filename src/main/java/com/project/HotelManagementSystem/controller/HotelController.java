@@ -2,6 +2,7 @@ package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.annotation.ActiveRole;
 import com.project.HotelManagementSystem.dto.hotel.HotelCreateDTO;
+import com.project.HotelManagementSystem.dto.hotel.HotelDTO;
 import com.project.HotelManagementSystem.dto.hotel.HotelUpdateDTO;
 import com.project.HotelManagementSystem.dto.searchFilter.MatchType;
 import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-
 
 @Controller
 @RequiredArgsConstructor
@@ -136,16 +136,16 @@ public class HotelController {
         return "redirect:/hotels";
     }
 
-    @GetMapping("/profile/{id}")
-    public String showProfile(@PathVariable Long id, Model model) {
-        Hotel hotel = this.hotelService.findById(id);
+    @GetMapping("/view/{id}")
+    public String showView(@PathVariable Long id, Model model) {
+        HotelDTO hotel = this.hotelService.findById(id);
         model.addAttribute("hotel", hotel);
         model.addAttribute("address", hotel.getAddress());
         model.addAttribute("profilePhotos", hotelService.getHotelPhotos(id, HotelMediaType.PROFILE));
         model.addAttribute("coverPhotos", hotelService.getHotelPhotos(id, HotelMediaType.COVER_PHOTO));
         model.addAttribute("servicePhotos", hotelService.getHotelPhotos(id, HotelMediaType.SERVICE));
         model.addAttribute("otherPhotos", hotelService.getHotelPhotos(id, HotelMediaType.OTHER));
-        return "hotels/profile";
+        return "hotels/view";
     }
 
     @PostMapping("/photos/delete/{id}")
@@ -153,14 +153,14 @@ public class HotelController {
                                @RequestParam(value="selectedPhotos",required = false) List<Long> photoIds) {
 
         if (photoIds == null || photoIds.isEmpty()) {
-            return "redirect:/hotels/profile/" + id + "?error=NoPhotosSelected";
+            return "redirect:/hotels/view/" + id + "?error=NoPhotosSelected";
         }
 
         for (Long photoId : photoIds) {
             hotelService.deleteHotelAttachmentAndFiles(photoId);
         }
 
-        return "redirect:/hotels/profile/" + id + "?success=PhotosDeleted";
+        return "redirect:/hotels/view/" + id + "?success=PhotosDeleted";
     }
 
     @PostMapping("/photos/add/{id}")
@@ -168,10 +168,10 @@ public class HotelController {
                             @RequestParam("files")List<MultipartFile> files,
                             @RequestParam("mediaType") HotelMediaType mediaType) {
         if(files == null || files.isEmpty()) {
-            return "redirect:/hotels/profile/" + id + "?error=NoPhotosSelected";
+            return "redirect:/hotels/view/" + id + "?error=NoPhotosSelected";
         }
         hotelService.addAttachment(files, id, mediaType);
-        return "redirect:/hotels/profile/" + id + "?success=PhotosAdded";
+        return "redirect:/hotels/view/" + id + "?success=PhotosAdded";
     }
 
 

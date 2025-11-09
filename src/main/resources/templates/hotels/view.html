@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Hotel Profile</title>
+  <title>Hotel View</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <link rel="stylesheet" th:href="@{/css/styles.css}">
   <link rel="stylesheet" th:href="@{/css/form-theme.css}">
@@ -45,6 +45,11 @@
         <p><strong>Road: </strong><span th:text="${address.road}"></span></p>
         <p><strong>City: </strong><span th:text="${address.city}"></span></p>
         <p><strong>ZipCode: </strong><span th:text="${address.zipCode}"></span></p>
+        <p><strong>Status :</strong><span th:text="${hotel.status}"></span></p>
+        <p><strong>Created At :</strong><span th:text="${hotel.createdAt}"></span></p>
+        <p><strong>Updated At :</strong><span th:text="${hotel.updatedAt}"></span></p>
+        <p><strong>Created By :</strong><span th:text="${hotel.createdBy}"></span></p>
+        <p><strong>Updated By :</strong><span th:text="${hotel.updatedBy}"></span></p>
         <p></p>
       </div>
     </div>
@@ -308,7 +313,6 @@
         </div>
       </div>
     </div>
-
 
   </div>
 </div>
