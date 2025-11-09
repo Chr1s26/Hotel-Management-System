@@ -1,9 +1,12 @@
     package com.project.HotelManagementSystem.service;
 
+    import com.amazonaws.services.s3.AmazonS3;
+    import com.amazonaws.services.s3.model.DeleteObjectRequest;
     import com.project.HotelManagementSystem.dto.hotel.HotelCreateDTO;
     import com.project.HotelManagementSystem.dto.hotel.HotelDTO;
     import com.project.HotelManagementSystem.dto.hotel.HotelResponse;
     import com.project.HotelManagementSystem.dto.hotel.HotelUpdateDTO;
+    import com.project.HotelManagementSystem.entity.FileStorage;
     import com.project.HotelManagementSystem.entity.Hotel;
     import com.project.HotelManagementSystem.entity.HotelAttachment;
     import com.project.HotelManagementSystem.entity.constants.FileType;
@@ -12,11 +15,7 @@
     import com.project.HotelManagementSystem.entity.constants.StatusType;
     import com.project.HotelManagementSystem.exception.DuplicateException;
     import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
-    import com.project.HotelManagementSystem.repository.AmenitiesRepository;
-    import com.project.HotelManagementSystem.repository.HotelAttachmentRepository;
-    import com.project.HotelManagementSystem.repository.HotelRepository;
-    import com.project.HotelManagementSystem.repository.PolicyRepository;
-    import com.project.HotelManagementSystem.repository.PromotionRepository;
+    import com.project.HotelManagementSystem.repository.*;
     import lombok.RequiredArgsConstructor;
     import org.modelmapper.ModelMapper;
     import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +44,8 @@
         private final FileService fileService;
         private final AuthService authService;
         private final HotelAttachmentRepository hotelAttachmentRepository;
+        private final FileStorageRepository fileStorageRepository;
+        private final AmazonS3 amazonS3;
 
         public HotelCreateDTO createHotel(HotelCreateDTO hotelCreateDTO) {
             Optional<Hotel> hotelOp = hotelRepository.findHotelByAddress(hotelCreateDTO.getAddress());
@@ -126,6 +127,14 @@
             return hotelUpdateDTO;
         }
 
+        public Hotel findById(Long id) {
+            Optional<Hotel> optionalHotel = hotelRepository.findById(id);
+            if(optionalHotel.isEmpty()) {
+                throw new ResourceNotFoundException("hotels",optionalHotel,"id","hotels"," A hotel with the id cannot be found");
+            }
+            return optionalHotel.get();
+        }
+
         public HotelResponse findAllHotelsWithPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
             Sort sortByAndSortOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
             Pageable pageable = PageRequest.of(pageNumber,pageSize,sortByAndSortOrder);
@@ -146,4 +155,6 @@
             List<HotelDTO> hotelDTOs = hotels.stream().map(h -> modelMapper.map(h, HotelDTO.class)).toList();
             return hotelDTOs;
         }
+
+
     }
