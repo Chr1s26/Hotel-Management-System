@@ -141,33 +141,29 @@ public class HotelController {
         Hotel hotel = this.hotelService.findById(id);
         model.addAttribute("hotel", hotel);
         model.addAttribute("address", hotel.getAddress());
-        model.addAttribute("profilePhotos", fileService.getHotelPhotos(id, HotelMediaType.PROFILE));
-        model.addAttribute("coverPhotos", fileService.getHotelPhotos(id, HotelMediaType.COVER_PHOTO));
-        model.addAttribute("servicePhotos", fileService.getHotelPhotos(id, HotelMediaType.SERVICE));
-        model.addAttribute("otherPhotos", fileService.getHotelPhotos(id, HotelMediaType.OTHER));
+        model.addAttribute("profilePhotos", hotelService.getHotelPhotos(id, HotelMediaType.PROFILE));
+        model.addAttribute("coverPhotos", hotelService.getHotelPhotos(id, HotelMediaType.COVER_PHOTO));
+        model.addAttribute("servicePhotos", hotelService.getHotelPhotos(id, HotelMediaType.SERVICE));
+        model.addAttribute("otherPhotos", hotelService.getHotelPhotos(id, HotelMediaType.OTHER));
         return "hotels/profile";
     }
 
-    @PostMapping("/{id}/photos/delete")
+    @PostMapping("/photos/delete/{id}")
     public String deletePhotos(@PathVariable Long id,
-                               @RequestParam(value="selectedPhotos",required = false) List<Long> photoIds,
-                               @RequestParam("mediaType") HotelMediaType mediaType) {
-//        for(Long photoId : photoIds) {
-//            fileService.deleteHotelAttachmentAndFiles(photoId);
-//        }
-//        return "redirect:/hotels/profile/" + id;
+                               @RequestParam(value="selectedPhotos",required = false) List<Long> photoIds) {
+
         if (photoIds == null || photoIds.isEmpty()) {
             return "redirect:/hotels/profile/" + id + "?error=NoPhotosSelected";
         }
 
         for (Long photoId : photoIds) {
-            fileService.deleteHotelAttachmentAndFiles(photoId);
+            hotelService.deleteHotelAttachmentAndFiles(photoId);
         }
 
         return "redirect:/hotels/profile/" + id + "?success=PhotosDeleted";
     }
 
-    @PostMapping("/{id}/photos/add")
+    @PostMapping("/photos/add/{id}")
     public String addPhotos(@PathVariable Long id,
                             @RequestParam("files")List<MultipartFile> files,
                             @RequestParam("mediaType") HotelMediaType mediaType) {

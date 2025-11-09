@@ -53,7 +53,7 @@
     <div class="tab-pane fade" id="profilePhotos" role="tabpanel">
       <h4 class="text-bluegray mb-3">Profile Photo Gallery</h4>
 
-      <form th:action="@{/hotels/{id}/photos/delete(id=${hotel.id})}" method="post" id="deleteProfileForm">
+      <form th:action="@{/hotels/photos/delete/{id}(id=${hotel.id})}" method="post" id="deleteProfileForm">
 
         <input type="hidden" name="mediaType" value="PROFILE" />
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -92,7 +92,7 @@
               <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              <form th:action="@{/hotels/{id}/photos/add(id=${hotel.id})}"
+              <form th:action="@{/hotels/photos/add/{id}(id=${hotel.id})}"
                     method="post"
                     enctype="multipart/form-data">
 
@@ -118,7 +118,7 @@
     <div class="tab-pane fade" id="coverPhotos" role="tabpanel">
       <h4 class="text-bluegray mb-3">Cover Photo Gallery</h4>
 
-      <form th:action="@{/hotels/{id}/photos/delete(id=${hotel.id})}" method="post" id="deleteCoverForm">
+      <form th:action="@{/hotels/photos/delete/{id}(id=${hotel.id})}" method="post" id="deleteCoverForm">
 
         <input type="hidden" name="mediaType" value="COVER_PHOTO" />
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -157,7 +157,7 @@
               <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              <form th:action="@{/hotels/{id}/photos/add(id=${hotel.id})}"
+              <form th:action="@{/hotels/photos/add/{id}(id=${hotel.id})}"
                     method="post"
                     enctype="multipart/form-data">
 
@@ -183,7 +183,7 @@
     <div class="tab-pane fade" id="servicePhotos" role="tabpanel">
       <h4 class="text-bluegray mb-3">Service Photo Gallery</h4>
 
-      <form th:action="@{/hotels/{id}/photos/delete(id=${hotel.id})}" method="post" id="deleteServiceForm">
+      <form th:action="@{/hotels/photos/delete/{id}(id=${hotel.id})}" method="post" id="deleteServiceForm">
 
         <input type="hidden" name="mediaType" value="SERVICE" />
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -222,7 +222,7 @@
               <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              <form th:action="@{/hotels/{id}/photos/add(id=${hotel.id})}"
+              <form th:action="@{/hotels/photos/add/{id}(id=${hotel.id})}"
                     method="post"
                     enctype="multipart/form-data">
 
@@ -248,7 +248,7 @@
     <div class="tab-pane fade" id="otherPhotos" role="tabpanel">
       <h4 class="text-bluegray mb-3">Other Photo Gallery</h4>
 
-      <form th:action="@{/hotels/{id}/photos/delete(id=${hotel.id})}" method="post" id="deleteOtherForm">
+      <form th:action="@{/hotels/photos/delete/{id}(id=${hotel.id})}" method="post" id="deleteOtherForm">
 
         <input type="hidden" name="mediaType" value="OTHER" />
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -287,7 +287,7 @@
               <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              <form th:action="@{/hotels/{id}/photos/add(id=${hotel.id})}"
+              <form th:action="@{/hotels/photos/add/{id}(id=${hotel.id})}"
                     method="post"
                     enctype="multipart/form-data">
 

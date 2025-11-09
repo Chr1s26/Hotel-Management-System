@@ -2,23 +2,18 @@
 
     import com.amazonaws.services.s3.AmazonS3;
     import com.amazonaws.services.s3.model.DeleteObjectRequest;
-    import com.project.HotelManagementSystem.dto.hotel.HotelCreateDTO;
-    import com.project.HotelManagementSystem.dto.hotel.HotelDTO;
-    import com.project.HotelManagementSystem.dto.hotel.HotelResponse;
-    import com.project.HotelManagementSystem.dto.hotel.HotelUpdateDTO;
+    import com.project.HotelManagementSystem.dto.hotel.*;
     import com.project.HotelManagementSystem.entity.FileStorage;
     import com.project.HotelManagementSystem.entity.Hotel;
     import com.project.HotelManagementSystem.entity.HotelAttachment;
     import com.project.HotelManagementSystem.entity.constants.FileType;
     import com.project.HotelManagementSystem.entity.constants.StatusType;
     import com.project.HotelManagementSystem.entity.constants.HotelMediaType;
-    import com.project.HotelManagementSystem.entity.constants.StatusType;
     import com.project.HotelManagementSystem.exception.DuplicateException;
     import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
     import com.project.HotelManagementSystem.repository.*;
     import lombok.RequiredArgsConstructor;
     import org.modelmapper.ModelMapper;
-    import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.data.domain.Page;
     import org.springframework.data.domain.PageRequest;
     import org.springframework.data.domain.Pageable;
@@ -31,7 +26,6 @@
     import java.util.HashSet;
     import java.util.List;
     import java.util.Optional;
-    import java.util.stream.Collectors;
 
     @Service
     @RequiredArgsConstructor
@@ -89,27 +83,6 @@
             return modelMapper.map(savedHotel,HotelUpdateDTO.class);
         }
 
-        public void addAttachment(List<MultipartFile> files, Long hotelId, HotelMediaType hotelMediaType){
-            if(files==null || files.isEmpty()) { return;}
-
-            Optional<Hotel> optionalHotel = this.hotelRepository.findById(hotelId);
-            if(optionalHotel.isEmpty()) {
-                throw new ResourceNotFoundException("hotels",optionalHotel,"id","hotels/edit"," A hotel with the id cannot be found");
-            }
-            Hotel hotel = optionalHotel.get();
-            for(MultipartFile multipartFile : files) {
-                if(multipartFile.isEmpty()) continue;
-                HotelAttachment hotelAttachment = new HotelAttachment();
-                hotelAttachment.setHotel(hotel);
-                hotelAttachment.setHotelMediaType(hotelMediaType);
-                hotelAttachment.setStatus(StatusType.ACTIVE);
-                hotelAttachment.setCreatedAt(LocalDateTime.now());
-                hotelAttachment.setCreatedBy(authService.getCurrentUser());
-                hotelAttachment = hotelAttachmentRepository.save(hotelAttachment);
-                fileService.handleFileUpload(multipartFile, FileType.HOTEL_ATTACHMENT, hotelAttachment.getId(), "s3");
-            }
-        }
-
         public void deleteHotel(Long id) {
             Optional<Hotel> optionalHotel = hotelRepository.findById(id);
             if(optionalHotel.isEmpty()) {
@@ -156,5 +129,52 @@
             return hotelDTOs;
         }
 
+        public List<HotelPhotoDTO> getHotelPhotos(Long hotelId, HotelMediaType hotelMediaType) {
+            List<HotelAttachment> hotelAttachments = hotelAttachmentRepository.findByHotelIdAndHotelMediaType(hotelId, hotelMediaType);
+            List<HotelPhotoDTO> hotelPhotos = new ArrayList<>();
+            for(HotelAttachment attachment : hotelAttachments){
+                List<String> fileUrls = fileService.getFileNames(FileType.HOTEL_ATTACHMENT, attachment.getId());
+                for(String url : fileUrls){
+                    hotelPhotos.add(new HotelPhotoDTO(attachment.getId(), url));
+                }
+            }
+            return hotelPhotos;
+        }
+
+        public void deleteHotelAttachmentAndFiles(Long attachmentId) {
+            List<FileStorage> files = fileStorageRepository.findAllByFileTypeAndFileIdOrderByCreatedAtDesc(FileType.HOTEL_ATTACHMENT, attachmentId);
+            for(FileStorage file : files) {
+                try{
+                    if("S3".equalsIgnoreCase(file.getServiceName())){
+                        amazonS3.deleteObject(new DeleteObjectRequest(fileService.getBucketName(), file.getKey()));
+                    }
+                    fileStorageRepository.delete(file);
+                }catch (Exception e){
+                    throw new RuntimeException("Failed to delete hotel file: " + e.getMessage());
+                }
+            }
+            hotelAttachmentRepository.deleteById(attachmentId);
+        }
+
+        public void addAttachment(List<MultipartFile> files, Long hotelId, HotelMediaType hotelMediaType){
+            if(files==null || files.isEmpty()) { return;}
+
+            Optional<Hotel> optionalHotel = this.hotelRepository.findById(hotelId);
+            if(optionalHotel.isEmpty()) {
+                throw new ResourceNotFoundException("hotels",optionalHotel,"id","hotels/edit"," A hotel with the id cannot be found");
+            }
+            Hotel hotel = optionalHotel.get();
+            for(MultipartFile multipartFile : files) {
+                if(multipartFile.isEmpty()) continue;
+                HotelAttachment hotelAttachment = new HotelAttachment();
+                hotelAttachment.setHotel(hotel);
+                hotelAttachment.setHotelMediaType(hotelMediaType);
+                hotelAttachment.setStatus(StatusType.ACTIVE);
+                hotelAttachment.setCreatedAt(LocalDateTime.now());
+                hotelAttachment.setCreatedBy(authService.getCurrentUser());
+                hotelAttachment = hotelAttachmentRepository.save(hotelAttachment);
+                fileService.handleFileUpload(multipartFile, FileType.HOTEL_ATTACHMENT, hotelAttachment.getId(), "s3");
+            }
+        }
 
     }
