@@ -1,5 +1,7 @@
 package com.project.HotelManagementSystem.dto.customer;
 
+import com.project.HotelManagementSystem.validator.admin.AvailableAdminCreateUser;
+import com.project.HotelManagementSystem.validator.customer.AvailableCustomerCreateUser;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
@@ -30,5 +32,6 @@ public class CustomerCreateDTO {
     @Pattern(regexp = "^[A-Za-z\\s]+$", message = "Nationality cannot include numbers or symbols")
     private String nationality;
     private boolean vipStatus;
+    @AvailableCustomerCreateUser(message = "This user is already assigned to another admin.")
     private Long user;
 }
