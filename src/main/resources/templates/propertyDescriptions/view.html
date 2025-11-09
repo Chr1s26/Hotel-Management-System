@@ -1,54 +1,164 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Property Description View</title>
+    <title>Property Description</title>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/form-theme.css}">
-</head>
+    <style>
+        body {
+            background: linear-gradient(135deg, var(--royal), var(--navy));
+            color: var(--soft);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding-top: 80px;
+        }
 
+        .profile-container {
+            max-width: 900px;
+            margin: 60px auto;
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(20, 32, 46, 0.7);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(136,169,195,0.35);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.45);
+        }
+
+        .profile-header {
+            background: linear-gradient(to right, var(--midnight), var(--royal));
+            text-align: center;
+            color: var(--soft);
+            padding: 40px 20px;
+            border-bottom: 1px solid rgba(136,169,195,0.2);
+        }
+
+        .profile-header img {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 4px solid var(--bluegray);
+            object-fit: cover;
+            margin-bottom: 15px;
+            box-shadow: 0 0 12px rgba(136,169,195,0.5);
+        }
+
+        .profile-header h2 {
+            font-weight: 600;
+            color: var(--bluegray);
+            margin-bottom: 5px;
+        }
+
+        .profile-header p {
+            color: var(--soft2);
+            margin-bottom: 6px;
+        }
+
+        /* 📋 Body section */
+        .profile-body {
+            padding: 30px;
+        }
+
+        .profile-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px 28px;
+        }
+
+        .profile-info div {
+            background: rgba(43,66,87,0.4);
+            padding: 14px 20px;
+            border-radius: 10px;
+            color: var(--soft);
+            border: 1px solid rgba(136,169,195,0.25);
+            transition: background-color .2s;
+        }
+
+        .profile-info div:hover {
+            background: rgba(43,66,87,0.6);
+        }
+
+        .label {
+            font-weight: 600;
+            color: var(--bluegray);
+        }
+
+        /* 📤 Upload form */
+        .upload-form {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .upload-form input[type="file"] {
+            display: none;
+        }
+
+        .upload-form label {
+            background: var(--bluegray);
+            color: var(--royal);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 600;
+        }
+
+        .upload-form label:hover {
+            background: #9db8cf;
+        }
+
+        .btn-update {
+            background: var(--midnight);
+            color: var(--soft);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-left: 6px;
+            font-weight: 600;
+        }
+
+        .btn-update:hover {
+            background: var(--royal);
+        }
+
+        /* Navbar layering fix */
+        .navbar { z-index: 1050 !important; }
+        .dropdown-menu { z-index: 2000 !important; }
+    </style>
+</head>
 <body class="royal-form-page">
 <div th:replace="fragments/sidebar :: sidebar"></div>
-
+<h1 class="page-title">Property Description</h1>
 <div class="container mt-4">
-    <h2 class="page-title" th:text="${propertyDescription.id}">Property Description Id</h2>
-
-    <!-- Tabs Navigation -->
-    <ul class="nav nav-tabs mb-3" id="propertyDescriptionTabs" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#home" role="tab">Home</a>
-        </li>
-    </ul>
-
-    <div class="tab-content" id="propertyDescriptionTabsContent">
-        <!-- Home Tab -->
-        <div class="tab-pane fade show active" id="home" role="tabpanel">
-            <div class="glass-card p-4 mb-4">
-                <h4 class="text-bluegray mb-3">Property Description Information</h4>
-                <p><strong>Property Description ID: </strong><span th:text="${propertyDescription.id}"></span></p>
-                <p><strong>Description: </strong><span th:text="${propertyDescription.description}"></span></p>
-                <p><strong>Opening Date: </strong><span th:text="${propertyDescription.openingDate}"></span></p>
-                <p><strong>Renovation Date: </strong><span th:text="${propertyDescription.renovationDate}"></span></p>
-                <p><strong>Number of Rooms: </strong><span th:text="${propertyDescription.numberOfRooms}"></span></p>
-                <p><strong>Status: </strong><span th:text="${propertyDescription.status}"></span></p>
-                <p><strong>Created At: </strong> <span th:text="${propertyDescription.createdAt}"></span></p>
-                <p><strong>Updated At: </strong><span th:text="${propertyDescription.updatedAt}"></span></p>
-                <p><strong>Created By:</strong> <span th:text="${propertyDescription.createdBy}"></span></p>
-                <p><strong>Updated By: </strong><span th:text="${propertyDescription.updatedBy}"></span></p>
-                <p></p>
-            </div>
-        </div>
-    </div>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <a th:href="@{/propertyDescriptions}" class="btn btn-secondary">
-            Back
+            <- Back
         </a>
     </div>
 
-</div>
+    <div class="profile-container">
+        <div class="profile-body">
+            <div class="profile-info">
+                <div><span class="label">Property Description ID :</span> <span th:text="${propertyDescription.id}"></span></div>
+                <div><span class="label">Description :</span> <span th:text="${propertyDescription.description}"></span></div>
+                <div><span class="label">Opening Date :</span> <span th:text="${propertyDescription.openingDate}"></span></div>
+                <div><span class="label">Renovation Date :</span> <span th:text="${propertyDescription.renovationDate}"></span></div>
+                <div><span class="label">Number of Rooms :</span> <span th:text="${propertyDescription.numberOfRooms}"></span></div>
+                <div><span class="label">Status :</span> <span th:text="${propertyDescription.status}"></span></div>
+                <div><span class="label">Created At :</span><span th:text="${propertyDescription.createdAt}"></span></div>
+                <div><span class="label">Updated At :</span><span th:text="${propertyDescription.updatedAt}"></span></div>
+                <div><span class="label">Created By :</span><span th:text="${propertyDescription.createdBy}"></span></div>
+                <div><span class="label">Updated By :</span><span th:text="${propertyDescription.updatedBy}"></span></div>
 
-<!-- JS -->
+            </div>
+        </div>
+    </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     (function() {
