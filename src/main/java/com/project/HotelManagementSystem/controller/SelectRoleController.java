@@ -1,8 +1,11 @@
 package com.project.HotelManagementSystem.controller;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +34,19 @@ public class SelectRoleController {
         boolean isValidRole = userRoles.stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equalsIgnoreCase(selectedRole));
 
         if(isValidRole){
+
             session.setAttribute("activeRole", selectedRole);
+            List<GrantedAuthority> newAuthorities =
+                    List.of(new SimpleGrantedAuthority(selectedRole));
+
+
+            Authentication newAuth = new UsernamePasswordAuthenticationToken(
+                    authentication.getPrincipal(),
+                    authentication.getCredentials(),
+                    newAuthorities
+            );
+            SecurityContextHolder.getContext().setAuthentication(newAuth);
+
             if("ROLE_ADMIN".equalsIgnoreCase(selectedRole)){
                 return "redirect:/home";
             }else if("ROLE_EDITOR".equalsIgnoreCase(selectedRole)){

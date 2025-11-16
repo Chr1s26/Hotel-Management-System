@@ -1,11 +1,7 @@
 package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.dto.city.*;
-import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
-import com.project.HotelManagementSystem.dto.searchFilter.city.CitySearchFilter;
-import com.project.HotelManagementSystem.dto.searchFilter.city.CitySearchQuery;
 import com.project.HotelManagementSystem.entity.City;
-import com.project.HotelManagementSystem.entity.Region;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.entity.specification.CitySpecification;
 import com.project.HotelManagementSystem.exception.DuplicateException;
@@ -13,8 +9,6 @@ import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CityRepository;
 import com.project.HotelManagementSystem.repository.RegionRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,9 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

@@ -1,9 +1,6 @@
 package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.dto.admin.*;
-import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
-import com.project.HotelManagementSystem.dto.searchFilter.admin.AdminSearchFilter;
-import com.project.HotelManagementSystem.dto.searchFilter.admin.AdminSearchQuery;
 import com.project.HotelManagementSystem.entity.Admin;
 import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.User;
@@ -23,7 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;

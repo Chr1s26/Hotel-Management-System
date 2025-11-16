@@ -15,12 +15,11 @@
 <div class="center-screen " style="min-height: 65vh;">
     <div class="glass-card shadow-glass p-4 text-center" style="max-width: 520px; width: 100%;">
 
-        <h2 class="text-danger fw-bold mb-3">You Do Not Have Access!!</h2>
+        <h2 class="text-danger fw-bold mb-3">You Do Not Have Access to this Page !!</h2>
 
         <p class="text-soft mb-3">
             You are logged in as:
             <span sec:authentication="authorities" class="role-badge"></span>
-            <!--            <span sec:authentication="name" class="text-bluegray fw-semibold"></span>-->
         </p>
 
         <p class="text-soft2 mb-4">
@@ -28,11 +27,10 @@
             <span sec:authentication="authorities" class="text-bluegray fw-medium"></span>
         </p>
 
-        <form th:action="@{/logout}" method="POST" >
-            <button type="submit" class="btn btn-danger w-100">
-                Logout
-            </button>
-        </form>
+        <button class="btn btn-primary w-100" onclick="history.back()">
+            Go Back
+        </button>
+
 
     </div>
 </div>
