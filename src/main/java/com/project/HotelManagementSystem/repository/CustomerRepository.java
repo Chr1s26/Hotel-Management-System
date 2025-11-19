@@ -1,6 +1,8 @@
 package com.project.HotelManagementSystem.repository;
 
 import com.project.HotelManagementSystem.entity.Customer;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;

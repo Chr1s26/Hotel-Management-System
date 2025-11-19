@@ -2,6 +2,8 @@ package com.project.HotelManagementSystem.repository;
 
 import com.project.HotelManagementSystem.entity.Admin;
 import com.project.HotelManagementSystem.entity.User;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,4 +27,6 @@ public interface AdminRepository extends JpaRepository<Admin, Long>, JpaSpecific
     boolean existsByNationalIdNumberIgnoreCase(String nationalIdNumber);
 
     boolean existsByUserIdAndIdNot(Long user, Long id);
+
+    Optional<Admin> findByPhone(@NotBlank(message = "Phone number cannot be empty.") @Pattern(regexp = "^[0-9\\-\\s()]{8,15}$", message = "Invalid phone number format") String phone);
 }

@@ -45,6 +45,10 @@ public class AdminService {
         if (adminOp.isPresent()) {
             throw new DuplicateException("admin",adminCreateDTO,"name","admins/create","An admin with the same name already exists");
         }
+
+        adminRepository.findByPhone(adminCreateDTO.getPhone()).ifPresent( a -> {
+            throw new DuplicateException("admin",adminCreateDTO,"phone","admins/create","An admin with the same phone number already exists");
+        });
         validateIdsUniqueOrThrow(null, adminCreateDTO.getPassportNumber(), adminCreateDTO.getNationalIdNumber(),adminCreateDTO,"create");
 
         Admin admin = modelMapper.map(adminCreateDTO, Admin.class);
@@ -70,6 +74,9 @@ public class AdminService {
         if (adminOp.isPresent()) {
             throw new DuplicateException("admin",adminUpdateDTO,"name","admins/edit","An admin with the same name already exists");
         }
+        adminRepository.findByPhone(adminUpdateDTO.getPhone()).ifPresent( a -> {
+            throw new DuplicateException("admin",adminUpdateDTO,"phone","admins/create","An admin with the same phone number already exists");
+        });
         validateIdsUniqueOrThrow(id, adminUpdateDTO.getPassportNumber(), adminUpdateDTO.getNationalIdNumber(),adminUpdateDTO,"update");
 
         Admin admin = adminRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("admin",adminUpdateDTO,"id","admins/edit","An account with this id cannot be found"));

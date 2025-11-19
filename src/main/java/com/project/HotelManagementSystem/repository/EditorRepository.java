@@ -2,6 +2,8 @@ package com.project.HotelManagementSystem.repository;
 
 import com.project.HotelManagementSystem.entity.Editor;
 import com.project.HotelManagementSystem.entity.User;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -26,4 +28,6 @@ public interface EditorRepository extends JpaRepository<Editor, Long>, JpaSpecif
     boolean existsByNationalIdNumberIgnoreCase(String nationalIdNumber);
 
     boolean existsByUserIdAndIdNot(Long user, Long id);
+
+    Optional<Editor> findByPhone( String phone);
 }

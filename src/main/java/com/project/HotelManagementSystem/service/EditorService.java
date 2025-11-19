@@ -47,6 +47,9 @@ public class EditorService {
         if (editorOp.isPresent()) {
             throw new DuplicateException("editor",editorCreateDTO,"name","editors/create","An editor with the same name already exists");
         }
+        editorRepository.findByPhone(editorCreateDTO.getPhone()).ifPresent( a -> {
+            throw new DuplicateException("editor",editorCreateDTO,"phone","editors/create","An editor with the same phone number already exists");
+        });
         validateIdsUniqueOrThrow(null, editorCreateDTO.getPassportNumber(), editorCreateDTO.getNationalIdNumber());
 
         Editor editor = modelMapper.map(editorCreateDTO, Editor.class);
@@ -74,6 +77,9 @@ public class EditorService {
         if (editorOp.isPresent()) {
             throw new DuplicateException("editor",editorUpdateDTO,"name","editors/edit","An editor with the same name already exists");
         }
+        editorRepository.findByPhone(editorUpdateDTO.getPhone()).ifPresent( a -> {
+            throw new DuplicateException("editor",editorUpdateDTO,"phone","editors/create","An editor with the same phone number already exists");
+        });
         validateIdsUniqueOrThrow(id, editorUpdateDTO.getPassportNumber(), editorUpdateDTO.getNationalIdNumber());
 //        Long userId = editorUpdateDTO.getUser();
         Editor savedEditor = editorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("editor",editorUpdateDTO,"id","editors/edit","An editor with the id cannot be found"));

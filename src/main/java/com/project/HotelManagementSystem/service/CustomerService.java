@@ -36,6 +36,7 @@ public class CustomerService {
         if (customrOp.isPresent()) {
             throw new DuplicateException("customer",customerCreateDTO,"name","customers/create","A customer with the same name and same phone number already exists");
         }
+
         Customer customer = toCustomerEntity(customerCreateDTO);
         customerRepository.save(customer);
         return toCreateDTO(customer);
