@@ -22,6 +22,7 @@
     import java.util.HashSet;
     import java.util.List;
     import java.util.Optional;
+    import java.util.stream.Collectors;
 
     @Service
     @RequiredArgsConstructor
@@ -101,7 +102,7 @@
             if(optionalHotel.isEmpty()) {
                 throw new ResourceNotFoundException("hotels",optionalHotel,"id","hotels"," A hotel with the id cannot be found");
             }
-            return toDTO(optionalHotel.get());
+            return modelMapper.map(optionalHotel.get(), HotelDTO.class);
         }
 
 //        public HotelResponse findAllHotelsWithPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
@@ -121,8 +122,7 @@
 
         public List<HotelDTO> findAllHotels() {
             List<Hotel> hotels = this.hotelRepository.findAll();
-            List<HotelDTO> hotelDTOs = hotels.stream().map(this::toDTO).toList();
-            return hotelDTOs;
+            return hotels.stream().map(hotel -> modelMapper.map(hotel, HotelDTO.class)).collect(Collectors.toList());
         }
 
         public List<HotelPhotoDTO> getHotelPhotos(Long hotelId, HotelMediaType hotelMediaType)  {
@@ -172,26 +172,4 @@
                 fileService.handleFileUpload(multipartFile, FileType.HOTEL_ATTACHMENT, hotelAttachment.getId(), "s3");
             }
         }
-
-        private HotelDTO toDTO(Hotel hotel) {
-            HotelDTO hotelDTO = new HotelDTO();
-            hotelDTO.setId(hotel.getId());
-            hotelDTO.setName(hotel.getName());
-            hotelDTO.setPhoneNumber(hotel.getPhoneNumber());
-            hotelDTO.setEmail(hotel.getEmail());
-            hotelDTO.setDescription(hotel.getDescription());
-            hotelDTO.setRating(hotel.getRating());
-            hotelDTO.setHotelType(hotel.getHotelType());
-            hotelDTO.setAddress(hotel.getAddress());
-            hotelDTO.setPropertyDescription(hotel.getPropertyDescription());
-            hotelDTO.setPromotions(hotel.getPromotions());
-            hotelDTO.setPolicies(hotel.getPolicies());
-            hotelDTO.setCreatedBy(hotel.getCreatedBy());
-            hotelDTO.setCreatedAt(hotel.getCreatedAt());
-            hotelDTO.setUpdatedAt(hotel.getUpdatedAt());
-            hotelDTO.setUpdatedBy(hotel.getUpdatedBy());
-            hotelDTO.setStatus(hotel.getStatus());
-            return hotelDTO;
-        }
-
     }

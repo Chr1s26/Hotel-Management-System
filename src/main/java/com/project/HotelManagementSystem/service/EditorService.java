@@ -50,8 +50,7 @@ public class EditorService {
         editorRepository.findByPhone(editorCreateDTO.getPhone()).ifPresent( a -> {
             throw new DuplicateException("editor",editorCreateDTO,"phone","editors/create","An editor with the same phone number already exists");
         });
-        validateIdsUniqueOrThrow(null, editorCreateDTO.getPassportNumber(), editorCreateDTO.getNationalIdNumber());
-
+        validateIdsUniqueOrThrow(null, editorCreateDTO.getPassportNumber(), editorCreateDTO.getNationalIdNumber(), editorCreateDTO,"create");
         Editor editor = modelMapper.map(editorCreateDTO, Editor.class);
 
         User user = userRepository.findById(editorCreateDTO.getUser())
@@ -68,8 +67,7 @@ public class EditorService {
         editor.setCreatedAt(LocalDateTime.now());
         editor.setCreatedBy(authService.getCurrentUser());
         editor = editorRepository.save(editor);
-        EditorCreateDTO dto = toCreateDTO(editor);
-        return dto;
+        return modelMapper.map(editor, EditorCreateDTO.class);
     }
 
     public EditorUpdateDTO updateEditor(Long id, EditorUpdateDTO editorUpdateDTO) {
@@ -77,10 +75,10 @@ public class EditorService {
         if (editorOp.isPresent()) {
             throw new DuplicateException("editor",editorUpdateDTO,"name","editors/edit","An editor with the same name already exists");
         }
-        editorRepository.findByPhone(editorUpdateDTO.getPhone()).ifPresent( a -> {
+        editorRepository.findByPhoneAndIdNot(editorUpdateDTO.getPhone(),id).ifPresent( a -> {
             throw new DuplicateException("editor",editorUpdateDTO,"phone","editors/create","An editor with the same phone number already exists");
         });
-        validateIdsUniqueOrThrow(id, editorUpdateDTO.getPassportNumber(), editorUpdateDTO.getNationalIdNumber());
+        validateIdsUniqueOrThrow(null, editorUpdateDTO.getPassportNumber(), editorUpdateDTO.getNationalIdNumber(), editorUpdateDTO,"update");
 //        Long userId = editorUpdateDTO.getUser();
         Editor savedEditor = editorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("editor",editorUpdateDTO,"id","editors/edit","An editor with the id cannot be found"));
         Editor editor = modelMapper.map(editorUpdateDTO, Editor.class);
@@ -101,8 +99,7 @@ public class EditorService {
         savedEditor.setUpdatedAt(LocalDateTime.now());
         savedEditor.setUpdatedBy(authService.getCurrentUser());
         savedEditor = editorRepository.save(savedEditor);
-        EditorUpdateDTO dto = toUpdateDTO(savedEditor);
-        return dto;
+        return modelMapper.map(savedEditor, EditorUpdateDTO.class);
     }
 
     public void deleteEditor(Long id) {
@@ -179,63 +176,38 @@ public class EditorService {
         return editorResponse;
     }
 
-    private void validateIdsUniqueOrThrow(Long currentEditorId, String passport, String nationalId) {
-        String p = (passport == null) ? null : passport.trim();
-        String n = (nationalId == null) ? null : nationalId.trim();
+    private void validateIdsUniqueOrThrow(Long currentEditorId, String passport, String nationalId, Object object, String type) {
+        String p = (passport != null) ? passport.trim() : "";
+        String n = (nationalId != null) ? nationalId.trim() : "";
 
-        if ((p == null || p.isEmpty()) && (n == null || n.isEmpty())) {
+        String route = switch (type.toLowerCase()) {
+            case "create" -> "editors/create";
+            case "update" -> "editors/edit";
+            default -> "editors";
+        };
+
+        if (p.isEmpty() && n.isEmpty()) {
             throw new IllegalArgumentException("Either passport number or national ID number must be provided.");
         }
 
-        if (p != null && !p.isEmpty()) {
+        if (!p.isEmpty()) {
             boolean dup = (currentEditorId == null)
                     ? editorRepository.existsByPassportNumberIgnoreCase(p)
                     : editorRepository.existsByPassportNumberIgnoreCaseAndIdNot(p, currentEditorId);
-//            if (dup) {
-//                throw new DuplicateException("Passport number is already used by another editor.");
-//            }
+
+            if (dup) {
+                throw new DuplicateException("editor", object, "passportNumber", route, "Passport Number already exists.");
+            }
         }
 
-        if (n != null && !n.isEmpty()) {
+        if (!n.isEmpty()) {
             boolean dup = (currentEditorId == null)
                     ? editorRepository.existsByNationalIdNumberIgnoreCase(n)
                     : editorRepository.existsByNationalIdNumberIgnoreCaseAndIdNot(n, currentEditorId);
-//            if (dup) {
-//                throw new DuplicateException("National ID number is already used by another editor.");
-//            }
+
+            if (dup) {
+                throw new DuplicateException("editor", object, "nationalIdNumber", route, "National ID Number already exists.");
+            }
         }
     }
-
-    public EditorCreateDTO toCreateDTO(Editor editor) {
-        EditorCreateDTO dto = new EditorCreateDTO();
-        dto.setId(editor.getId());
-        dto.setName(editor.getName());
-        dto.setPhone(editor.getPhone());
-        dto.setDateOfBirth(editor.getDateOfBirth());
-        dto.setNationality(editor.getNationality());
-        dto.setPassportNumber(editor.getPassportNumber());
-        dto.setNationalIdNumber(editor.getNationalIdNumber());
-        dto.setEditorType(editor.getEditorType());
-        if(editor.getUser() != null){
-            dto.setUser(editor.getUser().getId());
-        }
-        return dto;
-    }
-
-    public EditorUpdateDTO toUpdateDTO(Editor editor) {
-        EditorUpdateDTO dto = new EditorUpdateDTO();
-        dto.setId(editor.getId());
-        dto.setName(editor.getName());
-        dto.setPhone(editor.getPhone());
-        dto.setDateOfBirth(editor.getDateOfBirth());
-        dto.setNationality(editor.getNationality());
-        dto.setPassportNumber(editor.getPassportNumber());
-        dto.setNationalIdNumber(editor.getNationalIdNumber());
-        dto.setEditorType(editor.getEditorType());
-        if(editor.getUser() != null){
-            dto.setUser(editor.getUser().getId());
-        }
-        return dto;
-    }
-
 }

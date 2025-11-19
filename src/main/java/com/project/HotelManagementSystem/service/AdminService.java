@@ -64,8 +64,7 @@ public class AdminService {
         user.getRoles().add(adminRole);
         admin.setUser(user);
         admin = adminRepository.save(admin);
-        AdminCreateDTO dto = toCreateDTO(admin);
-        return dto;
+        return modelMapper.map(admin, AdminCreateDTO.class);
     }
 
     public AdminUpdateDTO updateAdmin(Long id,AdminUpdateDTO adminUpdateDTO) {
@@ -96,8 +95,7 @@ public class AdminService {
         admin.setUpdatedAt(LocalDateTime.now());
         admin.setUpdatedBy(authService.getCurrentUser());
         admin = adminRepository.save(admin);
-        AdminUpdateDTO dto = toUpdateDTO(admin);
-        return dto;
+        return modelMapper.map(admin, AdminUpdateDTO.class);
     }
 
     public void deleteAdmin(Long id) {
@@ -185,12 +183,10 @@ public class AdminService {
             default -> "admins";
         };
 
-        // ✅ Require at least one ID
         if (p.isEmpty() && n.isEmpty()) {
             throw new IllegalArgumentException("Either passport number or national ID number must be provided.");
         }
 
-        // ✅ Only check non-empty values
         if (!p.isEmpty()) {
             boolean dup = (currentAdminId == null)
                     ? adminRepository.existsByPassportNumberIgnoreCase(p)
@@ -211,37 +207,4 @@ public class AdminService {
             }
         }
     }
-
-    public AdminCreateDTO toCreateDTO(Admin admin) {
-        AdminCreateDTO dto = new AdminCreateDTO();
-        dto.setId(admin.getId());
-        dto.setName(admin.getName());
-        dto.setPhone(admin.getPhone());
-        dto.setDateOfBirth(admin.getDateOfBirth());
-        dto.setNationality(admin.getNationality());
-        dto.setPassportNumber(admin.getPassportNumber());
-        dto.setNationalIdNumber(admin.getNationalIdNumber());
-        dto.setAdminType(admin.getAdminType());
-        if(admin.getUser() != null){
-            dto.setUser(admin.getUser().getId());
-        }
-        return dto;
-    }
-
-    public AdminUpdateDTO toUpdateDTO(Admin admin) {
-        AdminUpdateDTO dto = new AdminUpdateDTO();
-        dto.setId(admin.getId());
-        dto.setName(admin.getName());
-        dto.setPhone(admin.getPhone());
-        dto.setDateOfBirth(admin.getDateOfBirth());
-        dto.setNationality(admin.getNationality());
-        dto.setPassportNumber(admin.getPassportNumber());
-        dto.setNationalIdNumber(admin.getNationalIdNumber());
-        dto.setAdminType(admin.getAdminType());
-        if(admin.getUser() != null){
-            dto.setUser(admin.getUser().getId());
-        }
-        return dto;
-    }
-
 }

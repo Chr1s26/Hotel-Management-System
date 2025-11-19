@@ -114,7 +114,7 @@ public class RoomService {
         if (roomOp.isEmpty()) {
             throw new ResourceNotFoundException("room",roomOp,"id","rooms","A room with this id cannot be found");
         }
-        return modelMapper.map(roomOp, RoomUpdateDTO.class);
+        return modelMapper.map(roomOp.get(), RoomUpdateDTO.class);
     }
 
     public RoomDTO findById(Long id) {
@@ -122,26 +122,7 @@ public class RoomService {
         if (roomOp.isEmpty()) {
             throw new ResourceNotFoundException("room",roomOp,"id","rooms","A room with this id cannot be found");
         }
-        return toDTO(roomOp.get());
-    }
-
-    private RoomDTO toDTO(Room room) {
-        RoomDTO roomDTO = new RoomDTO();
-        roomDTO.setId(room.getId());
-        roomDTO.setPrice(room.getPrice());
-        roomDTO.setAvailable(room.isAvailable());
-        roomDTO.setDescription(room.getDescription());
-        roomDTO.setRoomType(String.valueOf(room.getRoomType()));
-        roomDTO.setMaxCapacity(room.getMaxCapacity());
-        roomDTO.setHotel(room.getHotel());
-        roomDTO.setAmenities(room.getAmenities());
-        roomDTO.setPromotions(room.getPromotions());
-        roomDTO.setStatus(room.getStatus());
-        roomDTO.setCreatedAt(room.getCreatedAt());
-        roomDTO.setCreatedBy(room.getCreatedBy());
-        roomDTO.setUpdatedAt(room.getUpdatedAt());
-        roomDTO.setUpdatedBy(room.getUpdatedBy());
-        return roomDTO;
+        return modelMapper.map(roomOp.get(), RoomDTO.class);
     }
 
     public List<RoomPhotoDTO> getRoomPhotos(Long roomId,RoomMediaType roomMediaType) {

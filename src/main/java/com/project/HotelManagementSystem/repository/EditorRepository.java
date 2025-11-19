@@ -30,4 +30,6 @@ public interface EditorRepository extends JpaRepository<Editor, Long>, JpaSpecif
     boolean existsByUserIdAndIdNot(Long user, Long id);
 
     Optional<Editor> findByPhone( String phone);
+
+    Optional<Editor> findByPhoneAndIdNot(String phone, Long id);
 }
