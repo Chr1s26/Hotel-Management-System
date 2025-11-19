@@ -28,4 +28,6 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     boolean existsByEmailAndIdNot(String email, Long id);
 
     Page<User> findAll(Specification<User> spec, Pageable pageable);
+
+    boolean existsByNameAndEmail(String name, String email);
 }
