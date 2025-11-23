@@ -1,4 +1,4 @@
-package com.project.HotelManagementSystem.restController;
+package com.project.HotelManagementSystem.controller.api.v1;
 
 import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.User;
@@ -31,7 +31,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/auth")
-public class AuthRestController {
+public class AuthenticationController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -73,7 +73,7 @@ public class AuthRestController {
                 .body(response);
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/user/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest){
         if(userRepository.existsByNameAndEmail(signupRequest.getName(),signupRequest.getEmail())){
             return ResponseEntity.badRequest().body(new MessageResponse("User already with this name and email exists"));
