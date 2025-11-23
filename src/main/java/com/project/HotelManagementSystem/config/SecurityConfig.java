@@ -17,6 +17,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -60,42 +61,59 @@ public class SecurityConfig {
     @Bean
     @Order(1)
     public SecurityFilterChain adminSiteSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/register","/registerUser","/static/assets/**","/css/**","/confirm-account/**","/error", "/forget-password","/confirm-otp","/reset-password").permitAll()
-                        .requestMatchers("/select-role", "/set-active-role").authenticated()
-                        .requestMatchers("/admins/**").hasRole("ADMIN")
-                        .requestMatchers("/editors/**").hasAnyRole("EDITOR", "ADMIN")
-                        .requestMatchers("/users/**").hasAnyRole("EDITOR", "ADMIN")
-                        .requestMatchers("/customers/**").hasAnyRole("EDITOR", "ADMIN")
-                        .anyRequest().authenticated())
-                .formLogin(form -> form
-                        .loginPage("/login?error=false")
-                        .loginProcessingUrl("/authenticateTheUser")
-                        .successHandler(customAuthenticationSuccessSuccessHandler)
-                        .failureHandler(customAuthenticationFailureHandler)
-                        .permitAll())
-                .exceptionHandling(exception -> exception.accessDeniedPage("/access_denied"));
+        http.securityMatcher("/login", "/register", "/registerUser",
+                "/addresses/**","/amenities/**","/cities/**","/countries/**",
+                "/authenticateTheUser",
+                "/exports/**","/home/**","/hotels/**","/policies/**","/profiles/**",
+                "/promotions/**","/propertyDescriptions/**","/regions/**","/reviews/**",
+                "/roles/**","/rooms/**", "/admins/**", "/editors/**", "/users/**", "/customers/**",
+                "/select-role", "/set-active-role",
+                "/static/assets/**", "/css/**",
+                "/confirm-account/**", "/forget-password",
+                "/confirm-otp", "/reset-password", "/error");
 
-        http.authenticationProvider(authenticationProvider());
+        http.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/login","/register","/registerUser","/static/assets/**","/css/**","/confirm-account/**","/error", "/forget-password","/confirm-otp","/reset-password").permitAll()
+                .requestMatchers("/admins/**").hasRole("ADMIN")
+                .requestMatchers("/editors/**").hasAnyRole("EDITOR", "ADMIN")
+                .requestMatchers("/users/**").hasAnyRole("EDITOR", "ADMIN")
+                .requestMatchers("/customers/**").hasAnyRole("EDITOR", "ADMIN")
+                .anyRequest().authenticated()
+        );
+
+        http.formLogin(form -> form
+                .loginPage("/login?error=false")
+                .loginProcessingUrl("/authenticateTheUser")
+                .successHandler(customAuthenticationSuccessSuccessHandler)
+                .failureHandler(customAuthenticationFailureHandler)
+                .permitAll()
+        );
+
+        http.exceptionHandling(exception -> exception.accessDeniedPage("/access_denied"));
+
         return http.build();
     }
 
     @Bean
     @Order(2)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        http.securityMatcher("/api/**");
         http.csrf(csrf -> csrf.disable())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/api/signin").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(("/swagger-ui/**")).permitAll()
-                        .requestMatchers("/api/public/**").permitAll()
-                        .requestMatchers("/api/admin/**").permitAll()
                         .requestMatchers("/images/**").permitAll()
                         .anyRequest().authenticated());
 
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authTokenFilter(),
                 UsernamePasswordAuthenticationFilter.class);
+
+        http.headers(headers -> headers.frameOptions(
+                HeadersConfigurer.FrameOptionsConfig::sameOrigin));
         return http.build();
     }
 

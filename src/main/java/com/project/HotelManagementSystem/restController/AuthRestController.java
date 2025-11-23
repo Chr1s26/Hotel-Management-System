@@ -2,6 +2,7 @@ package com.project.HotelManagementSystem.restController;
 
 import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.User;
+import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.repository.RoleRepository;
 import com.project.HotelManagementSystem.repository.UserRepository;
 import com.project.HotelManagementSystem.security.jwt.JwtUtils;
@@ -12,7 +13,9 @@ import com.project.HotelManagementSystem.security.response.UserInfoResponse;
 import com.project.HotelManagementSystem.service.UserDetailsImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,14 +24,13 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
+@RequestMapping("/api/auth")
 public class AuthRestController {
 
     @Autowired
@@ -63,10 +65,12 @@ public class AuthRestController {
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        String jwtToken = jwtUtils.generateTokenFromUsername(userDetails);
+        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
         List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-        UserInfoResponse response = new UserInfoResponse(userDetails.getId(),jwtToken, userDetails.getName(), roles);
-        return ResponseEntity.ok(response);
+        UserInfoResponse response = new UserInfoResponse(userDetails.getId(),jwtCookie.toString(), userDetails.getName(), roles);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .body(response);
     }
 
     @PostMapping("/signup")
@@ -84,30 +88,33 @@ public class AuthRestController {
         Set<Role> roles = new HashSet<>();
 
         if(strRoles == null){
-            Role customerRole = roleRepository.findByRoleName("ROLE_CUSTOMER")
+            Role customerRole = roleRepository.findByRoleName("CUSTOMER")
                     .orElseThrow(()-> new RuntimeException("Error : Role not found"));
             roles.add(customerRole);
         }else{
             strRoles.forEach(role -> {
                 switch (role) {
                     case "admin":
-                        Role adminRole = roleRepository.findByRoleName("ROLE_ADMIN")
+                        Role adminRole = roleRepository.findByRoleName("ADMIN")
                                 .orElseThrow(() -> new RuntimeException("Error: Role not found"));
                         roles.add(adminRole);
                         break;
                     case "editor":
-                        Role editorRole = roleRepository.findByRoleName("ROLE_EDITOR")
+                        Role editorRole = roleRepository.findByRoleName("EDITOR")
                                 .orElseThrow(() -> new RuntimeException("Error: Role not found"));
                         roles.add(editorRole);
                         break;
                     default:
-                        Role customerRole = roleRepository.findByRoleName("ROLE_CUSTOMER")
+                        Role customerRole = roleRepository.findByRoleName("CUSTOMER")
                             .orElseThrow(() -> new RuntimeException("Error: Role not found"));
                     roles.add(customerRole);
                 }
             });
         }
         user.setRoles(roles);
+        user.setStatus(StatusType.ACTIVE);
+        user.setCreatedAt(LocalDateTime.now());
+        user.setConfirmedAt(LocalDateTime.now());
         userRepository.save(user);
         return ResponseEntity.ok(new MessageResponse("User registered successfully"));
     }
