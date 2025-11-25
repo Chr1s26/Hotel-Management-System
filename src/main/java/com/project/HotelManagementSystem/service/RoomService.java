@@ -12,18 +12,11 @@ import com.project.HotelManagementSystem.entity.constants.RoomMediaType;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -148,10 +141,8 @@ public class RoomService {
         List<RoomAttachment> roomAttachments = roomAttachmentRepository.findByRoomIdAndRoomMediaType(roomId,roomMediaType);
         List<RoomPhotoDTO> roomPhotos = new ArrayList<>();
         for(RoomAttachment attachment : roomAttachments){
-            List<String> fileUrls = fileService.getFileNames(FileType.ROOM_ATTACHMENT, attachment.getId());
-            for(String url : fileUrls){
-                roomPhotos.add(new RoomPhotoDTO(attachment.getId(),url));
-            }
+            String fileUrl = fileService.getFileNames(FileType.ROOM_ATTACHMENT, attachment.getId());
+            roomPhotos.add(new RoomPhotoDTO(attachment.getId(),fileUrl));
         }
         return roomPhotos;
     }

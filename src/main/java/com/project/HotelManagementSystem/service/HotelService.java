@@ -129,10 +129,8 @@
             List<HotelAttachment> hotelAttachments = hotelAttachmentRepository.findByHotelIdAndHotelMediaType(hotelId, hotelMediaType);
             List<HotelPhotoDTO> hotelPhotos = new ArrayList<>();
             for(HotelAttachment attachment : hotelAttachments){
-                List<String> fileUrls = fileService.getFileNames(FileType.HOTEL_ATTACHMENT, attachment.getId());
-                for(String url : fileUrls){
-                    hotelPhotos.add(new HotelPhotoDTO(attachment.getId(), url));
-                }
+                String fileUrls = fileService.getFileNames(FileType.HOTEL_ATTACHMENT, attachment.getId());
+                hotelPhotos.add(new HotelPhotoDTO(attachment.getId(), fileUrls));
             }
             return hotelPhotos;
         }

@@ -3,14 +3,14 @@ package com.project.HotelManagementSystem.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.project.HotelManagementSystem.entity.ExportListing;
-import com.project.HotelManagementSystem.entity.FileStorage;
+import com.project.HotelManagementSystem.entity.FileStorageV2;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.ExportListingRepository;
-import com.project.HotelManagementSystem.repository.FileStorageRepository;
 import com.project.HotelManagementSystem.repository.HotelAttachmentRepository;
+import com.project.HotelManagementSystem.repository.document.FileStorageV2Repository;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
@@ -24,8 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -45,7 +43,7 @@ public class FileService {
     @Value("${cloud.aws.region.static}")
     private String region;
 
-    private final FileStorageRepository fileStorageRepository;
+    private final FileStorageV2Repository fileStorageV2Repository;
     private final ExportListingRepository exportListingRepository;
     private final AmazonS3 amazonS3;
     @Autowired
@@ -54,8 +52,8 @@ public class FileService {
     private HotelAttachmentRepository hotelAttachmentRepository;
 
     public String getFileName(FileType fileType, Long fileId) {
-        return fileStorageRepository
-                .findTopByFileTypeAndFileIdOrderByCreatedAtDesc(fileType, fileId)
+        return fileStorageV2Repository
+                .findByFileTypeAndFileId(fileType, fileId)
                 .map(fs -> getFileUrl(fs.getKey(), fs.getServiceName()))
                 .orElse("/images/default-profile.png");
     }
@@ -96,9 +94,7 @@ public class FileService {
                 log.info("File Uploaded Successfully to S3 : {}",storedFileName);
             }
 
-            User user  = authService.getCurrentUser();
-
-            FileStorage fileStorage = new FileStorage();
+            FileStorageV2 fileStorage = new FileStorageV2();
             fileStorage.setFileName(file.getOriginalFilename());
             fileStorage.setKey(storedFileName);
             fileStorage.setFileSize(file.getSize());
@@ -106,17 +102,14 @@ public class FileService {
             fileStorage.setFileType(fileType);
             fileStorage.setFileId(id);
             fileStorage.setContentType(file.getContentType());
-            fileStorage.setCreatedAt(LocalDateTime.now());
-            fileStorage.setCreatedBy(user);
-            fileStorage.setUpdatedBy(user);
-            fileStorage.setStatus(StatusType.ACTIVE);
-            FileStorage fileStorage1 = fileStorageRepository.save(fileStorage);
+            fileStorageV2Repository.save(fileStorage);
+
         } catch (IOException e) {
             throw new RuntimeException("Filed to upload file : "+e.getMessage());
         }
     }
 
-    public FileStorage saveExportFileWithStatus(ByteArrayInputStream inputStream, ExportListing exportListing) throws IOException {
+    public FileStorageV2 saveExportFileWithStatus(ByteArrayInputStream inputStream, ExportListing exportListing) throws IOException {
 
         byte[] bytes = inputStream.readAllBytes();
         ByteArrayInputStream uploadStream = new ByteArrayInputStream(bytes);
@@ -129,7 +122,7 @@ public class FileService {
         String extension = fileName.substring(fileName.lastIndexOf("."));
         String s3Key = uuid + extension;
 
-        FileStorage fileStorage = new FileStorage();
+        FileStorageV2 fileStorage = new FileStorageV2();
 
         fileStorage.setFileName(fileName);
         fileStorage.setFileSize(fileSize);
@@ -138,11 +131,8 @@ public class FileService {
         fileStorage.setFileType(exportListing.getFileType());
         fileStorage.setFileId(exportListing.getId());
         fileStorage.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        fileStorage.setStatus(StatusType.COMPLETED);
-        fileStorage.setCreatedAt(LocalDateTime.now());
-        fileStorage.setCreatedBy(user);
 
-        fileStorage = fileStorageRepository.save(fileStorage);
+        fileStorage = fileStorageV2Repository.save(fileStorage);
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(bytes.length);
@@ -155,8 +145,7 @@ public class FileService {
     }
 
     public void downloadExportFile(ExportListing exportListing, HttpServletResponse response, boolean asZip) throws IOException {
-
-        FileStorage file = fileStorageRepository.findTopByFileIdAndFileTypeOrderByCreatedAtDesc(exportListing.getId(), exportListing.getFileType());
+        FileStorageV2 file = fileStorageV2Repository.findByFileTypeAndFileId(exportListing.getFileType(), exportListing.getId()).orElse(null);
         if (file == null) {
             throw new ResourceNotFoundException("FileStorage", file, "fileId", "/exports","File not found");
         }
@@ -198,12 +187,12 @@ public class FileService {
     }
 
 
-    public List<String> getFileNames(FileType fileType, Long fileId) {
-        List<FileStorage> files = fileStorageRepository.findAllByFileTypeAndFileIdOrderByCreatedAtDesc(fileType,fileId);
-        if(files.isEmpty()){
-            return List.of("/images/default-profile.png");
+    public String getFileNames(FileType fileType, Long fileId) {
+        FileStorageV2 file = fileStorageV2Repository.findByFileTypeAndFileId(fileType,fileId).orElse(null);
+        if(file == null){
+            return "/images/default-profile.png";
         }
-        return files.stream().map(fs -> getFileUrl(fs.getKey(), fs.getServiceName())).toList();
+        return getFileUrl(file.getKey(), file.getServiceName());
     }
 
     public void saveExportFileWithFailStatus(ExportListing exportListing) {
