@@ -6,6 +6,47 @@
   <link rel="stylesheet" th:href="@{/css/styles.css}">
   <link rel="stylesheet" th:href="@{/css/form-theme.css}">
 </head>
+
+<div class="modal fade" id="sendEmailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Send Export File</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <form id="sendEmailForm" method="post">
+        <div class="modal-body">
+
+          <input type="hidden" id="fileId" name="fileId">
+
+          <div class="mb-3">
+            <label class="form-label">Recipient Email</label>
+            <input type="email" name="recipient" class="form-control" required placeholder="example@gmail.com">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Subject</label>
+            <input type="text" name="subject" class="form-control" required placeholder="Enter email subject">
+          </div>
+
+          <p class="text-muted small">
+            The export file (ZIP) will be attached automatically.
+          </p>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Send Email</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
 <body class="royal-form-page">
 <div th:replace="fragments/sidebar :: sidebar"></div>
 <div class="container mt-4">
@@ -124,11 +165,14 @@
             </button>
           </form>
 
-          <form th:action="@{'/exports/send/' + ${file.id}}" method="get" class="m-0 p-0">
-            <button type="submit" class="btn btn-warning btn-sm py-1 px-3" title="Send Email" style="font-size: 0.85rem;">
-              <i class="bi bi-envelope me-1"></i>Send
-            </button>
-          </form>
+          <button type="button"
+                  class="btn btn-warning btn-sm py-1 px-3 send-btn"
+                  data-file-id="[[${file.id}]]"
+                  data-file-name="[[${file.fileName}]]"
+                  title="Send Email"
+                  style="font-size: 0.85rem;">
+            <i class="bi bi-envelope me-1"></i>Send
+          </button>
 
 
         </div>
@@ -224,5 +268,27 @@
     });
   })();
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+
+    const modal = new bootstrap.Modal(document.getElementById("sendEmailModal"));
+    const form = document.getElementById("sendEmailForm");
+
+    document.querySelectorAll(".send-btn").forEach(btn => {
+      btn.addEventListener("click", function () {
+
+        const fileId = this.getAttribute("data-file-id");
+
+        document.getElementById("fileId").value = fileId;
+
+        form.action = `/exports/send-file/${fileId}`;
+
+        modal.show();
+      });
+    });
+
+  });
+</script>
+
 </body>
 </html>
