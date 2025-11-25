@@ -80,4 +80,9 @@ public class ExportListingController {
         this.exportListingService.deleteExportListing(id);
         return "redirect:/exports";
     }
+
+    @PostMapping("/exports/send")
+    public String sendExport(){
+        return "redirect:/exports";
+    }
 }

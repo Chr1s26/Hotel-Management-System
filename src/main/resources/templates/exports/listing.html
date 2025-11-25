@@ -19,7 +19,12 @@
       <form id="sendEmailForm" method="post">
         <div class="modal-body">
 
-          <input type="hidden" id="fileId" name="fileId">
+          <input type="hidden" id="modal-file-id" name="fileId">
+
+          <div class="mb-3">
+            <label for="modal-file-name" class="form-label">File</label>
+            <input type="text" class="form-control" id="modal-file-name" readonly>
+          </div>
 
           <div class="mb-3">
             <label class="form-label">Recipient Email</label>
@@ -166,15 +171,14 @@
           </form>
 
           <button type="button"
-                  class="btn btn-warning btn-sm py-1 px-3 send-btn"
-                  data-file-id="[[${file.id}]]"
-                  data-file-name="[[${file.fileName}]]"
+                  class="btn btn-warning btn-sm py-1 px-3"
                   title="Send Email"
-                  style="font-size: 0.85rem;">
+                  style="font-size: 0.85rem;"
+                  data-bs-toggle="modal"
+                  data-bs-target="#sendEmailModal"
+                  th:attr="data-file-id=${file.id}, data-file-name=${file.fileName}">
             <i class="bi bi-envelope me-1"></i>Send
           </button>
-
-
         </div>
       </td>
 
@@ -269,24 +273,21 @@
   })();
 </script>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    const sendEmailModal = document.getElementById('sendEmailModal');
+    console.log("Click DOC")
+    sendEmailModal.addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
 
-    const modal = new bootstrap.Modal(document.getElementById("sendEmailModal"));
-    const form = document.getElementById("sendEmailForm");
+      const fileId = button.getAttribute('data-file-id');
+      const fileName = button.getAttribute('data-file-name');
 
-    document.querySelectorAll(".send-btn").forEach(btn => {
-      btn.addEventListener("click", function () {
+      const fileIdInput = sendEmailModal.querySelector('#modal-file-id');
+      const fileNameInput = sendEmailModal.querySelector('#modal-file-name');
 
-        const fileId = this.getAttribute("data-file-id");
-
-        document.getElementById("fileId").value = fileId;
-
-        form.action = `/exports/send-file/${fileId}`;
-
-        modal.show();
-      });
+      fileIdInput.value = fileId;
+      fileNameInput.value = fileName;
     });
-
   });
 </script>
 
