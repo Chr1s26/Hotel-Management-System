@@ -124,6 +124,13 @@
             </button>
           </form>
 
+          <form th:action="@{'/exports/send/' + ${file.id}}" method="get" class="m-0 p-0">
+            <button type="submit" class="btn btn-warning btn-sm py-1 px-3" title="Send Email" style="font-size: 0.85rem;">
+              <i class="bi bi-envelope me-1"></i>Send
+            </button>
+          </form>
+
+
         </div>
       </td>
 
