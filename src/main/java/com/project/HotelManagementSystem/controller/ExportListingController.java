@@ -11,6 +11,7 @@ import com.project.HotelManagementSystem.repository.ExportListingRepository;
 import com.project.HotelManagementSystem.service.ExportListingService;
 import com.project.HotelManagementSystem.service.FileService;
 import com.project.HotelManagementSystem.service.search.ExportListingSearchService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -81,8 +82,11 @@ public class ExportListingController {
         return "redirect:/exports";
     }
 
-    @PostMapping("/exports/send")
-    public String sendExport(){
+    @PostMapping("/send")
+    public String sendExport(@RequestParam("fileId")Long fileId,
+                            @RequestParam("recipient")String recipient,
+                             @RequestParam("subject")String subject) throws MessagingException, IOException {
+        exportListingService.sendExportFileByEmail(fileId, recipient, subject);
         return "redirect:/exports";
     }
 }

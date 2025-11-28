@@ -54,6 +54,7 @@
         </div>
         <div class="mb-3">
             <label class="form-label">Amenities</label>
+            <div class="d-flex gap-2">
             <select class="form-select" id="amenities-select" th:field="*{amenityIds}" multiple>
                 <option value="" disabled selected>-- Select Amenity --</option>
                 <option th:each="am : ${amenities}"
@@ -61,7 +62,14 @@
                         th:text="${am.name}">
                 </option>
             </select>
-                    <div class="text-danger" th:if="${#fields.hasErrors('amenityIds')}" th:errors="*{amenityIds}"></div>
+            <button type="button"
+            class="btn btn-outline-secondary"
+            data-bs-toggle="modal"
+            data-bs-target="#amenityModal">
+                + New
+            </button>
+            </div>
+            <div class="text-danger" th:if="${#fields.hasErrors('amenityIds')}" th:errors="*{amenityIds}"></div>
         </div>
 
         <div class="mb-3">
