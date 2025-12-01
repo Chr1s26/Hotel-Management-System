@@ -1,6 +1,4 @@
 package com.project.HotelManagementSystem.dto.amenities;
-
-import com.project.HotelManagementSystem.entity.Amenities;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
