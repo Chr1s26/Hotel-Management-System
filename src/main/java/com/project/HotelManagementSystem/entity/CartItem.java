@@ -28,6 +28,14 @@ public class CartItem extends MasterData {
     @Column
     private double price;
 
+    @ManyToOne
+    @JoinColumn(name = "promotion_id")
+    private Promotion promotion;
+
+    @ManyToOne
+    @JoinColumn(name = "room_id")
+    private Room room;
+
     @Column(name = "currency_type")
     @Convert(converter = CurrencyTypeConverter.class)
     private CurrencyType currencyType;

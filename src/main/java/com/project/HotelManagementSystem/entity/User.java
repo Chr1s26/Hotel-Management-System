@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -48,6 +50,9 @@ public class User extends MasterData{
 
     @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
     private Admin admin;
+
+    @OneToMany(mappedBy = "user")
+    private List<Cart> carts = new ArrayList<>();
 
     @Override
     public String toString() {

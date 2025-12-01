@@ -45,9 +45,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         HttpSession session = request.getSession();
 
         //Fixed Problem
-        UserDetailsImpl userDetails = UserDetailsImpl.build(appUser);
-        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
-        response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
+//        UserDetailsImpl userDetails = UserDetailsImpl.build(appUser);
+//        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+//        response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
 
         if(roles.size() > 1){
             request.getSession().setAttribute("userRoles", new ArrayList<>(roles));

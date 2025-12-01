@@ -57,6 +57,9 @@ public class Room extends MasterData {
     @OneToMany(mappedBy = "room",cascade = CascadeType.ALL)
     private List<RoomAttachment> roomAttachments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "room")
+    private List<CartItem> cartItems = new ArrayList<>();
+
     public boolean isAvailable() {
         return available;
     }

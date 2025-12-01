@@ -34,9 +34,6 @@ public class Customer extends UserMasterData{
     private List<Review> reviews = new ArrayList<>();
 
     @OneToMany(mappedBy = "customer")
-    private List<Cart> carts = new ArrayList<>();
-
-    @OneToMany(mappedBy = "customer")
     private List<Booking> bookings = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)

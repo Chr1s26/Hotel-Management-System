@@ -7,7 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -50,4 +52,7 @@ public class Promotion extends MasterData {
 
     @ManyToMany(mappedBy = "promotions")
     private Set<Hotel> hotels = new HashSet<>();
+
+    @OneToMany(mappedBy = "promotion")
+    private List<CartItem> cartItems = new ArrayList<>();
 }

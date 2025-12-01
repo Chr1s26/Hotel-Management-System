@@ -15,9 +15,12 @@ import java.util.List;
 @Table(name = "carts")
 public class Cart extends MasterData {
 
+    @Column
+    private Double totalPrice;
+
     @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @OneToMany(mappedBy = "cart")
     private List<CartItem> cartItems = new ArrayList<>();
