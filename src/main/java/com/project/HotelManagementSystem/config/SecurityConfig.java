@@ -61,7 +61,7 @@ public class SecurityConfig {
     @Bean
     @Order(1)
     public SecurityFilterChain adminSiteSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/login", "/register", "/registerUser",
+        http.securityMatcher("/login", "/logout", "/register", "/registerUser",
                 "/addresses/**","/amenities/**","/cities/**","/countries/**",
                 "/authenticateTheUser",
                 "/exports/**","/home/**","/hotels/**","/policies/**","/profiles/**",
@@ -71,6 +71,14 @@ public class SecurityConfig {
                 "/static/assets/**", "/css/**",
                 "/confirm-account/**", "/forget-password",
                 "/confirm-otp", "/reset-password", "/error");
+
+        http.logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID")
+        );
 
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/login","/register","/registerUser","/static/assets/**","/css/**","/confirm-account/**","/error", "/forget-password","/confirm-otp","/reset-password").permitAll()

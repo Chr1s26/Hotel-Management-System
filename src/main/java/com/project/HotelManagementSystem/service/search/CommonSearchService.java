@@ -5,7 +5,10 @@ import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
 import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchFilter;
 import com.project.HotelManagementSystem.dto.searchFilter.country.CountrySearchQuery;
 import com.project.HotelManagementSystem.entity.Country;
+import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.specification.CountrySpecification;
+import com.project.HotelManagementSystem.service.AuthService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +21,9 @@ import java.util.List;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 public class CommonSearchService {
+    public final AuthService authService;
 
     public <E, F> Page<E> searchByQuery(
             JpaSpecificationExecutor<E> repository,
@@ -40,7 +45,7 @@ public class CommonSearchService {
                 if (s != null) spec = (spec == null) ? Specification.where(s) : spec.and(s);
             }
         }
-
+        spec = createdByUserFilter(spec);
         return repository.findAll(spec, pageable);
     }
 
@@ -50,7 +55,22 @@ public class CommonSearchService {
             SearchQuery<F> query
     ) {
         Specification<E> spec = buildSpecification(query, specFunction);
+        spec = createdByUserFilter(spec);
         return repository.findAll(spec);
+    }
+
+    private <E> Specification<E> createdByUserFilter(Specification<E> spec){
+        User currentUser = authService.getCurrentUser();
+        Long currentUserId = currentUser.getId();
+        boolean isAdmin = authService.getCurrentUserRole().equalsIgnoreCase("ROLE_ADMIN");
+        if(!isAdmin){
+            return spec;
+        }
+        Specification<E> createdBySpec = (root, query, cb) -> cb.equal(root.get("createdBy").get("id"), currentUserId);
+        if(spec == null){
+            return Specification.where(createdBySpec);
+        }
+        return spec.and(createdBySpec);
     }
 
     private <E, F> Specification<E> buildSpecification(
