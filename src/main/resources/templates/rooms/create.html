@@ -153,10 +153,20 @@
                     description: description
                 }),
             success: function (data) {
-                console.log(data);
+                $('#amenityModal').modal('hide');
+                $('#amenity-name').val('');
+                $('#amenity-description').val('');
+
+                const newOption = new Option(data.name, data.id, true, true);
+                $('#amenities-select').append(newOption).trigger('change');
+
+                console.log("Amenity added:", data);
             },
             error: function (xhr){
                 console.log(xhr);
+                $('#amenity-error')
+                    .removeClass("d-none")
+                    .text(xhr.responseJSON?.message || "Error creating amenity");
             }
         });
     });

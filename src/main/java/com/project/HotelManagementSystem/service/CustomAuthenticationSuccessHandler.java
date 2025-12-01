@@ -2,11 +2,14 @@ package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.repository.UserRepository;
+import com.project.HotelManagementSystem.security.jwt.JwtUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,6 +25,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private JwtUtils jwtUtils;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -38,6 +43,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
         HttpSession session = request.getSession();
+
+        //Fixed Problem
+        UserDetailsImpl userDetails = UserDetailsImpl.build(appUser);
+        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+        response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
 
         if(roles.size() > 1){
             request.getSession().setAttribute("userRoles", new ArrayList<>(roles));
