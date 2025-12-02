@@ -1,6 +1,6 @@
 package com.project.HotelManagementSystem.dto.cart;
 
-import com.project.HotelManagementSystem.dto.room.RoomDTO;
+import com.project.HotelManagementSystem.dto.room.RoomSimpleDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,5 +14,5 @@ import java.util.List;
 public class CartDTO {
     private Long cartId;
     private Double totalPrice = 0.0;
-    private List<RoomDTO> rooms = new ArrayList<>();
+    private List<RoomSimpleDTO> rooms = new ArrayList<>();
 }

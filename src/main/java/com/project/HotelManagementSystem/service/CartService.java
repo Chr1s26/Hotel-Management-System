@@ -2,6 +2,7 @@ package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.dto.cart.CartDTO;
 import com.project.HotelManagementSystem.dto.room.RoomDTO;
+import com.project.HotelManagementSystem.dto.room.RoomSimpleDTO;
 import com.project.HotelManagementSystem.entity.Cart;
 import com.project.HotelManagementSystem.entity.CartItem;
 import com.project.HotelManagementSystem.entity.Promotion;
@@ -80,8 +81,8 @@ public class CartService {
 
         List<CartItem> cartItems = cart.getCartItems();
 
-        Stream<RoomDTO> roomDTOStream = cartItems.stream().map(item ->{
-            RoomDTO map = modelMapper.map(item.getRoom(), RoomDTO.class);
+        Stream<RoomSimpleDTO> roomDTOStream = cartItems.stream().map(item ->{
+            RoomSimpleDTO map = modelMapper.map(item.getRoom(), RoomSimpleDTO.class);
             map.setQuantity(item.getQuantity());
             return map;
         });
@@ -99,7 +100,7 @@ public class CartService {
 
         List<CartDTO> cartDto = carts.stream().map( cart -> {
             CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
-            List<RoomDTO> rooms = cart.getCartItems().stream().map(p -> modelMapper.map(p.getRoom(), RoomDTO.class)).collect(Collectors.toList());
+            List<RoomSimpleDTO> rooms = cart.getCartItems().stream().map(r -> modelMapper.map(r.getRoom(), RoomSimpleDTO.class)).collect(Collectors.toList());
             cartDTO.setRooms(rooms);
             return cartDTO;
         }).collect(Collectors.toList());
@@ -113,7 +114,7 @@ public class CartService {
         }
         CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
         cart.getCartItems().forEach(c -> c.getRoom().setQuantity(c.getQuantity()));
-        List<RoomDTO> roomDTOS = cart.getCartItems().stream().map(p -> modelMapper.map(p.getRoom(), RoomDTO.class)).collect(Collectors.toList());
+        List<RoomSimpleDTO> roomDTOS = cart.getCartItems().stream().map(p -> modelMapper.map(p.getRoom(), RoomSimpleDTO.class)).collect(Collectors.toList());
         cartDTO.setRooms(roomDTOS);
         return cartDTO;
     }
