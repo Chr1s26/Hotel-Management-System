@@ -22,6 +22,7 @@ public class RoomDTO {
     private boolean available;
     private String description;
     private String roomType;
+    private Integer quantity;
     private int maxCapacity;
     private Hotel hotel;
     private Set<Amenities> amenities = new HashSet<>();

@@ -35,6 +35,9 @@ public class Room extends MasterData {
     @Column(nullable = false)
     private int maxCapacity;
 
+    @Column(nullable = true)
+    private Integer quantity;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
