@@ -4,6 +4,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.user.UserSearchQuery;
 import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.FileType;
+import com.project.HotelManagementSystem.repository.UserRepository;
 import com.project.HotelManagementSystem.service.ExportListingService;
 import com.project.HotelManagementSystem.service.FileService;
 import com.project.HotelManagementSystem.service.search.UserSearchService;
@@ -19,8 +20,8 @@ public class UserExportProcess extends CommonExportProcess<User, UserSearchQuery
     @Autowired
     private UserSearchService userSearchService;
 
-    public UserExportProcess(ExportListingService exportListingService, FileService fileService) {
-        super(exportListingService, fileService);
+    public UserExportProcess(ExportListingService exportListingService, FileService fileService, UserRepository userRepository) {
+        super(exportListingService, fileService, userRepository);
     }
 
     @Override

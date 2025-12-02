@@ -3,6 +3,7 @@ package com.project.HotelManagementSystem.service.excelExport;
 import com.project.HotelManagementSystem.dto.searchFilter.address.AddressSearchQuery;
 import com.project.HotelManagementSystem.entity.Address;
 import com.project.HotelManagementSystem.entity.constants.FileType;
+import com.project.HotelManagementSystem.repository.UserRepository;
 import com.project.HotelManagementSystem.service.ExportListingService;
 import com.project.HotelManagementSystem.service.FileService;
 import com.project.HotelManagementSystem.service.search.AddressSearchService;
@@ -17,8 +18,8 @@ public class AddressExportProcess extends CommonExportProcess<Address, AddressSe
     @Autowired
     private AddressSearchService addressSearchService;
 
-    public AddressExportProcess(ExportListingService exportListingService, FileService fileService) {
-        super(exportListingService, fileService);
+    public AddressExportProcess(ExportListingService exportListingService, FileService fileService, UserRepository userRepository) {
+        super(exportListingService, fileService, userRepository);
     }
 
     @Override

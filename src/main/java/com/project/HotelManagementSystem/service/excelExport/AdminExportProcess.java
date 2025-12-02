@@ -3,6 +3,7 @@ package com.project.HotelManagementSystem.service.excelExport;
 import com.project.HotelManagementSystem.dto.searchFilter.admin.AdminSearchQuery;
 import com.project.HotelManagementSystem.entity.Admin;
 import com.project.HotelManagementSystem.entity.constants.FileType;
+import com.project.HotelManagementSystem.repository.UserRepository;
 import com.project.HotelManagementSystem.service.ExportListingService;
 import com.project.HotelManagementSystem.service.FileService;
 import com.project.HotelManagementSystem.service.search.AdminSearchService;
@@ -15,8 +16,8 @@ public class AdminExportProcess extends CommonExportProcess<Admin, AdminSearchQu
 
     private final AdminSearchService adminSearchService;
 
-    public AdminExportProcess(ExportListingService exportListingService, FileService fileService, AdminSearchService adminSearchService) {
-        super(exportListingService, fileService);
+    public AdminExportProcess(ExportListingService exportListingService, FileService fileService, AdminSearchService adminSearchService, UserRepository userRepository) {
+        super(exportListingService, fileService, userRepository);
         this.adminSearchService = adminSearchService;
     }
 

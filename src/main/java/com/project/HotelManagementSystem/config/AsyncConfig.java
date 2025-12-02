@@ -33,6 +33,17 @@ public class AsyncConfig implements AsyncConfigurer {
         return executor;
     }
 
+    @Bean(name = "schedulerExecutor")
+    public Executor schedulerExecutor(){
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(4);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("scheduler-");
+        executor.initialize();
+        return executor;
+    }
+
     @Bean
     public AsyncUncaughtExceptionHandler customAsyncExceptionHandler(){
         return (throwable, method, params) -> {

@@ -43,8 +43,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
         HttpSession session = request.getSession();
-
-        //Fixed Problem
+        // Fixed Problem
 //        UserDetailsImpl userDetails = UserDetailsImpl.build(appUser);
 //        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 //        response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());

@@ -3,6 +3,7 @@ package com.project.HotelManagementSystem.service.excelExport;
 import com.project.HotelManagementSystem.dto.searchFilter.region.RegionSearchQuery;
 import com.project.HotelManagementSystem.entity.Region;
 import com.project.HotelManagementSystem.entity.constants.FileType;
+import com.project.HotelManagementSystem.repository.UserRepository;
 import com.project.HotelManagementSystem.service.ExportListingService;
 import com.project.HotelManagementSystem.service.FileService;
 import com.project.HotelManagementSystem.service.RegionService;
@@ -20,8 +21,8 @@ public class RegionExportProceess extends CommonExportProcess<Region, RegionSear
     @Autowired
     private RegionService regionService;
 
-    public RegionExportProceess(ExportListingService exportListingService, FileService fileService) {
-        super(exportListingService, fileService);
+    public RegionExportProceess(ExportListingService exportListingService, FileService fileService, UserRepository userRepository) {
+        super(exportListingService, fileService, userRepository);
     }
 
 

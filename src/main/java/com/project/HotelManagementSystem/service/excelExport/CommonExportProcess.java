@@ -1,14 +1,19 @@
 package com.project.HotelManagementSystem.service.excelExport;
 
+import com.project.HotelManagementSystem.dto.searchFilter.customer.CustomerSearchQuery;
 import com.project.HotelManagementSystem.entity.ExportListing;
+import com.project.HotelManagementSystem.entity.FileStorageV2;
 import com.project.HotelManagementSystem.entity.MasterData;
+import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.exception.ExportFailedException;
+import com.project.HotelManagementSystem.repository.UserRepository;
 import com.project.HotelManagementSystem.service.ExportListingService;
 import com.project.HotelManagementSystem.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +34,7 @@ public abstract class CommonExportProcess<T extends MasterData, Q> {
     public abstract String getListingRoute();
     private final ExportListingService exportListingService;
     private final FileService fileService;
+    private final UserRepository userRepository;
 
     public String fileName(){
         return getSheetName()+".xlsx";
@@ -44,6 +50,29 @@ public abstract class CommonExportProcess<T extends MasterData, Q> {
             return new ByteArrayInputStream(out.toByteArray());
         } catch (IOException e) {
             throw new ExportFailedException(getListingRoute(),"Export failed during writing sheet");
+        }
+    }
+
+    @Transactional
+    public void generateExportFileAndSendToAdmin(Q query){
+        ExportListing exportListing = null;
+        ByteArrayInputStream in = export(query);
+        try {
+            exportListing = exportListingService.saveExportListing(getRecordType(), getDownloadFileType());
+            fileService.saveExportFileWithStatus(in, exportListing);
+            List<User> users = userRepository.findByRoleName("ADMIN");
+            for(User user  : users) {
+                if(user.getEmail() != null) {
+                    exportListingService.sendExportFileByEmail(exportListing.getId(), user.getEmail(), "Monthly Report!!!");
+                }
+            }
+        } catch (Exception ex){
+            ex.printStackTrace();
+            if(exportListing!=null) {
+                fileService.saveExportFileWithFailStatus(exportListing);
+            }else{
+                throw new ExportFailedException(getListingRoute(),"Export failed when it's saved into export listing database");
+            }
         }
     }
 

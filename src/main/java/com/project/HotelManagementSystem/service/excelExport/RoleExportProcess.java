@@ -3,6 +3,7 @@ package com.project.HotelManagementSystem.service.excelExport;
 import com.project.HotelManagementSystem.dto.searchFilter.role.RoleSearchQuery;
 import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.constants.FileType;
+import com.project.HotelManagementSystem.repository.UserRepository;
 import com.project.HotelManagementSystem.service.ExportListingService;
 import com.project.HotelManagementSystem.service.FileService;
 import com.project.HotelManagementSystem.service.search.RoleSearchService;
@@ -17,8 +18,8 @@ public class RoleExportProcess extends CommonExportProcess<Role, RoleSearchQuery
     @Autowired
     private RoleSearchService roleSearchService;
 
-    public RoleExportProcess(ExportListingService exportListingService, FileService fileService) {
-        super(exportListingService, fileService);
+    public RoleExportProcess(ExportListingService exportListingService, FileService fileService, UserRepository userRepository) {
+        super(exportListingService, fileService, userRepository);
     }
 
     @Override

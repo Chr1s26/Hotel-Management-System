@@ -3,6 +3,7 @@ package com.project.HotelManagementSystem.service.excelExport;
 import com.project.HotelManagementSystem.dto.searchFilter.propertyDescription.PropertyDescriptionSearchQuery;
 import com.project.HotelManagementSystem.entity.PropertyDescription;
 import com.project.HotelManagementSystem.entity.constants.FileType;
+import com.project.HotelManagementSystem.repository.UserRepository;
 import com.project.HotelManagementSystem.service.ExportListingService;
 import com.project.HotelManagementSystem.service.FileService;
 import com.project.HotelManagementSystem.service.search.PropertyDescriptionSearchService;
@@ -17,8 +18,8 @@ public class PropertyDescriptionExportProcess extends CommonExportProcess<Proper
     @Autowired
     private PropertyDescriptionSearchService propertyDescriptionSearchService;
 
-    public PropertyDescriptionExportProcess(ExportListingService exportListingService, FileService fileService) {
-        super(exportListingService, fileService);
+    public PropertyDescriptionExportProcess(ExportListingService exportListingService, FileService fileService, UserRepository userRepository) {
+        super(exportListingService, fileService, userRepository);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.project.HotelManagementSystem.service.excelExport;
 import com.project.HotelManagementSystem.dto.searchFilter.city.CitySearchQuery;
 import com.project.HotelManagementSystem.entity.City;
 import com.project.HotelManagementSystem.entity.constants.FileType;
+import com.project.HotelManagementSystem.repository.UserRepository;
 import com.project.HotelManagementSystem.service.CityService;
 import com.project.HotelManagementSystem.service.ExportListingService;
 import com.project.HotelManagementSystem.service.FileService;
@@ -17,8 +18,8 @@ public class CityExportProcess extends CommonExportProcess<City, CitySearchQuery
 
     private final CitySearchService citySearchService;
 
-    public CityExportProcess(ExportListingService exportListingService, FileService fileService, CitySearchService citySearchService) {
-        super(exportListingService, fileService);
+    public CityExportProcess(ExportListingService exportListingService, FileService fileService, UserRepository userRepository, CitySearchService citySearchService) {
+        super(exportListingService, fileService, userRepository);
         this.citySearchService = citySearchService;
     }
 

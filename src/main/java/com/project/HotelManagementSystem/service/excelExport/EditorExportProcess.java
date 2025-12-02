@@ -3,6 +3,7 @@ package com.project.HotelManagementSystem.service.excelExport;
 import com.project.HotelManagementSystem.dto.searchFilter.editor.EditorSearchQuery;
 import com.project.HotelManagementSystem.entity.Editor;
 import com.project.HotelManagementSystem.entity.constants.FileType;
+import com.project.HotelManagementSystem.repository.UserRepository;
 import com.project.HotelManagementSystem.service.ExportListingService;
 import com.project.HotelManagementSystem.service.FileService;
 import com.project.HotelManagementSystem.service.search.EditorSearchService;
@@ -13,8 +14,8 @@ import java.util.List;
 public class EditorExportProcess extends CommonExportProcess<Editor, EditorSearchQuery> {
     private final EditorSearchService editorSearchService;
 
-    public EditorExportProcess(ExportListingService exportListingService, FileService fileService, EditorSearchService editorSearchService) {
-        super(exportListingService, fileService);
+    public EditorExportProcess(ExportListingService exportListingService, FileService fileService, EditorSearchService editorSearchService, UserRepository userRepository) {
+        super(exportListingService, fileService, userRepository);
         this.editorSearchService = editorSearchService;
     }
 

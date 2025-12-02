@@ -5,6 +5,7 @@ import com.project.HotelManagementSystem.entity.Amenities;
 import com.project.HotelManagementSystem.entity.Promotion;
 import com.project.HotelManagementSystem.entity.Room;
 import com.project.HotelManagementSystem.entity.constants.FileType;
+import com.project.HotelManagementSystem.repository.UserRepository;
 import com.project.HotelManagementSystem.service.ExportListingService;
 import com.project.HotelManagementSystem.service.FileService;
 import com.project.HotelManagementSystem.service.search.RoomSearchService;
@@ -16,8 +17,8 @@ import java.util.stream.Collectors;
 public class RoomExportProcess extends CommonExportProcess<Room, RoomSearchQuery> {
     private final RoomSearchService roomSearchService;
 
-    public RoomExportProcess(ExportListingService exportListingService, FileService fileService, RoomSearchService roomSearchService) {
-        super(exportListingService, fileService);
+    public RoomExportProcess(ExportListingService exportListingService, FileService fileService, RoomSearchService roomSearchService, UserRepository userRepository) {
+        super(exportListingService, fileService, userRepository);
         this.roomSearchService = roomSearchService;
     }
 

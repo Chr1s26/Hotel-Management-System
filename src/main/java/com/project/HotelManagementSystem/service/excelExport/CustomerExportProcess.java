@@ -3,6 +3,7 @@ package com.project.HotelManagementSystem.service.excelExport;
 import com.project.HotelManagementSystem.dto.searchFilter.customer.CustomerSearchQuery;
 import com.project.HotelManagementSystem.entity.Customer;
 import com.project.HotelManagementSystem.entity.constants.FileType;
+import com.project.HotelManagementSystem.repository.UserRepository;
 import com.project.HotelManagementSystem.service.ExportListingService;
 import com.project.HotelManagementSystem.service.FileService;
 import com.project.HotelManagementSystem.service.search.CustomerSearchService;
@@ -15,8 +16,8 @@ public class CustomerExportProcess extends CommonExportProcess<Customer, Custome
 
     private final CustomerSearchService customerSearchService;
 
-    public CustomerExportProcess(ExportListingService exportListingService, FileService fileService, CustomerSearchService customerSearchService) {
-        super(exportListingService, fileService);
+    public CustomerExportProcess(ExportListingService exportListingService, FileService fileService, CustomerSearchService customerSearchService, UserRepository userRepository) {
+        super(exportListingService, fileService, userRepository);
         this.customerSearchService = customerSearchService;
     }
 

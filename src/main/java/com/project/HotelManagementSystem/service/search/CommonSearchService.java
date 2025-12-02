@@ -61,6 +61,9 @@ public class CommonSearchService {
 
     private <E> Specification<E> createdByUserFilter(Specification<E> spec){
         User currentUser = authService.getCurrentUser();
+        if(currentUser == null){
+            return spec;
+        }
         Long currentUserId = currentUser.getId();
         boolean isAdmin = authService.getCurrentUserRole().equalsIgnoreCase("ROLE_ADMIN");
         if(!isAdmin){

@@ -4,6 +4,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.policy.PolicySearchQue
 import com.project.HotelManagementSystem.entity.ExportListing;
 import com.project.HotelManagementSystem.entity.Policy;
 import com.project.HotelManagementSystem.entity.constants.FileType;
+import com.project.HotelManagementSystem.repository.UserRepository;
 import com.project.HotelManagementSystem.service.ExportListingService;
 import com.project.HotelManagementSystem.service.FileService;
 import com.project.HotelManagementSystem.service.search.PolicySearchService;
@@ -18,8 +19,8 @@ public class PolicyExportProcess extends CommonExportProcess<Policy, PolicySearc
     @Autowired
     private PolicySearchService policySearchService;
 
-    public PolicyExportProcess(ExportListingService exportListingService, FileService fileService) {
-        super(exportListingService, fileService);
+    public PolicyExportProcess(ExportListingService exportListingService, FileService fileService, UserRepository userRepository) {
+        super(exportListingService, fileService, userRepository);
     }
 
     @Override
