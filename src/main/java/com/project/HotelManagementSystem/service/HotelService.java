@@ -1,7 +1,10 @@
     package com.project.HotelManagementSystem.service;
 
+    import co.elastic.clients.elasticsearch.ElasticsearchClient;
+    import co.elastic.clients.elasticsearch.core.IndexResponse;
     import com.amazonaws.services.s3.AmazonS3;
     import com.amazonaws.services.s3.model.DeleteObjectRequest;
+    import com.project.HotelManagementSystem.dto.document.hotel.HotelSearchDocument;
     import com.project.HotelManagementSystem.dto.hotel.*;
     import com.project.HotelManagementSystem.entity.FileStorage;
     import com.project.HotelManagementSystem.entity.Hotel;
@@ -17,6 +20,7 @@
     import org.springframework.stereotype.Service;
     import org.springframework.web.multipart.MultipartFile;
 
+    import java.io.IOException;
     import java.time.LocalDateTime;
     import java.util.ArrayList;
     import java.util.HashSet;
@@ -36,8 +40,10 @@
         private final HotelAttachmentRepository hotelAttachmentRepository;
         private final FileStorageRepository fileStorageRepository;
         private final AmazonS3 amazonS3;
+        private final ElasticsearchClient elasticsearchClient;
+        private static final String INDEX_NAME = "hotels";
 
-        public HotelCreateDTO createHotel(HotelCreateDTO hotelCreateDTO) {
+        public HotelCreateDTO createHotel(HotelCreateDTO hotelCreateDTO) throws IOException {
             Optional<Hotel> hotelOp = hotelRepository.findHotelByAddress(hotelCreateDTO.getAddress());
             if(hotelOp.isPresent()) {
                 throw new DuplicateException("hotel",hotelCreateDTO,"name","hotels/create","Hotel with this address already exists");
@@ -50,6 +56,10 @@
             hotel.setCreatedBy(authService.getCurrentUser());
             hotel.setStatus(StatusType.ACTIVE);
             Hotel savedHotel = hotelRepository.save(hotel);
+            HotelSearchDocument hotelSearchDocument = this.mapToSearchDoc(savedHotel);
+            IndexResponse response = elasticsearchClient.index(i -> i.index(INDEX_NAME)
+                                            .id(savedHotel.getId().toString())
+                                            .document(hotelSearchDocument));
             this.addAttachment(hotelCreateDTO.getFiles(), savedHotel.getId(), hotelCreateDTO.getHotelMediaType());
             return modelMapper.map(savedHotel,HotelCreateDTO.class);
         }
@@ -190,6 +200,35 @@
             hotelDTO.setUpdatedBy(hotel.getUpdatedBy());
             hotelDTO.setStatus(hotel.getStatus());
             return hotelDTO;
+        }
+
+        private HotelSearchDocument mapToSearchDoc(Hotel hotel) {
+            if (hotel == null) {
+                return null; // or throw IllegalArgumentException
+            }
+
+            HotelSearchDocument doc = new HotelSearchDocument();
+
+            // id
+            doc.setId(hotel.getId() != null ? hotel.getId().toString() : null);
+
+            // name
+            doc.setName(hotel.getName());  // nullable is fine if ES mapping allows it
+
+            // city name (guard nested nulls)
+            String cityName = null;
+            if (hotel.getAddress() != null &&
+                    hotel.getAddress().getCity() != null &&
+                    hotel.getAddress().getCity().getName() != null) {
+
+                cityName = hotel.getAddress().getCity().getName();
+            }
+            doc.setCity(cityName);
+
+            // description
+            doc.setDescription(hotel.getDescription());
+
+            return doc;
         }
 
     }

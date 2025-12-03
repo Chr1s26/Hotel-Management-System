@@ -23,6 +23,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -87,7 +88,7 @@ public class HotelController {
     }
 
     @PostMapping("/create")
-    public String createHotel(@Valid @ModelAttribute("hotel") HotelCreateDTO hotelCreateDTO, BindingResult bindingResult, Model model) {
+    public String createHotel(@Valid @ModelAttribute("hotel") HotelCreateDTO hotelCreateDTO, BindingResult bindingResult, Model model) throws IOException {
         if (bindingResult.hasErrors()) {
             model.addAttribute("addresses", this.addressService.findAllAddress());
             model.addAttribute("propertyDescriptions", this.propertyDescriptionService.findAllPropertyDescriptions());
