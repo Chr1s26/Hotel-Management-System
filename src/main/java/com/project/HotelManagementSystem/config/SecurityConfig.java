@@ -61,7 +61,7 @@ public class SecurityConfig {
     @Bean
     @Order(1)
     public SecurityFilterChain adminSiteSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/login", "/logout", "/register", "/registerUser",
+        http.securityMatcher("/login", "", "/logout", "/register", "/registerUser",
                 "/addresses/**","/amenities/**","/cities/**","/countries/**",
                 "/authenticateTheUser",
                 "/exports/**","/home/**","/hotels/**","/policies/**","/profiles/**",
@@ -112,7 +112,7 @@ public class SecurityConfig {
 //                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**", "/api/v1/hotels/**").permitAll()
                         .requestMatchers(("/swagger-ui/**")).permitAll()
                         .requestMatchers("/images/**").permitAll()
                         .anyRequest().authenticated());

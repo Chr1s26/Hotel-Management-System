@@ -4,6 +4,7 @@
     import co.elastic.clients.elasticsearch.core.IndexResponse;
     import com.amazonaws.services.s3.AmazonS3;
     import com.amazonaws.services.s3.model.DeleteObjectRequest;
+    import com.project.HotelManagementSystem.config.AppConstants;
     import com.project.HotelManagementSystem.dto.document.hotel.HotelSearchDocument;
     import com.project.HotelManagementSystem.dto.hotel.*;
     import com.project.HotelManagementSystem.entity.FileStorage;
@@ -41,7 +42,6 @@
         private final FileStorageRepository fileStorageRepository;
         private final AmazonS3 amazonS3;
         private final ElasticsearchClient elasticsearchClient;
-        private static final String INDEX_NAME = "hotels";
 
         public HotelCreateDTO createHotel(HotelCreateDTO hotelCreateDTO) throws IOException {
             Optional<Hotel> hotelOp = hotelRepository.findHotelByAddress(hotelCreateDTO.getAddress());
@@ -57,7 +57,7 @@
             hotel.setStatus(StatusType.ACTIVE);
             Hotel savedHotel = hotelRepository.save(hotel);
             HotelSearchDocument hotelSearchDocument = this.mapToSearchDoc(savedHotel);
-            IndexResponse response = elasticsearchClient.index(i -> i.index(INDEX_NAME)
+            IndexResponse response = elasticsearchClient.index(i -> i.index(AppConstants.HOTEL_INDEX_NAME)
                                             .id(savedHotel.getId().toString())
                                             .document(hotelSearchDocument));
             this.addAttachment(hotelCreateDTO.getFiles(), savedHotel.getId(), hotelCreateDTO.getHotelMediaType());
