@@ -1,7 +1,11 @@
 package com.project.HotelManagementSystem.service;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.IndexResponse;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.project.HotelManagementSystem.config.AppConstants;
+import com.project.HotelManagementSystem.dto.document.room.RoomSearchDocument;
 import com.project.HotelManagementSystem.dto.room.*;
 import com.project.HotelManagementSystem.entity.FileStorage;
 import com.project.HotelManagementSystem.entity.Hotel;
@@ -17,6 +21,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -46,17 +52,23 @@ public class RoomService {
     private FileStorageRepository fileStorageRepository;
     @Autowired
     private AmazonS3 amazonS3;
+    @Autowired
+    private ElasticsearchClient elasticsearchClient;
 
-    public RoomCreateDTO createRoom(RoomCreateDTO roomCreateDTO) {
+    public RoomCreateDTO createRoom(RoomCreateDTO roomCreateDTO) throws IOException {
         Room room = modelMapper.map(roomCreateDTO, Room.class);
         room.setAmenities(new HashSet<>(amenitiesRepository.findAllById(roomCreateDTO.getAmenityIds())));
         room.setPromotions(new HashSet<>(promotionRepository.findAllById(roomCreateDTO.getPromotionIds())));
         Room savedRoom = roomRepository.save(room);
+        RoomSearchDocument roomSearchDocument = this.mapToSearchDoc(savedRoom);
+        IndexResponse response = elasticsearchClient.index(i -> i.index(AppConstants.ROOM_INDEX_NAME)
+                .id(savedRoom.getId().toString())
+                .document(roomSearchDocument));
         this.addAttachment(roomCreateDTO.getFiles(),savedRoom.getId(),roomCreateDTO.getRoomMediaType(),roomCreateDTO.getHotel().getId());
         return modelMapper.map(savedRoom, RoomCreateDTO.class);
     }
 
-    public RoomUpdateDTO updateRoom(Long id, RoomUpdateDTO roomUpdateDTO) {
+    public RoomUpdateDTO updateRoom(Long id, RoomUpdateDTO roomUpdateDTO) throws IOException {
         Room roomOp = roomRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("room",roomUpdateDTO,"id","rooms/edit","A room with this id cannot be found"));
         Room room = modelMapper.map(roomUpdateDTO, Room.class);
 
@@ -69,6 +81,10 @@ public class RoomService {
         roomOp.setAmenities(new HashSet<>(amenitiesRepository.findAllById(roomUpdateDTO.getAmenityIds())));
         roomOp.setPromotions(new HashSet<>(promotionRepository.findAllById(roomUpdateDTO.getPromotionIds())));
         Room savedRoom = roomRepository.save(roomOp);
+        RoomSearchDocument roomSearchDocument = this.mapToSearchDoc(savedRoom);
+        IndexResponse response = elasticsearchClient.index(i -> i.index(AppConstants.ROOM_INDEX_NAME)
+                .id(savedRoom.getId().toString())
+                .document(roomSearchDocument));
         this.addAttachment(roomUpdateDTO.getFiles(),savedRoom.getId(),roomUpdateDTO.getRoomMediaType(),roomUpdateDTO.getHotel().getId());
         return modelMapper.map(savedRoom, RoomUpdateDTO.class);
     }
@@ -163,6 +179,18 @@ public class RoomService {
     public List<RoomDTO> findAllRooms() {
         List<Room> rooms = roomRepository.findAll();
         return rooms.stream().map(room -> modelMapper.map(room, RoomDTO.class)).collect(Collectors.toList());
+    }
+
+    private RoomSearchDocument mapToSearchDoc(Room room) {
+        if(room == null) return null;
+
+        RoomSearchDocument roomSearchDocument = new RoomSearchDocument();
+        roomSearchDocument.setId(room.getId() != null ? room.getId().toString() : null);
+        roomSearchDocument.setPrice(room.getPrice());
+        roomSearchDocument.setAvailable(room.isAvailable());
+        roomSearchDocument.setRoomType(room.getRoomType());
+        roomSearchDocument.setMaxCapacity(room.getMaxCapacity());
+        return roomSearchDocument;
     }
 
 //    public RoomResponse findAllRoomsWithPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {

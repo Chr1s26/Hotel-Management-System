@@ -1,4 +1,4 @@
-package com.project.HotelManagementSystem.dto.document.hotel;
+package com.project.HotelManagementSystem.dto.document;
 
 import lombok.Data;
 

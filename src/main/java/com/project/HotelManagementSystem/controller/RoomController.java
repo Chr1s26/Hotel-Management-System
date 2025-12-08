@@ -28,6 +28,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -88,7 +89,7 @@ public class RoomController {
     }
 
     @PostMapping("/create")
-    public String createRoom(@Valid @ModelAttribute("room") RoomCreateDTO roomCreateDTO, BindingResult bindingResult,Model model) {
+    public String createRoom(@Valid @ModelAttribute("room") RoomCreateDTO roomCreateDTO, BindingResult bindingResult,Model model) throws IOException {
         if(bindingResult.hasErrors()){
             model.addAttribute("hotels", hotelService.findAllHotels());
             model.addAttribute("amenities", amenitiesService.findAllAmenities());
@@ -110,7 +111,7 @@ public class RoomController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateRoom(@PathVariable Long id,@Valid @ModelAttribute("room") RoomUpdateDTO RoomUpdateDTO,BindingResult bindingResult,Model model) {
+    public String updateRoom(@PathVariable Long id,@Valid @ModelAttribute("room") RoomUpdateDTO RoomUpdateDTO,BindingResult bindingResult,Model model) throws IOException {
         if(bindingResult.hasErrors()){
             model.addAttribute("hotels", hotelService.findAllHotels());
             model.addAttribute("amenities", amenitiesService.findAllAmenities());
