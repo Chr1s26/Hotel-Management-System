@@ -24,21 +24,21 @@ public class DailyReportScheduler {
     @Async("schedulerExecutor")
     @Scheduled(fixedRate = 150000000)
     public void customerReport(){
-//        log.info("Report Export Customer Report {}", LocalDateTime.now());
-//        CustomerSearchQuery customerSearchQuery = new CustomerSearchQuery();
-//        customerSearchQuery.setPageNumber(0);
-//        customerSearchQuery.setPageSize(6);
-//        customerSearchQuery.setSortBy("createdAt");
-//        customerSearchQuery.setSortDirection(SortDirection.DESC);
-//        customerSearchQuery.setSortDirection(SortDirection.DESC);
-//        customerSearchQuery.setFilterList(List.of(
-//                new CustomerSearchFilter(CustomerSearchField.NAME, MatchType.CONTAINS, ""),
-//                new CustomerSearchFilter(CustomerSearchField.PHONE, MatchType.CONTAINS, ""),
-//                new CustomerSearchFilter(CustomerSearchField.NATIONALITY, MatchType.CONTAINS, ""),
-//                new CustomerSearchFilter(CustomerSearchField.DATE_OF_BIRTH, MatchType.EXACT,""),
-//                new CustomerSearchFilter(CustomerSearchField.VIP_STATUS, MatchType.EXACT, ""),
-//                new CustomerSearchFilter(CustomerSearchField.STATUS, MatchType.EXACT, "")
-//        ));
-//        customerExportProcess.generateExportFileAndSendToAdmin(customerSearchQuery);
+        log.info("Report Export Customer Report {}", LocalDateTime.now());
+        CustomerSearchQuery customerSearchQuery = new CustomerSearchQuery();
+        customerSearchQuery.setPageNumber(0);
+        customerSearchQuery.setPageSize(6);
+        customerSearchQuery.setSortBy("createdAt");
+        customerSearchQuery.setSortDirection(SortDirection.DESC);
+        customerSearchQuery.setSortDirection(SortDirection.DESC);
+        customerSearchQuery.setFilterList(List.of(
+                new CustomerSearchFilter(CustomerSearchField.NAME, MatchType.CONTAINS, ""),
+                new CustomerSearchFilter(CustomerSearchField.PHONE, MatchType.CONTAINS, ""),
+                new CustomerSearchFilter(CustomerSearchField.NATIONALITY, MatchType.CONTAINS, ""),
+                new CustomerSearchFilter(CustomerSearchField.DATE_OF_BIRTH, MatchType.EXACT,""),
+                new CustomerSearchFilter(CustomerSearchField.VIP_STATUS, MatchType.EXACT, ""),
+                new CustomerSearchFilter(CustomerSearchField.STATUS, MatchType.EXACT, "")
+        ));
+        customerExportProcess.generateExportFileAndSendToAdmin(customerSearchQuery);
     }
 }
