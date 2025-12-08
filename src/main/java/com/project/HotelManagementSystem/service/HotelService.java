@@ -204,18 +204,12 @@
 
         private HotelSearchDocument mapToSearchDoc(Hotel hotel) {
             if (hotel == null) {
-                return null; // or throw IllegalArgumentException
+                return null;
             }
 
             HotelSearchDocument doc = new HotelSearchDocument();
-
-            // id
             doc.setId(hotel.getId() != null ? hotel.getId().toString() : null);
-
-            // name
-            doc.setName(hotel.getName());  // nullable is fine if ES mapping allows it
-
-            // city name (guard nested nulls)
+            doc.setName(hotel.getName());
             String cityName = null;
             if (hotel.getAddress() != null &&
                     hotel.getAddress().getCity() != null &&
@@ -224,8 +218,6 @@
                 cityName = hotel.getAddress().getCity().getName();
             }
             doc.setCity(cityName);
-
-            // description
             doc.setDescription(hotel.getDescription());
 
             return doc;

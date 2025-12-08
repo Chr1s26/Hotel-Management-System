@@ -34,9 +34,10 @@ public class HotelSearchService {
     }
 
     public List<HotelSearchDocument> elasticSearchByQuery(String hotelName) throws IOException {
-        SearchResponse<HotelSearchDocument> hotelSearchResponse = elasticsearchClient.search(s -> s.index("hotels").query(q -> q.multiMatch(m -> m
+        SearchResponse<HotelSearchDocument> hotelSearchResponse = elasticsearchClient.search(s -> s.index(AppConstants.HOTEL_INDEX_NAME).query(q -> q.multiMatch(m -> m
                 .fields("name^2", "description")
-                .query(hotelName))), HotelSearchDocument.class);
+                .query(hotelName)))
+                , HotelSearchDocument.class);
         return hotelSearchResponse.hits().hits().stream().map(Hit::source).filter(Objects::nonNull).toList();
     }
 }
