@@ -8,6 +8,7 @@ import com.project.HotelManagementSystem.dto.document.PagingInfo;
 import com.project.HotelManagementSystem.dto.document.hotel.HotelSearchDocument;
 import com.project.HotelManagementSystem.dto.document.room.RoomSearchDocument;
 import com.project.HotelManagementSystem.dto.document.room.RoomSearchResponse;
+import com.project.HotelManagementSystem.dto.searchFilter.room.RoomSearchField;
 import com.project.HotelManagementSystem.dto.searchFilter.room.RoomSearchQuery;
 import com.project.HotelManagementSystem.entity.Room;
 import com.project.HotelManagementSystem.entity.specification.RoomSpecification;
@@ -36,15 +37,20 @@ public class RoomSearchService {
         return commonSearchService.searchByQueryAll(roomRepository, RoomSpecification::fromFilter,query);
     }
 
-    public RoomSearchResponse elasticSearchByQuery(String field, Integer page, Integer size) throws IOException {
+    public RoomSearchResponse elasticSearchByQuery(RoomSearchQuery query) throws IOException {
+        int page = query.getPageNumber();
+        int size = query.getPageSize();
         int from = page * size;
+
+        String searchValue = query.getFilterValue(RoomSearchField.PRICE);
+
         SearchResponse<RoomSearchDocument> searchResponse = elasticsearchClient.search(
                 s -> s.index(AppConstants.ROOM_INDEX_NAME)
                         .from(from)
                         .size(size)
                         .query(q -> q.multiMatch(m -> m
                                 .fields("price^2", "isAvailable","roomType","maxCapacity")
-                                .query(field)))
+                                .query(searchValue)))
                 , RoomSearchDocument.class);
 
         RoomSearchResponse response = new RoomSearchResponse();

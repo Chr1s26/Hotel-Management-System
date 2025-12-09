@@ -7,6 +7,7 @@ import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.document.hotel.HotelSearchDocument;
 import com.project.HotelManagementSystem.dto.document.hotel.HotelSearchResponse;
 import com.project.HotelManagementSystem.dto.document.PagingInfo;
+import com.project.HotelManagementSystem.dto.searchFilter.hotel.HotelSearchField;
 import com.project.HotelManagementSystem.dto.searchFilter.hotel.HotelSearchQuery;
 import com.project.HotelManagementSystem.entity.Hotel;
 import com.project.HotelManagementSystem.entity.specification.HotelSpecification;
@@ -35,8 +36,12 @@ public class HotelSearchService {
         return commonSearchService.searchByQueryAll(hotelRepository, HotelSpecification::fromFilter,query);
     }
 
-    public HotelSearchResponse elasticSearchByQuery(String hotelName, Integer page, Integer size) throws IOException {
+    public HotelSearchResponse elasticSearchByQuery(HotelSearchQuery query) throws IOException {
+        int page = query.getPageNumber();
+        int size = query.getPageSize();
         int from = page * size;
+        String hotelName = query.getFilterValue(HotelSearchField.NAME);
+
         SearchResponse<HotelSearchDocument> hotelSearchResponse = elasticsearchClient.search(
                 s -> s.index(AppConstants.HOTEL_INDEX_NAME)
                         .from(from)
