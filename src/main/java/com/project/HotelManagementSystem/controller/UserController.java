@@ -13,6 +13,7 @@ import com.project.HotelManagementSystem.service.search.UserSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -77,6 +78,7 @@ public class UserController {
     }
 
     @GetMapping("/edit/{id}")
+    @PreAuthorize("hasRole('ADMIN') and @userSecurity.isOwner(#id)")
     @ActiveRole({"ADMIN", "EDITOR"})
     public String showEditForm(@PathVariable Long id, Model model) {
         UserUpdateDTO user = this.userService.findUserById(id);
@@ -93,6 +95,7 @@ public class UserController {
     }
 
     @GetMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN') and @userSecurity.isOwner(#id)")
     @ActiveRole("ADMIN")
     public String deleteUser(@PathVariable Long id) {
         this.userService.deleteUser(id);

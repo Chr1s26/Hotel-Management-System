@@ -45,7 +45,7 @@ public class CommonSearchService {
                 if (s != null) spec = (spec == null) ? Specification.where(s) : spec.and(s);
             }
         }
-//        spec = createdByUserFilter(spec);
+        spec = createdByUserFilter(spec);
         return repository.findAll(spec, pageable);
     }
 

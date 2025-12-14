@@ -17,6 +17,7 @@ import com.project.HotelManagementSystem.service.search.AddressSearchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -90,6 +91,7 @@ public class AddressController {
     }
 
     @GetMapping("/edit/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @userSecurity.isOwner(#id)")
     @ActiveRole({"ADMIN", "EDITOR"})
     public String showUpdateForm(@PathVariable Long id, Model model) {
         model.addAttribute("address", addressService.findAddressById(id));
@@ -108,6 +110,7 @@ public class AddressController {
     }
 
     @GetMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @userSecurity.isOwner(#id)")
     @ActiveRole({"ADMIN", "EDITOR"})
     public String deleteAddress(@PathVariable Long id) {
         addressService.deleteAddress(id);
