@@ -121,10 +121,27 @@
             <span th:text="${totalPages}">X</span> —
             Total: <span th:text="${totalElements}">Y</span> hotels
         </div>
+        <a class="btn btn-lg"
+           th:href="@{/hotels/search}"
+           style="
+       background-color: #1ABC9C;
+       border: none;
+       color: white;
+       font-weight: 600;
+       padding: 10px 22px;
+       border-radius: 8px;
+       box-shadow: 0 0 10px rgba(26,188,156,0.4);
+       transition: 0.2s;
+   "
+           onmouseover="this.style.backgroundColor='#18A085'"
+           onmouseout="this.style.backgroundColor='#1ABC9C'">
+            🔍 Find Hotel (Elastic Search)
+        </a>
 
         <div>
             <a class="btn btn-primary btn-lg" th:href="@{/hotels/new}">Add Hotels</a>
         </div>
+
     </div>
 
     <table class="table table-bordered">
