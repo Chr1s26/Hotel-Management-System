@@ -1,0 +1,50 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hotel Search</title>
+</head>
+<body>
+<label>Search hotel</label>
+<input id="hotelSearch" type="text" placeholder="Type Hotel Name...." autocomplete="off">
+<ul id="suggestions" style="border:1px solid #ccc; display:none; list-style:none; padding:0; margin:0;"></ul>
+<script>
+    const input = document.getElementById("hotelSearch");
+    const list  = document.getElementById("suggestions");
+
+    let timer = null;
+
+    input.addEventListener("input", () => {
+      clearTimeout(timer);
+      const q = input.value.trim();
+
+      if (q.length < 2) {
+        list.style.display = "none";
+        list.innerHTML = "";
+        return;
+      }
+
+      timer = setTimeout(async () => {
+        const res = await fetch(`/api/v1/hotels/autocomplete-search?q=${encodeURIComponent(q)}&field=NAME`);
+        const data = await res.json();
+        const listData = data.hotelSearchDocumentList || [];
+        list.innerHTML = "";
+        listData.forEach(text => {
+          const li = document.createElement("li");
+          li.textContent = text.name;
+          li.style.padding = "8px";
+          li.style.cursor = "pointer";
+          li.addEventListener("click", () => {
+            input.value = text;
+            list.style.display = "none";
+          });
+          list.appendChild(li);
+        });
+
+        list.style.display = listData.length ? "block" : "none";
+      }, 250);
+    });
+
+</script>
+</body>
+</html>

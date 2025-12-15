@@ -109,6 +109,8 @@ public class UserController {
     }
 
     @GetMapping("/view/{id}")
+    @PreAuthorize("hasRole('ADMIN') and @userSecurity.isOwner(#id)")
+    @ActiveRole({"ADMIN", "EDITOR"})
     public String showView(@PathVariable("id") Long id, Model model) {
         UserDTO user = this.userService.findById(id);
         model.addAttribute("user", user);

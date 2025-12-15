@@ -12,4 +12,11 @@ public class HotelSearchFilter {
     private HotelSearchField field;
     private MatchType matchType;
     private String value;
+
+    public HotelSearchFilter(HotelSearchField field, String value) {
+        this.field = field;
+        this.value = value;
+    }
+
+
 }

@@ -67,6 +67,7 @@ public class HotelController {
         return "hotels/listing";
     }
 
+
     @PostMapping
     public String searchHotels(Model model, @ModelAttribute("query") HotelSearchQuery query) {
         Page<Hotel> hotels = this.hotelSearchService.searchByQuery(query);
@@ -74,6 +75,11 @@ public class HotelController {
         model.addAttribute("totalPages",hotels.getTotalPages());
         model.addAttribute("totalElements",hotels.getTotalElements());
         return "hotels/listing";
+    }
+
+    @GetMapping("/search")
+    public String searchPage(){
+        return "hotels/search";
     }
 
     @GetMapping("/new")
