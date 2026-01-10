@@ -8,10 +8,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CountryCreateDTO {
+public class CountryCreateDTO  implements Serializable {
+    private static final long serialVersionUID= 1L;
     private Long id;
     @NotBlank(message = "Country name cannot be empty.")
     @Size(min = 2, max = 100, message = "Country name must be between 2 and 100 characters.")

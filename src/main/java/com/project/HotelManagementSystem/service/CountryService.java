@@ -9,6 +9,9 @@ import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +32,8 @@ public class CountryService {
     private final ModelMapper modelMapper;
     private final AuthService authService;
 
-    public CountryCreateDTO createCountry(CountryCreateDTO countryCreateDTO) {
+    @CachePut(cacheNames = "countries", key = "#result.id")
+    public CountryDTO createCountry(CountryCreateDTO countryCreateDTO) {
         Optional<Country> countryOptional = this.countryRepository.findByNameIgnoreCase(countryCreateDTO.getName());
         if(countryOptional.isPresent()){
             throw new DuplicateException("country",countryCreateDTO,"name","countries/create","A country with the same name already exists");
@@ -39,10 +43,11 @@ public class CountryService {
         country.setCreatedAt(LocalDateTime.now());
         country.setCreatedBy(authService.getCurrentUser());
         Country savedCountry = countryRepository.save(country);
-        return modelMapper.map(savedCountry,CountryCreateDTO.class);
+        return modelMapper.map(savedCountry,CountryDTO.class);
     }
 
-    public CountryUpdateDTO updateCountry(Long id, CountryUpdateDTO countryUpdateDTO) {
+    @CachePut(cacheNames = "countries", key = "#id")
+    public CountryDTO updateCountry(Long id, CountryUpdateDTO countryUpdateDTO) {
         Optional<Country> countryOptional = this.countryRepository.findByNameIgnoreCaseAndIdNot(countryUpdateDTO.getName(),countryUpdateDTO.getId());
         if(countryOptional.isPresent() && !countryOptional.get().getId().equals(id)){
             throw new DuplicateException("country",countryUpdateDTO,"name","countries/edit","A country with the same name already exists");
@@ -54,9 +59,10 @@ public class CountryService {
         optionalCountry.setUpdatedBy(authService.getCurrentUser());
         optionalCountry.setStatus(StatusType.ACTIVE);
         country = this.countryRepository.save(optionalCountry);
-        return modelMapper.map(country,CountryUpdateDTO.class);
+        return modelMapper.map(country,CountryDTO.class);
     }
 
+    @CacheEvict(cacheNames = "countries", key = "#id")
     public void deleteCountry(Long id) {
         Optional<Country> country = countryRepository.findById(id);
         if(country.isEmpty()){
@@ -65,6 +71,7 @@ public class CountryService {
         this.countryRepository.deleteById(id);
     }
 
+    @Cacheable(cacheNames = "countries", key="#id")
     public CountryDTO findCountryById(Long id) {
         Optional<Country> country = countryRepository.findById(id);
         if(country.isEmpty()){
