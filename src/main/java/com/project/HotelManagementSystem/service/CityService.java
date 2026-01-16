@@ -10,6 +10,9 @@ import com.project.HotelManagementSystem.repository.CityRepository;
 import com.project.HotelManagementSystem.repository.RegionRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +33,8 @@ public class CityService {
     private final ModelMapper modelMapper;
     private final AuthService authService;
 
-    public CityCreateDTO createCity(CityCreateDTO cityCreateDTO) {
+    @CachePut(cacheNames = "cities", key = "#result.id")
+    public CityDTO createCity(CityCreateDTO cityCreateDTO) {
         Optional<City> cityOp = this.cityRepository.findByNameIgnoreCaseAndRegion(cityCreateDTO.getName(),cityCreateDTO.getRegion());
         if(cityOp.isPresent()) {
             throw new DuplicateException("city",cityCreateDTO,"name","cities/create","An city with this name already exists");
@@ -40,10 +44,11 @@ public class CityService {
         city.setCreatedAt(LocalDateTime.now());
         city.setCreatedBy(authService.getCurrentUser());
         City savedCity = cityRepository.save(city);
-        return modelMapper.map(savedCity,CityCreateDTO.class);
+        return modelMapper.map(savedCity,CityDTO.class);
     }
 
-    public CityUpdateDTO updateCity(Long id, CityUpdateDTO cityUpdateDTO) {
+    @CachePut(cacheNames = "cities", key = "#id")
+    public CityDTO updateCity(Long id, CityUpdateDTO cityUpdateDTO) {
         Optional<City> cityOptional = this.cityRepository.findByNameIgnoreCaseAndRegionAndIdNot(cityUpdateDTO.getName(),cityUpdateDTO.getRegion(),cityUpdateDTO.getId());
         if(cityOptional.isPresent() && !cityOptional.get().getId().equals(id)) {
             throw new DuplicateException("city",cityUpdateDTO,"name","cities/edit","An city with this name already exists");
@@ -56,9 +61,10 @@ public class CityService {
         cityOp.setUpdatedBy(authService.getCurrentUser());
         cityOp.setStatus(StatusType.ACTIVE);
         City savedCity = cityRepository.save(cityOp);
-        return modelMapper.map(savedCity,CityUpdateDTO.class);
+        return modelMapper.map(savedCity,CityDTO.class);
     }
 
+    @CacheEvict(cacheNames = "cities", key = "#id")
     public void deleteCity(Long id) {
         Optional<City> city = cityRepository.findById(id);
         if(city.isEmpty()){
@@ -67,6 +73,7 @@ public class CityService {
         cityRepository.delete(city.get());
     }
 
+    @Cacheable(cacheNames = "cities", key = "#id")
     public CityDTO findCityById(Long id) {
         Optional<City> city = cityRepository.findById(id);
         if(city.isEmpty()){

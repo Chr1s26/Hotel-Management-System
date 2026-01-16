@@ -44,10 +44,6 @@ public class AuthenticationController {
     @Autowired
     private RoleRepository roleRepository;
 
-    @GetMapping("/hello")
-    public String hello(){
-        return "Hello World";
-    }
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest){
