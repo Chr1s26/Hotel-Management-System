@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -20,4 +21,16 @@ public interface HotelRepository extends JpaRepository<Hotel, Long>, JpaSpecific
     Optional<Hotel> findHotelByAddress(Address address);
     Optional<Hotel> findHotelByAddressAndIdNot(Address address,Long id);
 
+    @Query("""
+    SELECT DISTINCT h FROM Hotel h
+    JOIN h.address a
+    JOIN a.city c
+    JOIN c.region r
+    JOIN r.country co
+    WHERE (:keyword IS NULL OR LOWER(h.name) LIKE LOWER(CONCAT('%', :keyword, '%')))
+    AND (:cityId IS NULL OR c.id = :cityId)
+    AND (:regionId IS NULL OR r.id = :regionId)
+    AND (:countryId IS NULL OR co.id = :countryId)
+    """)
+    List<Hotel> search(String keyword, Long cityId, Long regionId, Long countryId);
 }
