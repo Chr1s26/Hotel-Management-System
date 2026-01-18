@@ -7,10 +7,7 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.document.room.RoomSearchDocument;
 import com.project.HotelManagementSystem.dto.room.*;
-import com.project.HotelManagementSystem.entity.FileStorage;
-import com.project.HotelManagementSystem.entity.Hotel;
-import com.project.HotelManagementSystem.entity.Room;
-import com.project.HotelManagementSystem.entity.RoomAttachment;
+import com.project.HotelManagementSystem.entity.*;
 import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.entity.constants.RoomMediaType;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
@@ -54,11 +51,21 @@ public class RoomService {
     private AmazonS3 amazonS3;
     @Autowired
     private ElasticsearchClient elasticsearchClient;
+    @Autowired
+    private RoomTypeService roomTypeService;
 
     public RoomCreateDTO createRoom(RoomCreateDTO roomCreateDTO) throws IOException {
-        Room room = modelMapper.map(roomCreateDTO, Room.class);
+        RoomType roomType = roomTypeService.findOrCreate(roomCreateDTO.getRoomTypeName(),roomCreateDTO.getPrice(),roomCreateDTO.getRoomSize(),roomCreateDTO.getCapacity());
+        Room room = new Room();
+        room.setAvailable(roomCreateDTO.isAvailable());
+        room.setDescription(roomCreateDTO.getDescription());
+        room.setRoomType(roomType);
+        room.setHotel(room.getHotel());
         room.setAmenities(new HashSet<>(amenitiesRepository.findAllById(roomCreateDTO.getAmenityIds())));
         room.setPromotions(new HashSet<>(promotionRepository.findAllById(roomCreateDTO.getPromotionIds())));
+        room.setStatus(StatusType.ACTIVE);
+        room.setCreatedAt(LocalDateTime.now());
+        room.setCreatedBy(authService.getCurrentUser());
         Room savedRoom = roomRepository.save(room);
         RoomSearchDocument roomSearchDocument = this.mapToSearchDoc(savedRoom);
         IndexResponse response = elasticsearchClient.index(i -> i.index(AppConstants.ROOM_INDEX_NAME)
@@ -69,15 +76,19 @@ public class RoomService {
     }
 
     public RoomUpdateDTO updateRoom(Long id, RoomUpdateDTO roomUpdateDTO) throws IOException {
+        RoomType roomType = roomTypeService.findOrCreate(roomUpdateDTO.getRoomTypeName(),roomUpdateDTO.getPrice(),roomUpdateDTO.getRoomSize(),roomUpdateDTO.getCapacity());
         Room roomOp = roomRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("room",roomUpdateDTO,"id","rooms/edit","A room with this id cannot be found"));
         Room room = modelMapper.map(roomUpdateDTO, Room.class);
 
         roomOp.setAvailable(room.isAvailable());
         roomOp.setDescription(room.getDescription());
-        roomOp.setRoomType(room.getRoomType());
+        roomOp.setRoomType(roomType);
         roomOp.setHotel(room.getHotel());
         roomOp.setAmenities(new HashSet<>(amenitiesRepository.findAllById(roomUpdateDTO.getAmenityIds())));
         roomOp.setPromotions(new HashSet<>(promotionRepository.findAllById(roomUpdateDTO.getPromotionIds())));
+        room.setStatus(StatusType.ACTIVE);
+        room.setUpdatedAt(LocalDateTime.now());
+        room.setUpdatedBy(authService.getCurrentUser());
         Room savedRoom = roomRepository.save(roomOp);
         RoomSearchDocument roomSearchDocument = this.mapToSearchDoc(savedRoom);
         IndexResponse response = elasticsearchClient.index(i -> i.index(AppConstants.ROOM_INDEX_NAME)
@@ -121,7 +132,18 @@ public class RoomService {
         if (roomOp.isEmpty()) {
             throw new ResourceNotFoundException("room",roomOp,"id","rooms","A room with this id cannot be found");
         }
-        return modelMapper.map(roomOp, RoomUpdateDTO.class);
+        Room room = roomOp.get();
+        RoomUpdateDTO dto = new RoomUpdateDTO();
+        dto.setAvailable(room.isAvailable());
+        dto.setDescription(room.getDescription());
+        dto.setRoomSize(room.getRoomType().getRoomSize());
+        dto.setHotel(room.getHotel());
+        dto.setPrice(room.getRoomType().getPrice());
+        dto.setRoomTypeName(room.getRoomType().getName());
+        dto.setCapacity(room.getRoomType().getCapacity());
+        dto.setAmenityIds(room.getAmenities().stream().map(Amenities::getId).collect(Collectors.toSet()));
+        dto.setPromotionIds(room.getPromotions().stream().map(Promotion::getId).collect(Collectors.toSet()));
+        return dto;
     }
 
     public RoomDTO findById(Long id) {
@@ -132,7 +154,7 @@ public class RoomService {
         return toDTO(roomOp.get());
     }
 
-    private RoomDTO toDTO(Room room) {
+    public RoomDTO toDTO(Room room) {
         RoomDTO roomDTO = new RoomDTO();
         roomDTO.setId(room.getId());
         roomDTO.setAvailable(room.isAvailable());

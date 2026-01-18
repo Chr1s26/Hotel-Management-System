@@ -46,11 +46,12 @@ public class RoomExportProcess extends CommonExportProcess<Room, RoomSearchQuery
     public List<ColumnSpec<Room>> columns() {
         return List.of(
                 new ColumnSpec<>("ID",r -> String.valueOf(r.getId()), null),
-                new ColumnSpec<>("Price", r -> String.valueOf(r.getPrice()),null),
+                new ColumnSpec<>("Price", r -> String.valueOf(r.getRoomType().getPrice()),null),
                 new ColumnSpec<>("Is Available", r -> String.valueOf(r.isAvailable()),null),
                 new ColumnSpec<>("Description", Room::getDescription,null),
-                new ColumnSpec<>("Room Type", r -> String.valueOf(r.getRoomType()), null),
-                new ColumnSpec<>("Max Capacity", r -> String.valueOf(r.getMaxCapacity()), null),
+                new ColumnSpec<>("Room Type", r -> String.valueOf(r.getRoomType().getName()), null),
+                new ColumnSpec<>("Max Capacity", r -> String.valueOf(r.getRoomType().getCapacity()), null),
+                new ColumnSpec<>("Room Size", r -> String.valueOf(r.getRoomType().getRoomSize()), null),
                 new ColumnSpec<>("Hotel", r -> r.getHotel()!=null ? r.getHotel().getName() : null, null),
                 new ColumnSpec<>("Amenities", r -> r.getAmenities().stream().map(Amenities::getName).collect(Collectors.joining(", ")),null),
                 new ColumnSpec<>("Promotions",r -> r.getPromotions().stream().map(Promotion::getCode).collect(Collectors.joining(", ")), null),

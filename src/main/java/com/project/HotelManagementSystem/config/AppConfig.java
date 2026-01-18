@@ -101,13 +101,8 @@ public class  AppConfig {
             public RoomUpdateDTO convert(MappingContext<Room, RoomUpdateDTO> context) {
                 Room room = context.getSource();
                 RoomUpdateDTO dto = new RoomUpdateDTO();
-
-                dto.setId(room.getId());
-                dto.setPrice(room.getPrice());
                 dto.setAvailable(room.isAvailable());
                 dto.setDescription(room.getDescription());
-                dto.setRoomType(room.getRoomType().toString()); // assuming RoomType is an enum
-                dto.setMaxCapacity(room.getMaxCapacity());
                 dto.setHotel(room.getHotel());
 
                 dto.setAmenityIds(room.getAmenities()

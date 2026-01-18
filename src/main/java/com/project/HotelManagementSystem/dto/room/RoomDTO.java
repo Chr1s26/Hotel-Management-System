@@ -20,7 +20,7 @@ public class RoomDTO {
     private Long id;
     private boolean available;
     private String description;
-    private Integer quantity;
+    private Integer capacity;
     private String roomTypeName;
     private double price;
     private int roomSize;

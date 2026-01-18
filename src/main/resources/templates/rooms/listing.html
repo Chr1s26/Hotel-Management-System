@@ -43,29 +43,25 @@
         </div>
 
         <div class="col-md-3">
-            <label for="searchRoomType" class="form-label">Room Type</label>
-            <input type="hidden" th:name="*{filterList[3].field}" th:value="'ROOM_TYPE'">
-            <input type="hidden" th:name="*{filterList[3].matchType}" th:value="'EXACT'">
-            <select th:field="*{filterList[3].value}" id="searchRoomType" name="roomType" class="form-select">
-                <option value="">All</option>
-                <option value="SINGLE">SINGLE</option>
-                <option value="DOUBLE">DOUBLE</option>
-                <option value="TWIN">TWIN</option>
-                <option value="TRIPLE">TRIPLE</option>
-                <option value="SUITE">SUITE</option>
-                <option value="DELUXE">DELUXE</option>
-                <option value="FAMILY">FAMILY</option>
-                <option value="KING">KING</option>
-                <option value="QUEEN">QUEEN</option>
-                <option value="STUDIO">STUDIO</option>
-            </select>
+            <label class="form-label">Room Type</label>
+            <input type="text"
+                   th:field="*{filterList[3].value}"
+                   class="form-control"
+                   placeholder="e.g. Double, Family">
         </div>
 
         <div class="col-md-3">
-            <label for="searchMaxCapacity" class="form-label">Max Capacity</label>
-            <input type="hidden" th:name="*{filterList[4].field}" th:value="'MAX_CAPACITY'">
-            <input type="hidden" th:name="*{filterList[4].matchType}" th:value="'EXACT'">
-            <input type="text" id="searchMaxCapacity" name="maxCapacity" class="form-control" th:field="*{filterList[4].value}" placeholder="Search by max capacity">
+            <label class="form-label">Room Size (people)</label>
+            <input type="number"
+                   th:field="*{filterList[4].value}"
+                   class="form-control">
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Capacity (rooms)</label>
+            <input type="number"
+                   th:field="*{filterList[5].value}"
+                   class="form-control">
         </div>
 
         <div class="col-md-3">
@@ -134,8 +130,9 @@
             <td th:text="${room.price}"></td>
             <td th:text="${room.isAvailable}"></td>
             <td th:text="${room.description}"></td>
-            <td th:text="${room.roomType}"></td>
-            <td th:text="${room.maxCapacity}"></td>
+            <td th:text="${room.roomTypeName}"></td>
+            <td th:text="${room.capacity}"></td>
+            <td th:text="${room.roomSize}"></td>
             <td th:text="${room.hotel}"></td>
             <td>
                 <ul class="list-unstyled mb-0" th:if="${room.amenities != null}">

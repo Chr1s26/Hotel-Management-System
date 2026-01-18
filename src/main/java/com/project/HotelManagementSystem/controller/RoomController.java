@@ -54,8 +54,9 @@ public class RoomController {
                 new RoomSearchFilter(RoomSearchField.PRICE, MatchType.EXACT,""),
                 new RoomSearchFilter(RoomSearchField.IS_AVAILABLE, MatchType.EXACT,null),
                 new RoomSearchFilter(RoomSearchField.STATUS, MatchType.EXACT,""),
-                new RoomSearchFilter(RoomSearchField.ROOM_TYPE,MatchType.EXACT,""),
-                new RoomSearchFilter(RoomSearchField.MAX_CAPACITY,MatchType.EXACT,"")
+                new RoomSearchFilter(RoomSearchField.ROOM_TYPE_NAME, MatchType.CONTAINS, ""),
+                new RoomSearchFilter(RoomSearchField.ROOM_SIZE, MatchType.EXACT, ""),
+                new RoomSearchFilter(RoomSearchField.CAPACITY, MatchType.EXACT, "")
         ));
         return query;
     }
@@ -63,7 +64,12 @@ public class RoomController {
     @GetMapping
     public String getAllRooms(Model model, @ModelAttribute("query") RoomSearchQuery query) {
         Page<Room> page = roomSearchService.searchByQuery(query);
-        model.addAttribute("rooms",page.getContent());
+        List<RoomDTO> roomDTOs = page.getContent()
+                .stream()
+                .map(roomService::toDTO)
+                .toList();
+
+        model.addAttribute("rooms", roomDTOs);
         model.addAttribute("totalPages",page.getTotalPages());
         model.addAttribute("totalElements",page.getTotalElements());
         return "rooms/listing";
@@ -72,6 +78,12 @@ public class RoomController {
     @PostMapping
     public String searchRooms(Model model, @ModelAttribute("query") RoomSearchQuery query) {
         Page<Room> page = roomSearchService.searchByQuery(query);
+        List<RoomDTO> roomDTOs = page.getContent()
+                .stream()
+                .map(roomService::toDTO)
+                .toList();
+
+        model.addAttribute("rooms", roomDTOs);
         model.addAttribute("rooms",page.getContent());
         model.addAttribute("totalPages",page.getTotalPages());
         model.addAttribute("totalElements",page.getTotalElements());

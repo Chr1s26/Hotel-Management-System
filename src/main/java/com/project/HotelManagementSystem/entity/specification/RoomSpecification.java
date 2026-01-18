@@ -15,8 +15,9 @@ public class RoomSpecification {
             case PRICE -> priceSpec(f);
             case IS_AVAILABLE -> availabilitySpec(f);
             case STATUS -> statusSpec(f);
-            case ROOM_TYPE -> roomTypeSpec(f);
-            case MAX_CAPACITY -> maxCapacitySpec(f);
+            case ROOM_TYPE_NAME -> roomTypeSpec(f);
+            case ROOM_SIZE -> roomSizeSpec(f);
+            case CAPACITY -> maxCapacitySpec(f);
         };
     }
 
@@ -25,7 +26,7 @@ public class RoomSpecification {
             if (f.getValue() == null || f.getValue().isBlank()) return null;
             try {
                 double price = Double.parseDouble(f.getValue());
-                return cb.equal(root.get("price"), price);
+                return cb.equal(root.join("roomType").get("price"), price);
             } catch (NumberFormatException e) {
                 return null;
             }
@@ -58,24 +59,34 @@ public class RoomSpecification {
     private static Specification<Room> roomTypeSpec(RoomSearchFilter f) {
         return (root, q, cb) -> {
             if (f.getValue() == null || f.getValue().isBlank()) return null;
-            try {
-                RoomType type = RoomType.valueOf(f.getValue().toUpperCase());
-                return cb.equal(root.get("roomType"), type);
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
+            return cb.equal(
+                    cb.lower(root.join("roomType").get("name")),
+                    f.getValue().toLowerCase()
+            );
         };
     }
+
+    private static Specification<Room> roomSizeSpec(RoomSearchFilter f) {
+        return (root, q, cb) -> {
+            if (f.getValue() == null || f.getValue().isBlank()) return null;
+            return cb.equal(
+                    root.join("roomType").get("roomSize"),
+                    Integer.parseInt(f.getValue())
+            );
+        };
+    }
+
 
     private static Specification<Room> maxCapacitySpec(RoomSearchFilter f) {
         return (root, q, cb) -> {
             if (f.getValue() == null || f.getValue().isBlank()) return null;
             try {
                 int capacity = Integer.parseInt(f.getValue());
-                return cb.equal(root.get("maxCapacity"), capacity);
+                return cb.equal(root.join("roomType").get("capacity"), capacity);
             } catch (NumberFormatException e) {
                 return null;
             }
         };
     }
+
 }

@@ -45,9 +45,11 @@
         <h4 class="text-bluegray mb-3">Room Information</h4>
         <p><strong>Price:</strong> <span th:text="${room.price}"></span></p>
         <p><strong>Available: </strong><span th:text="${room.available}"></span></p>
+        <p><strong>Room Type:</strong> <span th:text="${room.roomTypeName}"></span></p>
+        <p><strong>Room Size:</strong> <span th:text="${room.roomSize}"></span></p>
         <p><strong>Description: </strong> <span th:text="${room.description}"></span></p>
-        <p><strong>Room Type: </strong><span th:text="${room.roomType}"></span></p>
-        <p><strong>Max Capacity:</strong> <span th:text="${room.maxCapacity}"></span></p>
+        <p><strong>Room Type: </strong><span th:text="${room.roomTypeName}"></span></p>
+        <p><strong>Max Capacity:</strong> <span th:text="${room.capacity}"></span></p>
         <p><strong>Hotel Name: </strong><span th:text="${hotel.name}"></span></p>
         <p>
           <strong>Amenities: </strong>
