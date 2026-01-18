@@ -18,12 +18,12 @@ import java.util.Set;
 @NoArgsConstructor
 public class RoomDTO {
     private Long id;
-    private double price;
     private boolean available;
     private String description;
-    private String roomType;
     private Integer quantity;
-    private int maxCapacity;
+    private String roomTypeName;
+    private double price;
+    private int roomSize;
     private Hotel hotel;
     private Set<Amenities> amenities = new HashSet<>();
     private Set<Promotion> promotions = new HashSet<>();

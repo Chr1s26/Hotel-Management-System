@@ -48,9 +48,6 @@ public class Booking extends MasterData {
     @Column(nullable = false)
     private boolean isPaid;
 
-    @Column(nullable = false)
-    private double roomPrice;
-
     @Column(nullable = true)
     private double tax;
 

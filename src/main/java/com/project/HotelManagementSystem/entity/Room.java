@@ -2,7 +2,6 @@ package com.project.HotelManagementSystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.HotelManagementSystem.converter.RoomTypeConverter;
-import com.project.HotelManagementSystem.entity.constants.RoomType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,24 +19,15 @@ import java.util.Set;
 @Table(name = "rooms")
 public class Room extends MasterData {
 
-    @Column(nullable = false)
-    private double price;
-
     @Column(name = "is_available", nullable = false)
     private boolean available;
 
     @Column(nullable = true)
     private String description;
 
-    @Column(name = "room_type", nullable = false)
-    @Convert(converter = RoomTypeConverter.class)
+    @ManyToOne
+    @JoinColumn(name = "room_type_id")
     private RoomType roomType;
-
-    @Column(nullable = false)
-    private int maxCapacity;
-
-    @Column(nullable = true)
-    private Integer quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id")
@@ -70,9 +60,7 @@ public class Room extends MasterData {
     @JsonIgnore
     private List<CartItem> cartItems = new ArrayList<>();
 
-    public boolean isAvailable() {
-        return available;
-    }
+    public boolean isAvailable() { return available;}
 
     public void setAvailable(boolean available) {
         this.available = available;

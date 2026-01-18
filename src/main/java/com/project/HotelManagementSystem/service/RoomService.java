@@ -72,11 +72,9 @@ public class RoomService {
         Room roomOp = roomRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("room",roomUpdateDTO,"id","rooms/edit","A room with this id cannot be found"));
         Room room = modelMapper.map(roomUpdateDTO, Room.class);
 
-        roomOp.setPrice(room.getPrice());
         roomOp.setAvailable(room.isAvailable());
         roomOp.setDescription(room.getDescription());
         roomOp.setRoomType(room.getRoomType());
-        roomOp.setMaxCapacity(room.getMaxCapacity());
         roomOp.setHotel(room.getHotel());
         roomOp.setAmenities(new HashSet<>(amenitiesRepository.findAllById(roomUpdateDTO.getAmenityIds())));
         roomOp.setPromotions(new HashSet<>(promotionRepository.findAllById(roomUpdateDTO.getPromotionIds())));
@@ -137,11 +135,11 @@ public class RoomService {
     private RoomDTO toDTO(Room room) {
         RoomDTO roomDTO = new RoomDTO();
         roomDTO.setId(room.getId());
-        roomDTO.setPrice(room.getPrice());
         roomDTO.setAvailable(room.isAvailable());
         roomDTO.setDescription(room.getDescription());
-        roomDTO.setRoomType(String.valueOf(room.getRoomType()));
-        roomDTO.setMaxCapacity(room.getMaxCapacity());
+        roomDTO.setRoomSize(room.getRoomType().getRoomSize());
+        roomDTO.setRoomTypeName(room.getRoomType().getName());
+        roomDTO.setPrice(room.getRoomType().getPrice());
         roomDTO.setHotel(room.getHotel());
         roomDTO.setAmenities(room.getAmenities());
         roomDTO.setPromotions(room.getPromotions());
@@ -186,10 +184,10 @@ public class RoomService {
 
         RoomSearchDocument roomSearchDocument = new RoomSearchDocument();
         roomSearchDocument.setId(room.getId() != null ? room.getId().toString() : null);
-        roomSearchDocument.setPrice(room.getPrice());
+        roomSearchDocument.setPrice(room.getRoomType().getPrice());
         roomSearchDocument.setAvailable(room.isAvailable());
-        roomSearchDocument.setRoomType(room.getRoomType());
-        roomSearchDocument.setMaxCapacity(room.getMaxCapacity());
+        roomSearchDocument.setRoomType(room.getRoomType().getName());
+        roomSearchDocument.setMaxCapacity(room.getRoomType().getRoomSize());
         return roomSearchDocument;
     }
 
