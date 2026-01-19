@@ -11,6 +11,6 @@ public class HotelSearchDTO {
     private Long regionId;
     private Long cityId;
     private LocalDate checkIn;
-    private LocalDate checkout;
+    private LocalDate checkOut;
     private int numberOfGuests;
 }

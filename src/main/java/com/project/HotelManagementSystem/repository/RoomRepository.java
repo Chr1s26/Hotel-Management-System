@@ -13,12 +13,12 @@ import java.util.List;
 @Repository
 public interface RoomRepository extends JpaRepository<Room,Long>, JpaSpecificationExecutor<Room> {
     @Query("""
-    SELECT new com.project.dto.RoomTypeAvailabilityDTO(
-    rt.id,
-    rt.name,
-    rt.roomSize,
-    rt.capacity,
-    rt.price,
+    SELECT new com.project.HotelManagementSystem.dto.booking.RoomTypeAvailabilityDTO(
+        rt.id,
+        rt.name,
+        rt.roomSize,
+        rt.capacity,
+        rt.price,
     COUNT(r)
     )
     FROM Room r
@@ -28,7 +28,7 @@ public interface RoomRepository extends JpaRepository<Room,Long>, JpaSpecificati
     AND r.id NOT IN (
         SELECT br.id FROM Booking b
         JOIN b.rooms br
-        WHERE b.bookingStatus <> 'CANCELLED'
+        WHERE b.bookingStatus <> 0
         AND b.checkInDate < :checkOut
         AND :checkIn < b.checkOutDate
     )
@@ -43,7 +43,7 @@ public interface RoomRepository extends JpaRepository<Room,Long>, JpaSpecificati
       AND r.id NOT IN (
           SELECT br.id FROM Booking b
           JOIN b.rooms br
-          WHERE b.bookingStatus <> 'CANCELLED'
+          WHERE b.bookingStatus <> 0
             AND b.checkInDate < :checkOut
             AND :checkIn < b.checkOutDate
       )
