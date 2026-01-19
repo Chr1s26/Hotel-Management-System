@@ -14,6 +14,9 @@ public class SearchService {
     private final HotelRepository hotelRepository;
 
     public List<Hotel> searchHotels(HotelSearchDTO dto){
-        return hotelRepository.search(dto.getKeyword(),dto.getCityId(),dto.getRegionId(),dto.getCountryId());
+        String keyword = dto.getKeyword();
+        return hotelRepository.searchByKeyword(
+                keyword == null ? "" : keyword.trim()
+        );
     }
 }

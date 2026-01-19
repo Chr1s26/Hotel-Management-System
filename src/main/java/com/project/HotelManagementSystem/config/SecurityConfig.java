@@ -67,6 +67,7 @@ public class SecurityConfig {
                 "/addresses/**","/amenities/**","/cities/**","/countries/**",
                 "/authenticateTheUser",
                 "/exports/**","/home/**","/hotels/**","/policies/**","/profiles/**",
+                "/bookings/**","/hotelDetail/**","/search/**",
                 "/promotions/**","/propertyDescriptions/**","/regions/**","/reviews/**",
                 "/roles/**","/rooms/**", "/admins/**", "/editors/**", "/users/**", "/customers/**",
                 "/select-role", "/set-active-role",

@@ -22,15 +22,18 @@ public interface HotelRepository extends JpaRepository<Hotel, Long>, JpaSpecific
     Optional<Hotel> findHotelByAddressAndIdNot(Address address,Long id);
 
     @Query("""
-    SELECT DISTINCT h FROM Hotel h
-    JOIN h.address a
-    JOIN a.city c
-    JOIN c.region r
-    JOIN r.country co
-    WHERE (:keyword IS NULL OR LOWER(h.name) LIKE LOWER(CONCAT('%', :keyword, '%')))
-    AND (:cityId IS NULL OR c.id = :cityId)
-    AND (:regionId IS NULL OR r.id = :regionId)
-    AND (:countryId IS NULL OR co.id = :countryId)
+        SELECT DISTINCT h FROM Hotel h
+        JOIN h.address a
+        JOIN a.city c
+        JOIN c.region r
+        JOIN r.country co
+        WHERE (
+            :keyword IS NULL OR :keyword = '' OR
+            LOWER(h.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
+            LOWER(c.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
+            LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
+            LOWER(co.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        )
     """)
-    List<Hotel> search(String keyword, Long cityId, Long regionId, Long countryId);
+    List<Hotel> searchByKeyword(String keyword);
 }

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Search Results</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/form-theme.css}">
+</head>
+
+<body class="royal-form-page">
+<div th:replace="fragments/sidebar :: sidebar"></div>
+
+<div class="container mt-4">
+    <h2 class="mb-4">Available Hotels</h2>
+
+    <div class="row g-4">
+        <div class="col-md-4" th:each="hotel : ${hotels}">
+            <div class="glass-card p-3 h-100">
+                <h5 th:text="${hotel.name}"></h5>
+                <p class="text-muted" th:text="${hotel.city + ', ' + hotel.country}"></p>
+
+                <a class="btn btn-outline-primary mt-3"
+                   th:href="@{/hotelDetail/{id}(
+                       id=${hotel.id},
+                       checkIn=${search.checkIn},
+                       checkOut=${search.checkOut},
+                       guests=${search.guests}
+                   )}">
+                    View Rooms
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

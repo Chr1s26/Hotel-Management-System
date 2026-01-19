@@ -35,4 +35,18 @@ public interface RoomRepository extends JpaRepository<Room,Long>, JpaSpecificati
     GROUP BY rt.id, rt.name, rt.roomSize, rt.capacity, rt.price
     """)
     List<RoomTypeAvailabilityDTO> findRoomTypeAvailability(Long hotelId, LocalDate checkIn, LocalDate checkOut, int guests);
+
+    @Query("""
+    SELECT r FROM Room r
+    WHERE r.hotel.id = :hotelId
+      AND r.roomType.id = :roomTypeId
+      AND r.id NOT IN (
+          SELECT br.id FROM Booking b
+          JOIN b.rooms br
+          WHERE b.bookingStatus <> 'CANCELLED'
+            AND b.checkInDate < :checkOut
+            AND :checkIn < b.checkOutDate
+      )
+    """)
+    List<Room> findAvailableRooms(Long hotelId, Long roomTypeId, LocalDate checkIn, LocalDate checkOut);
 }

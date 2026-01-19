@@ -38,13 +38,8 @@ public class RoomTypeService {
         return roomTypeOp.get();
     }
 
-    public List<RoomTypeAvailabilityDTO> findAvailableRoomTypes(
-            Long hotelId,
-            LocalDate checkIn,
-            LocalDate checkOut,
-            int guests) {
+    public List<RoomTypeAvailabilityDTO> findAvailableRoomTypes(Long hotelId, LocalDate checkIn, LocalDate checkOut, int guests) {
 
-        return roomRepository.findRoomTypeAvailability(
-                hotelId, checkIn, checkOut, guests);
+        return roomRepository.findRoomTypeAvailability(hotelId, checkIn, checkOut, guests);
     }
 }
