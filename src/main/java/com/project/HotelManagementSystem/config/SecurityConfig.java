@@ -116,7 +116,7 @@ public class SecurityConfig {
 //                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**", "/api/public/search/**").permitAll()
                         .requestMatchers(("/swagger-ui/**")).permitAll()
                         .requestMatchers("/images/**").permitAll()
                         .anyRequest().authenticated());

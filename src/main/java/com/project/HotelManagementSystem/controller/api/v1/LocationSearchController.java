@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/search")
+@RequestMapping("/api/public/search")
 public class LocationSearchController {
 
     private final LocationSearchService searchService;

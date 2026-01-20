@@ -120,7 +120,7 @@
         }
 
         timer = setTimeout(async () => {
-            const res = await fetch(`/api/v1/search/autocomplete?q=${encodeURIComponent(q)}`);
+            const res = await fetch(`/api/public/search/autocomplete?q=${encodeURIComponent(q)}`);
             const data = await res.json();
 
             list.innerHTML = "";
