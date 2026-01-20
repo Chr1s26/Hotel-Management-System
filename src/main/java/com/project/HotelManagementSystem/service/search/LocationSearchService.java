@@ -24,18 +24,16 @@ public class LocationSearchService {
                 client.search(s -> s
                                 .index(AppConstants.LOCATION_INDEX)
                                 .size(10)
-                                .query(q -> q.bool(b -> b
-                                        .should(s1 -> s1.prefix(p ->
-                                                p.field("name").value(keyword)
-                                        ))
-                                        .should(s2 -> s2.prefix(p ->
-                                                p.field("regionName").value(keyword)
-                                        ))
-                                        .should(s3 -> s3.prefix(p ->
-                                                p.field("countryName").value(keyword)
-                                        ))
-                                ))
-                        , LocationSearchDocument.class);
+                                .query(q -> q.multiMatch(m -> m
+                                        .query(keyword)
+                                        .fields(
+                                                "name^5",
+                                                "regionName^2",
+                                                "countryName^2"
+                                        )
+                                )),
+                        LocationSearchDocument.class
+                );
 
         return res.hits().hits().stream()
                 .map(Hit::source)
