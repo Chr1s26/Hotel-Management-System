@@ -7,6 +7,7 @@
     import com.project.HotelManagementSystem.config.AppConstants;
     import com.project.HotelManagementSystem.dto.document.hotel.HotelSearchDocument;
     import com.project.HotelManagementSystem.dto.hotel.*;
+    import com.project.HotelManagementSystem.entity.Address;
     import com.project.HotelManagementSystem.entity.FileStorage;
     import com.project.HotelManagementSystem.entity.Hotel;
     import com.project.HotelManagementSystem.entity.HotelAttachment;
@@ -16,6 +17,8 @@
     import com.project.HotelManagementSystem.exception.DuplicateException;
     import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
     import com.project.HotelManagementSystem.repository.*;
+    import com.project.HotelManagementSystem.service.search.LocationIndexService;
+    import jakarta.transaction.Transactional;
     import lombok.RequiredArgsConstructor;
     import org.modelmapper.ModelMapper;
     import org.springframework.stereotype.Service;
@@ -42,13 +45,29 @@
         private final FileStorageRepository fileStorageRepository;
         private final AmazonS3 amazonS3;
         private final ElasticsearchClient elasticsearchClient;
+        private final LocationIndexService locationIndexService;
+        private final AddressRepository addressRepository;
 
-        public HotelCreateDTO createHotel(HotelCreateDTO hotelCreateDTO) throws IOException {
+        public HotelCreateDTO createHotel(HotelCreateDTO hotelCreateDTO) throws Exception {
             Optional<Hotel> hotelOp = hotelRepository.findHotelByAddress(hotelCreateDTO.getAddress());
             if(hotelOp.isPresent()) {
                 throw new DuplicateException("hotel",hotelCreateDTO,"name","hotels/create","Hotel with this address already exists");
             }
-            Hotel hotel = modelMapper.map(hotelCreateDTO, Hotel.class);
+
+            Address address = addressRepository.findById(hotelCreateDTO.getAddress().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "address", hotelCreateDTO, "addressId", "hotels/create",
+                            "Address not found"
+                    ));
+
+            Hotel hotel = new Hotel();
+            hotel.setName(hotelCreateDTO.getName());
+            hotel.setPhoneNumber(hotelCreateDTO.getPhoneNumber());
+            hotel.setEmail(hotelCreateDTO.getEmail());
+            hotel.setDescription(hotelCreateDTO.getDescription());
+            hotel.setRating(hotelCreateDTO.getRating());
+            hotel.setHotelType(hotelCreateDTO.getHotelType());
+            hotel.setAddress(address);
             hotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelCreateDTO.getPolicyIds())));
             hotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelCreateDTO.getPromotionIds())));
 
@@ -56,6 +75,7 @@
             hotel.setCreatedBy(authService.getCurrentUser());
             hotel.setStatus(StatusType.ACTIVE);
             Hotel savedHotel = hotelRepository.save(hotel);
+            locationIndexService.indexHotel(savedHotel);
             HotelSearchDocument hotelSearchDocument = this.mapToSearchDoc(savedHotel);
             IndexResponse response = elasticsearchClient.index(i -> i.index(AppConstants.HOTEL_INDEX_NAME)
                                             .id(savedHotel.getId().toString())
@@ -89,12 +109,22 @@
             return modelMapper.map(savedHotel,HotelUpdateDTO.class);
         }
 
+        @Transactional
         public void deleteHotel(Long id) {
-            Optional<Hotel> optionalHotel = hotelRepository.findById(id);
-            if(optionalHotel.isEmpty()) {
-                throw new ResourceNotFoundException("hotels",optionalHotel,"id","hotels"," A hotel with the id cannot be found");
-            }
-            this.hotelRepository.delete(optionalHotel.get());
+            Hotel hotel = hotelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("hotel", id, "id", "hotels", "Hotel not found"));
+            hotel.getPolicies().clear();
+            hotel.getPromotions().clear();
+
+            hotel.getRooms().clear();
+            hotel.getBookings().clear();
+            hotel.getReviews().clear();
+            hotel.getInvoices().clear();
+            hotel.getEditors().clear();
+            hotel.getHotelAttachments().clear();
+            hotel.getRoomAttachments().clear();
+
+            hotelRepository.saveAndFlush(hotel);
+            hotelRepository.delete(hotel);
         }
 
         public HotelUpdateDTO findHotelById(Long id) {

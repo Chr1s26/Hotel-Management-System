@@ -84,6 +84,7 @@ public class SecurityConfig {
         );
 
         http.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers( "/bookings/**", "/hotelDetail/**", "/search/**","/api/v1/search/autocomplete").permitAll()
                 .requestMatchers("/login","/register","/registerUser","/static/assets/**","/css/**","/confirm-account/**","/error", "/forget-password","/confirm-otp","/reset-password").permitAll()
                 .requestMatchers("/admins/**").hasRole("ADMIN")
                 .requestMatchers("/editors/**").hasAnyRole("EDITOR", "ADMIN")

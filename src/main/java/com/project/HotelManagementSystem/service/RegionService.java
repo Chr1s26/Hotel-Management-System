@@ -9,6 +9,7 @@ import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.RegionRepository;
 import com.project.HotelManagementSystem.service.excelExport.ColumnSpec;
 import com.project.HotelManagementSystem.service.excelExport.CommonExportProcess;
+import com.project.HotelManagementSystem.service.search.LocationIndexService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -29,8 +30,9 @@ public class RegionService {
     private final RegionRepository regionRepository;
     private final ModelMapper modelMapper;
     private final AuthService authService;
+    private final LocationIndexService locationIndexService;
 
-    public RegionCreateDTO createRegion(RegionCreateDTO regionCreateDTO) {
+    public RegionCreateDTO createRegion(RegionCreateDTO regionCreateDTO) throws Exception {
         Optional<Region> regionOp = regionRepository.findByNameIgnoreCaseAndCountryId(regionCreateDTO.getName(),regionCreateDTO.getCountry().getId());
         if(regionOp.isPresent()) {
             throw new DuplicateException("region",regionCreateDTO,"name","regions/create","A region with this name already exists");
@@ -40,6 +42,7 @@ public class RegionService {
         region.setCreatedBy(authService.getCurrentUser());
         region.setStatus(StatusType.ACTIVE);
         this.regionRepository.save(region);
+        locationIndexService.indexRegion(region);
         return modelMapper.map(region, RegionCreateDTO.class);
     }
 

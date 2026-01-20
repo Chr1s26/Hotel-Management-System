@@ -2,25 +2,73 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Hotel Search</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/form-theme.css}">
+
+    <style>
+        #suggestions {
+            position: absolute;
+            width: 100%;
+            background: rgba(15, 30, 55, 0.95);
+            border-radius: 10px;
+            margin-top: 4px;
+            list-style: none;
+            padding: 0;
+            display: none;
+            z-index: 1000;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        #suggestions li {
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            color: #cfe3ff;
+        }
+
+        #suggestions li:hover {
+            background: rgba(78, 142, 255, 0.25);
+        }
+
+        .suggest-type {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-left: 6px;
+        }
+    </style>
 </head>
 
 <body class="royal-form-page">
-<div th:replace="fragments/sidebar :: sidebar"></div>
 
 <div class="container mt-5">
-    <div class="glass-card p-4">
+    <div class="glass-card p-4 position-relative">
         <h2 class="mb-4 text-center">Find Your Stay</h2>
 
         <form th:action="@{/search}" th:object="${search}" method="post" class="row g-3">
 
-            <div class="col-md-6">
+            <!-- AUTOCOMPLETE INPUT -->
+            <div class="col-md-6 position-relative">
                 <label class="form-label">Hotel / City / Country</label>
-                <input type="text" th:field="*{keyword}" class="form-control"
-                       placeholder="Bangkok, Thailand, Hilton..." required>
+
+                <input id="keywordInput"
+                       type="text"
+                       th:field="*{keyword}"
+                       class="form-control"
+                       placeholder="Bangkok, Thailand, Hilton..."
+                       autocomplete="off"
+                       required>
+
+                <ul id="suggestions"></ul>
             </div>
+
+            <!-- HIDDEN SELECTED IDS -->
+            <input type="hidden" th:field="*{cityId}" id="cityId">
+            <input type="hidden" th:field="*{regionId}" id="regionId">
+            <input type="hidden" th:field="*{countryId}" id="countryId">
 
             <div class="col-md-3">
                 <label class="form-label">Check-in</label>
@@ -46,5 +94,71 @@
         </form>
     </div>
 </div>
+
+<script>
+    const input = document.getElementById("keywordInput");
+    const list = document.getElementById("suggestions");
+
+    const cityId = document.getElementById("cityId");
+    const regionId = document.getElementById("regionId");
+    const countryId = document.getElementById("countryId");
+
+    let timer = null;
+
+    input.addEventListener("input", () => {
+        clearTimeout(timer);
+        const q = input.value.trim();
+
+        cityId.value = "";
+        regionId.value = "";
+        countryId.value = "";
+
+        if (q.length < 2) {
+            list.style.display = "none";
+            list.innerHTML = "";
+            return;
+        }
+
+        timer = setTimeout(async () => {
+            const res = await fetch(`/api/v1/search/autocomplete?q=${encodeURIComponent(q)}`);
+            const data = await res.json();
+
+            list.innerHTML = "";
+            data.forEach(item => {
+                const li = document.createElement("li");
+
+                li.innerHTML = `
+                    <strong>${item.name}</strong>
+                    <span class="suggest-type">${item.type}</span>
+                `;
+
+                li.onclick = () => selectItem(item);
+                list.appendChild(li);
+            });
+
+            list.style.display = data.length ? "block" : "none";
+        }, 300);
+    });
+
+    function selectItem(item) {
+        input.value = item.name;
+        list.style.display = "none";
+
+        if (item.type === "CITY") {
+            cityId.value = item.cityId;
+        } else if (item.type === "REGION") {
+            regionId.value = item.regionId;
+        } else if (item.type === "COUNTRY") {
+            countryId.value = item.countryId;
+        }
+    }
+
+    document.addEventListener("click", e => {
+        if (!e.target.closest(".position-relative")) {
+            list.style.display = "none";
+        }
+    });
+</script>
+
 </body>
 </html>

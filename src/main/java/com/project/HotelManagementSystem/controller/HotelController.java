@@ -94,7 +94,7 @@ public class HotelController {
     }
 
     @PostMapping("/create")
-    public String createHotel(@Valid @ModelAttribute("hotel") HotelCreateDTO hotelCreateDTO, BindingResult bindingResult, Model model) throws IOException {
+    public String createHotel(@Valid @ModelAttribute("hotel") HotelCreateDTO hotelCreateDTO, BindingResult bindingResult, Model model) throws Exception {
         if (bindingResult.hasErrors()) {
             model.addAttribute("addresses", this.addressService.findAllAddress());
             model.addAttribute("propertyDescriptions", this.propertyDescriptionService.findAllPropertyDescriptions());

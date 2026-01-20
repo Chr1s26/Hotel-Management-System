@@ -7,6 +7,7 @@ import com.project.HotelManagementSystem.entity.specification.CountrySpecificati
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CountryRepository;
+import com.project.HotelManagementSystem.service.search.LocationIndexService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
@@ -31,9 +32,10 @@ public class CountryService {
     private final CountryRepository countryRepository;
     private final ModelMapper modelMapper;
     private final AuthService authService;
+    private final LocationIndexService locationIndexService;
 
     @CachePut(cacheNames = "countries", key = "#result.id")
-    public CountryDTO createCountry(CountryCreateDTO countryCreateDTO) {
+    public CountryDTO createCountry(CountryCreateDTO countryCreateDTO) throws Exception {
         Optional<Country> countryOptional = this.countryRepository.findByNameIgnoreCase(countryCreateDTO.getName());
         if(countryOptional.isPresent()){
             throw new DuplicateException("country",countryCreateDTO,"name","countries/create","A country with the same name already exists");
@@ -43,6 +45,7 @@ public class CountryService {
         country.setCreatedAt(LocalDateTime.now());
         country.setCreatedBy(authService.getCurrentUser());
         Country savedCountry = countryRepository.save(country);
+        locationIndexService.indexCountry(country);
         return modelMapper.map(savedCountry,CountryDTO.class);
     }
 

@@ -70,7 +70,7 @@ public class CountryController {
     }
 
     @PostMapping("/create")
-    public String createCountry(@Valid @ModelAttribute("country") CountryCreateDTO countryCreateDTO, BindingResult bindingResult, Model model) {
+    public String createCountry(@Valid @ModelAttribute("country") CountryCreateDTO countryCreateDTO, BindingResult bindingResult, Model model) throws Exception {
         if (bindingResult.hasErrors()) {
             return "countries/create";
         }

@@ -5,10 +5,12 @@ import com.project.HotelManagementSystem.dto.address.AddressDTO;
 import com.project.HotelManagementSystem.dto.address.AddressResponse;
 import com.project.HotelManagementSystem.dto.address.AddressUpdateDTO;
 import com.project.HotelManagementSystem.entity.Address;
+import com.project.HotelManagementSystem.entity.City;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.AddressRepository;
+import com.project.HotelManagementSystem.repository.CityRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,17 +29,34 @@ import java.util.Optional;
 public class AddressService {
 
     private final AddressRepository addressRepository;
+    private final CityRepository cityRepository;
     @Autowired
     private AuthService authService;
     @Autowired
     private ModelMapper modelMapper;
 
     public AddressCreateDTO createAddress(AddressCreateDTO addressCreateDTO) {
+        City city = cityRepository.findById(addressCreateDTO.getCity().getId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "city", addressCreateDTO, "cityId", "addresses/create",
+                        "City not found"
+                ));
+
+        if (city.getRegion() == null || city.getRegion().getCountry() == null) {
+            throw new IllegalStateException(
+                    "City must belong to a region and country"
+            );
+        }
         Optional<Address> addressOp = addressRepository.findByLatitudeAndLongitude(addressCreateDTO.getLatitude(),addressCreateDTO.getLongitude());
         if(addressOp.isPresent()){
             throw new DuplicateException("address",addressCreateDTO,"latitude","addresses/create","An address with this latitude and longitude already exists");
         }
-        Address address = modelMapper.map(addressCreateDTO, Address.class);
+        Address address = new Address();
+        address.setRoad(addressCreateDTO.getRoad());
+        address.setLatitude(addressCreateDTO.getLatitude());
+        address.setLongitude(addressCreateDTO.getLongitude());
+        address.setZipCode(addressCreateDTO.getZipCode());
+        address.setCity(city);
         address.setStatus(StatusType.ACTIVE);
         address.setCreatedAt(LocalDateTime.now());
         address.setCreatedBy(authService.getCurrentUser());

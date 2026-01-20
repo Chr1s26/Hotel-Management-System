@@ -7,4 +7,6 @@ public class AppConstants {
     public static final String SORT_BY_Id ="id";
     public static final String HOTEL_INDEX_NAME = "hotels";
     public static final String ROOM_INDEX_NAME = "rooms";
+    public static final String LOCATION_INDEX = "location_autocomplete";
+
 }

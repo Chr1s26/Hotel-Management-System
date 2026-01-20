@@ -83,7 +83,7 @@ public class CityController {
     }
 
     @PostMapping("/create")
-    public String createCity(@Valid @ModelAttribute("city") CityCreateDTO cityCreateDTO, BindingResult bindingResult, Model model) {
+    public String createCity(@Valid @ModelAttribute("city") CityCreateDTO cityCreateDTO, BindingResult bindingResult, Model model) throws Exception {
         if (bindingResult.hasErrors()) {
             model.addAttribute("regions", regionService.findAllRegion());
             return "cities/create";

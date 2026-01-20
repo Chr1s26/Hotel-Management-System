@@ -2,12 +2,14 @@ package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.dto.city.*;
 import com.project.HotelManagementSystem.entity.City;
+import com.project.HotelManagementSystem.entity.Region;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.entity.specification.CitySpecification;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CityRepository;
 import com.project.HotelManagementSystem.repository.RegionRepository;
+import com.project.HotelManagementSystem.service.search.LocationIndexService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
@@ -32,18 +34,35 @@ public class CityService {
     private final RegionRepository regionRepository;
     private final ModelMapper modelMapper;
     private final AuthService authService;
+    private final LocationIndexService locationIndexService;
 
     @CachePut(cacheNames = "cities", key = "#result.id")
-    public CityDTO createCity(CityCreateDTO cityCreateDTO) {
+    public CityDTO createCity(CityCreateDTO cityCreateDTO) throws Exception {
+
+        Region region = regionRepository.findById(cityCreateDTO.getRegion().getId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "region", cityCreateDTO, "regionId", "cities/create",
+                                "Region not found"
+                        )
+                );
+
+        if (region.getCountry() == null) {
+            throw new IllegalStateException("Region must belong to a country");
+        }
         Optional<City> cityOp = this.cityRepository.findByNameIgnoreCaseAndRegion(cityCreateDTO.getName(),cityCreateDTO.getRegion());
         if(cityOp.isPresent()) {
             throw new DuplicateException("city",cityCreateDTO,"name","cities/create","An city with this name already exists");
         }
-        City city = modelMapper.map(cityCreateDTO, City.class);
+
+        City city = new City();
+        city.setName(cityCreateDTO.getName());
+        city.setRegion(region);
         city.setStatus(StatusType.ACTIVE);
         city.setCreatedAt(LocalDateTime.now());
         city.setCreatedBy(authService.getCurrentUser());
         City savedCity = cityRepository.save(city);
+        locationIndexService.indexCity(savedCity);
         return modelMapper.map(savedCity,CityDTO.class);
     }
 
