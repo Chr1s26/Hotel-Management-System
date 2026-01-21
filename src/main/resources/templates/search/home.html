@@ -8,6 +8,8 @@
 
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/form-theme.css}">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <style>
         #suggestions {
@@ -24,7 +26,7 @@
         }
 
         #suggestions li {
-            padding: 10px 14px;
+            padding: 12px 14px;
             cursor: pointer;
             border-bottom: 1px solid rgba(255,255,255,0.08);
             color: #cfe3ff;
@@ -34,10 +36,21 @@
             background: rgba(78, 142, 255, 0.25);
         }
 
+        .suggest-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .suggest-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
         .suggest-type {
             font-size: 12px;
-            opacity: 0.7;
-            margin-left: 6px;
+            opacity: 0.6;
         }
     </style>
 </head>
@@ -50,7 +63,7 @@
 
         <form th:action="@{/search}" th:object="${search}" method="post" class="row g-3">
 
-            <!-- AUTOCOMPLETE INPUT -->
+            <!-- AUTOCOMPLETE -->
             <div class="col-md-6 position-relative">
                 <label class="form-label">Hotel / City / Country</label>
 
@@ -65,7 +78,7 @@
                 <ul id="suggestions"></ul>
             </div>
 
-            <!-- HIDDEN SELECTED IDS -->
+            <!-- Hidden IDs -->
             <input type="hidden" th:field="*{cityId}" id="cityId">
             <input type="hidden" th:field="*{regionId}" id="regionId">
             <input type="hidden" th:field="*{countryId}" id="countryId">
@@ -103,17 +116,24 @@
     const regionId = document.getElementById("regionId");
     const countryId = document.getElementById("countryId");
 
+    const iconMap = {
+        HOTEL: "bi-building",
+        CITY: "bi-buildings",
+        REGION: "bi-geo-alt",
+        COUNTRY: "bi-globe-asia-australia"
+    };
+
     let timer = null;
 
     input.addEventListener("input", () => {
         clearTimeout(timer);
-        const q = input.value.trim();
 
+        const q = input.value.trim();
         cityId.value = "";
         regionId.value = "";
         countryId.value = "";
 
-        if (q.length < 2) {
+        if (q.length < 1) {
             list.style.display = "none";
             list.innerHTML = "";
             return;
@@ -124,12 +144,19 @@
             const data = await res.json();
 
             list.innerHTML = "";
+
             data.forEach(item => {
                 const li = document.createElement("li");
+                const icon = iconMap[item.type] || "bi-search";
 
                 li.innerHTML = `
-                    <strong>${item.name}</strong>
-                    <span class="suggest-type">${item.type}</span>
+                    <div class="suggest-item">
+                        <i class="bi ${icon} suggest-icon"></i>
+                        <div>
+                            <strong>${item.name}</strong>
+                            <div class="suggest-type">${item.type}</div>
+                        </div>
+                    </div>
                 `;
 
                 li.onclick = () => selectItem(item);
@@ -137,20 +164,16 @@
             });
 
             list.style.display = data.length ? "block" : "none";
-        }, 300);
+        }, 250);
     });
 
     function selectItem(item) {
         input.value = item.name;
         list.style.display = "none";
 
-        if (item.type === "CITY") {
-            cityId.value = item.cityId;
-        } else if (item.type === "REGION") {
-            regionId.value = item.regionId;
-        } else if (item.type === "COUNTRY") {
-            countryId.value = item.countryId;
-        }
+        if (item.type === "CITY") cityId.value = item.cityId;
+        if (item.type === "REGION") regionId.value = item.regionId;
+        if (item.type === "COUNTRY") countryId.value = item.countryId;
     }
 
     document.addEventListener("click", e => {
