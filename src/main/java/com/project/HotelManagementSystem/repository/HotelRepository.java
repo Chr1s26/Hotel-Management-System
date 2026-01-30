@@ -2,6 +2,7 @@ package com.project.HotelManagementSystem.repository;
 
 import com.project.HotelManagementSystem.entity.Address;
 import com.project.HotelManagementSystem.entity.Hotel;
+import com.project.HotelManagementSystem.entity.PropertyDescription;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -18,8 +19,12 @@ public interface HotelRepository extends JpaRepository<Hotel, Long>, JpaSpecific
     @Query("SELECT h FROM Hotel h WHERE LOWER(h.name) = LOWER(:name) AND h.address.latitude = :latitude AND h.address.longitude = :longitude AND h.id <> :id")
     Optional<Hotel> findHotelByNameAndCoordinatesAndIdNot(String name, double latitude, double longitude, Long id);
 
-    Optional<Hotel> findHotelByAddress(Address address);
+    boolean existsByAddress(Address address);
+    boolean existsByPropertyDescription(PropertyDescription propertyDescription);
+
     Optional<Hotel> findHotelByAddressAndIdNot(Address address,Long id);
+    boolean existsByAddressAndIdNot(Address address, Long id);
+    boolean existsByPropertyDescriptionAndIdNot(PropertyDescription propertyDescription, Long id);
 
     @Query("""
         SELECT DISTINCT h FROM Hotel h

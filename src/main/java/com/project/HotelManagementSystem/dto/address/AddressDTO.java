@@ -26,4 +26,9 @@ public class AddressDTO {
     private LocalDateTime updatedAt;
     private User createdBy;
     private User updatedBy;
+
+    @Override
+    public String toString() {
+        return road + " "+(city != null ? city.getName() : null);
+    }
 }

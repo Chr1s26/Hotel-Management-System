@@ -25,5 +25,5 @@ public class PropertyDescriptionUpdateDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate renovationDate;
     @Min(value = 1, message = "Number of room cannot be less than 1.")
-    private int numberOfRooms;
+    private Integer numberOfRooms;
 }

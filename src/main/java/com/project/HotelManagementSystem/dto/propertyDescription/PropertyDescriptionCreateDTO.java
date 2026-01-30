@@ -21,5 +21,5 @@ public class PropertyDescriptionCreateDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate openingDate;
     @Min(value = 1, message = "Number of room cannot be less than 1.")
-    private int numberOfRooms;
+    private Integer numberOfRooms;
 }

@@ -74,7 +74,6 @@ public class SecurityConfig {
                 "/static/assets/**", "/css/**",
                 "/confirm-account/**", "/forget-password",
                 "/confirm-otp", "/reset-password", "/error");
-
         http.logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login")
@@ -82,7 +81,6 @@ public class SecurityConfig {
                 .clearAuthentication(true)
                 .deleteCookies("JSESSIONID")
         );
-
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers( "/bookings/**", "/hotelDetail/**", "/search/**","/api/v1/search/autocomplete").permitAll()
                 .requestMatchers("/login","/register","/registerUser","/static/assets/**","/css/**","/confirm-account/**","/error", "/forget-password","/confirm-otp","/reset-password").permitAll()
@@ -92,7 +90,6 @@ public class SecurityConfig {
                 .requestMatchers("/customers/**").hasAnyRole("EDITOR", "ADMIN")
                 .anyRequest().authenticated()
         );
-
         http.formLogin(form -> form
                 .loginPage("/login?error=false")
                 .loginProcessingUrl("/authenticateTheUser")
@@ -100,7 +97,6 @@ public class SecurityConfig {
                 .failureHandler(customAuthenticationFailureHandler)
                 .permitAll()
         );
-
         http.exceptionHandling(exception -> exception.accessDeniedPage("/access_denied"));
 
         return http.build();

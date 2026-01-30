@@ -17,7 +17,9 @@ import java.time.LocalDateTime;
 public class PropertyDescriptionDTO {
     private Long id;
     private String description;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate openingDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate renovationDate;
     private int numberOfRooms;
     private StatusType status;
@@ -25,4 +27,9 @@ public class PropertyDescriptionDTO {
     private LocalDateTime updatedAt;
     private User createdBy;
     private User updatedBy;
+
+    @Override
+    public String toString() {
+        return description;
+    }
 }

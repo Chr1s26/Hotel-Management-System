@@ -18,11 +18,13 @@ public class AddressUpdateDTO {
     @NotNull(message = "Latitude cannot be empty")
     @DecimalMin(value = "-90.0", message = "Latitude must be greater than or equal to -90")
     @DecimalMax(value = "90.0", message = "Latitude must be less than or equal to 90")
+    @Digits(integer = 3, fraction = 8)
     private Double latitude;
 
     @NotNull(message = "longitude cannot be empty")
     @DecimalMin(value = "-180.0", message = "Longitude must be greater than or equal to -180")
     @DecimalMax(value = "180.0", message = "Longitude must be less than or equal to 180")
+    @Digits(integer = 3, fraction = 8)
     private Double longitude;
 
     @NotBlank(message = "Road name cannot be empty.")

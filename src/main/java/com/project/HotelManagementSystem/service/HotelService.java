@@ -24,7 +24,6 @@
     import org.springframework.stereotype.Service;
     import org.springframework.web.multipart.MultipartFile;
 
-    import java.io.IOException;
     import java.time.LocalDateTime;
     import java.util.ArrayList;
     import java.util.HashSet;
@@ -49,16 +48,21 @@
         private final AddressRepository addressRepository;
 
         public HotelCreateDTO createHotel(HotelCreateDTO hotelCreateDTO) throws Exception {
-            Optional<Hotel> hotelOp = hotelRepository.findHotelByAddress(hotelCreateDTO.getAddress());
-            if(hotelOp.isPresent()) {
+            boolean existAddress = hotelRepository.existsByAddress(hotelCreateDTO.getAddress());
+            boolean existPD = hotelRepository.existsByPropertyDescription(hotelCreateDTO.getPropertyDescription());
+
+            if(existAddress) {
                 throw new DuplicateException("hotel",hotelCreateDTO,"name","hotels/create","Hotel with this address already exists");
+            }
+
+            if(existPD){
+                throw new DuplicateException("hotel",hotelCreateDTO,"name","hotels/create","Hotel with this property description already exists");
             }
 
             Address address = addressRepository.findById(hotelCreateDTO.getAddress().getId())
                     .orElseThrow(() -> new ResourceNotFoundException(
                             "address", hotelCreateDTO, "addressId", "hotels/create",
-                            "Address not found"
-                    ));
+                            "Address not found"));
 
             Hotel hotel = new Hotel();
             hotel.setName(hotelCreateDTO.getName());
@@ -70,10 +74,10 @@
             hotel.setAddress(address);
             hotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelCreateDTO.getPolicyIds())));
             hotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelCreateDTO.getPromotionIds())));
-
             hotel.setCreatedAt(LocalDateTime.now());
             hotel.setCreatedBy(authService.getCurrentUser());
             hotel.setStatus(StatusType.ACTIVE);
+            hotel.setPropertyDescription(hotelCreateDTO.getPropertyDescription());
             Hotel savedHotel = hotelRepository.save(hotel);
             locationIndexService.indexHotel(savedHotel);
             HotelSearchDocument hotelSearchDocument = this.mapToSearchDoc(savedHotel);
@@ -85,9 +89,13 @@
         }
 
         public HotelUpdateDTO updateHotel(Long id, HotelUpdateDTO hotelUpdateDTO) {
-            Optional<Hotel> hotelOp = hotelRepository.findHotelByAddressAndIdNot(hotelUpdateDTO.getAddress(),hotelUpdateDTO.getId());
-            if(hotelOp.isPresent()) {
+            boolean existAddress = hotelRepository.existsByAddressAndIdNot(hotelUpdateDTO.getAddress(),hotelUpdateDTO.getId());
+            boolean existPD = hotelRepository.existsByPropertyDescriptionAndIdNot(hotelUpdateDTO.getPropertyDescription(),hotelUpdateDTO.getId());
+            if(existAddress) {
                 throw new DuplicateException("hotel",hotelUpdateDTO,"name","hotels/edit","Hotel with this address already exists");
+            }
+            if(existPD) {
+                throw new DuplicateException("hotel",hotelUpdateDTO,"name","hotels/edit","Hotel with this property description already exists");
             }
             Hotel optionalHotel = this.hotelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("hotel",hotelUpdateDTO,"id","hotels/edit"," A hotel with the id cannot be found"));
             Hotel hotel = modelMapper.map(hotelUpdateDTO, Hotel.class);
@@ -101,6 +109,7 @@
             optionalHotel.setPropertyDescription(hotel.getPropertyDescription());
             optionalHotel.setPolicies(new HashSet<>(policyRepository.findAllById(hotelUpdateDTO.getPolicyIds())));
             optionalHotel.setPromotions(new HashSet<>(promotionRepository.findAllById(hotelUpdateDTO.getPromotionIds())));
+            optionalHotel.setPropertyDescription(hotel.getPropertyDescription());
             optionalHotel.setUpdatedAt(LocalDateTime.now());
             optionalHotel.setUpdatedBy(authService.getCurrentUser());
             optionalHotel.setStatus(StatusType.ACTIVE);
