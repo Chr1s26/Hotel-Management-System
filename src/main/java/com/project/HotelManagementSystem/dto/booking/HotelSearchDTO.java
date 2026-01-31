@@ -7,6 +7,7 @@ import java.time.LocalDate;
 @Data
 public class HotelSearchDTO {
     private String keyword;
+    private Long hotelId;
     private Long countryId;
     private Long regionId;
     private Long cityId;

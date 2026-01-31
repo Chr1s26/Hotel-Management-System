@@ -13,10 +13,26 @@ import java.util.List;
 public class SearchService {
     private final HotelRepository hotelRepository;
 
-    public List<Hotel> searchHotels(HotelSearchDTO dto){
-        String keyword = dto.getKeyword();
+    public List<Hotel> searchHotels(HotelSearchDTO dto) {
+
+        if (dto.getHotelId() != null) {
+            return hotelRepository.findHotelAndNearby(dto.getHotelId());
+        }
+
+        if (dto.getCityId() != null) {
+            return hotelRepository.findByCityId(dto.getCityId());
+        }
+
+        if (dto.getRegionId() != null) {
+            return hotelRepository.findByRegionId(dto.getRegionId());
+        }
+
+        if (dto.getCountryId() != null) {
+            return hotelRepository.findByCountryId(dto.getCountryId());
+        }
+
         return hotelRepository.searchByKeyword(
-                keyword == null ? "" : keyword.trim()
+                dto.getKeyword() == null ? "" : dto.getKeyword().trim()
         );
     }
 }

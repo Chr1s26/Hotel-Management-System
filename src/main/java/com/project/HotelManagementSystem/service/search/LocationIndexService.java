@@ -27,6 +27,7 @@ public class LocationIndexService {
         doc.setCityId(c.getId());
         doc.setRegionId(r.getId());
         doc.setCountryId(co.getId());
+        doc.setCityName(c.getName());
         doc.setRegionName(r.getName());
         doc.setCountryName(co.getName());
 

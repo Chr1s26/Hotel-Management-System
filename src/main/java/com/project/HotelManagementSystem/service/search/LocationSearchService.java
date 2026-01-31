@@ -18,19 +18,56 @@ public class LocationSearchService {
 
     private final ElasticsearchClient client;
 
+//    public List<LocationSearchDocument> autocomplete(String keyword) throws Exception {
+//
+//        SearchResponse<LocationSearchDocument> res =
+//                client.search(s -> s
+//                                .index(AppConstants.LOCATION_INDEX)
+//                                .size(10)
+//                                .query(q -> q.multiMatch(m -> m
+//                                        .query(keyword)
+//                                        .fields(
+//                                                "name^5",
+//                                                "regionName^2",
+//                                                "countryName^2"
+//                                        )
+//                                )),
+//                        LocationSearchDocument.class
+//                );
+//
+//        return res.hits().hits().stream()
+//                .map(Hit::source)
+//                .filter(Objects::nonNull)
+//                .toList();
+//    }
+
     public List<LocationSearchDocument> autocomplete(String keyword) throws Exception {
 
         SearchResponse<LocationSearchDocument> res =
                 client.search(s -> s
                                 .index(AppConstants.LOCATION_INDEX)
                                 .size(10)
-                                .query(q -> q.multiMatch(m -> m
-                                        .query(keyword)
-                                        .fields(
-                                                "name^5",
-                                                "regionName^2",
-                                                "countryName^2"
-                                        )
+                                .query(q -> q.bool(b -> b
+                                        .should(s1 -> s1.match(m -> m
+                                                .field("name")
+                                                .query(keyword)
+                                                .boost(5f)
+                                        ))
+                                        .should(s2 -> s2.match(m -> m
+                                                .field("cityName")
+                                                .query(keyword)
+                                                .boost(4f)
+                                        ))
+                                        .should(s3 -> s3.match(m -> m
+                                                .field("regionName")
+                                                .query(keyword)
+                                                .boost(3f)
+                                        ))
+                                        .should(s4 -> s4.match(m -> m
+                                                .field("countryName")
+                                                .query(keyword)
+                                                .boost(2f)
+                                        ))
                                 )),
                         LocationSearchDocument.class
                 );
@@ -40,4 +77,5 @@ public class LocationSearchService {
                 .filter(Objects::nonNull)
                 .toList();
     }
+
 }

@@ -5,107 +5,187 @@
 
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" th:href="@{/css/form-theme.css}">
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <style>
+        /* ===== ROYAL BLUE BACKGROUND ===== */
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0b1d4a, #1e3a8a);
+            padding-top: 50px;
+            font-family: "Segoe UI", system-ui, -apple-system;
+        }
+
+        /* ===== PAGE TITLE ===== */
+        .page-title {
+            text-align: center;
+            color: #ffffff;
+            margin-bottom: 28px;
+        }
+
+        .page-title h1 {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .page-title p {
+            font-size: 15px;
+            opacity: 0.85;
+        }
+
+        /* ===== SEARCH CARD ===== */
+        .search-card {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 18px;
+            padding: 26px 30px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+        }
+
+        .search-input {
+            height: 42px;
+            font-size: 14px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        /* ===== AUTOCOMPLETE ===== */
         #suggestions {
             position: absolute;
             width: 100%;
-            background: rgba(15, 30, 55, 0.95);
+            background: #ffffff;
             border-radius: 10px;
             margin-top: 4px;
             list-style: none;
             padding: 0;
             display: none;
             z-index: 1000;
-            border: 1px solid rgba(255,255,255,0.15);
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
         }
 
         #suggestions li {
-            padding: 12px 14px;
+            padding: 10px 14px;
             cursor: pointer;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            color: #cfe3ff;
+            border-bottom: 1px solid #f1f5f9;
         }
 
         #suggestions li:hover {
-            background: rgba(78, 142, 255, 0.25);
+            background: #eef2ff;
         }
 
         .suggest-item {
             display: flex;
-            align-items: center;
             gap: 12px;
         }
 
         .suggest-icon {
             font-size: 18px;
-            width: 24px;
-            text-align: center;
+            color: #1e40af;
+            margin-top: 2px;
         }
 
-        .suggest-type {
+        .suggest-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .suggest-meta {
             font-size: 12px;
-            opacity: 0.6;
+            color: #6b7280;
+        }
+
+        /* ===== SEARCH BUTTON ===== */
+        .search-btn {
+            background: linear-gradient(135deg, #1e40af, #1d4ed8);
+            border: none;
+            padding: 10px 42px;
+            font-weight: 600;
+            border-radius: 999px;
+        }
+
+        .search-btn:hover {
+            background: linear-gradient(135deg, #1d4ed8, #2563eb);
         }
     </style>
 </head>
 
-<body class="royal-form-page">
+<body>
 
-<div class="container mt-5">
-    <div class="glass-card p-4 position-relative">
-        <h2 class="mb-4 text-center">Find Your Stay</h2>
+<!-- ===== TITLE ===== -->
+<div class="page-title">
+    <h1>Welcome to Hotel Management System</h1>
+    <p>Find the perfect hotel for your stay</p>
+</div>
 
-        <form th:action="@{/search}" th:object="${search}" method="post" class="row g-3">
+<div class="search-card">
 
-            <!-- AUTOCOMPLETE -->
-            <div class="col-md-6 position-relative">
-                <label class="form-label">Hotel / City / Country</label>
+    <form th:action="@{/search}" th:object="${search}" method="post">
 
+        <!-- DESTINATION (FULL WIDTH) -->
+        <div class="row mb-3">
+            <div class="col-12 position-relative">
+                <label class="form-label">Destination</label>
                 <input id="keywordInput"
                        type="text"
                        th:field="*{keyword}"
-                       class="form-control"
-                       placeholder="Bangkok, Thailand, Hilton..."
+                       class="form-control search-input"
+                       placeholder="Hotel, city, region, country..."
                        autocomplete="off"
                        required>
 
                 <ul id="suggestions"></ul>
             </div>
+        </div>
 
-            <!-- Hidden IDs -->
-            <input type="hidden" th:field="*{cityId}" id="cityId">
-            <input type="hidden" th:field="*{regionId}" id="regionId">
-            <input type="hidden" th:field="*{countryId}" id="countryId">
+        <!-- DATES + GUESTS -->
+        <div class="row g-3 align-items-end">
 
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <label class="form-label">Check-in</label>
-                <input type="date" th:field="*{checkIn}" class="form-control" required>
+                <input type="date"
+                       th:field="*{checkIn}"
+                       class="form-control search-input"
+                       required>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <label class="form-label">Check-out</label>
-                <input type="date" th:field="*{checkOut}" class="form-control" required>
+                <input type="date"
+                       th:field="*{checkOut}"
+                       class="form-control search-input"
+                       required>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <label class="form-label">Guests</label>
-                <input type="number" th:field="*{numberOfGuests}" min="1" class="form-control" required>
+                <input type="number"
+                       th:field="*{numberOfGuests}"
+                       min="1"
+                       class="form-control search-input"
+                       required>
             </div>
 
-            <div class="col-md-12 text-end">
-                <button class="btn btn-primary btn-lg mt-3">
-                    Search Hotels
-                </button>
-            </div>
+        </div>
 
-        </form>
-    </div>
+        <div class="text-end mt-4">
+            <button class="btn btn-primary search-btn">
+                Search Hotels
+            </button>
+        </div>
+
+        <!-- HIDDEN IDS -->
+        <input type="hidden" th:field="*{cityId}" id="cityId">
+        <input type="hidden" th:field="*{regionId}" id="regionId">
+        <input type="hidden" th:field="*{countryId}" id="countryId">
+
+    </form>
 </div>
 
 <script>
@@ -120,7 +200,7 @@
         HOTEL: "bi-building",
         CITY: "bi-buildings",
         REGION: "bi-geo-alt",
-        COUNTRY: "bi-globe-asia-australia"
+        COUNTRY: "bi-globe"
     };
 
     let timer = null;
@@ -133,7 +213,7 @@
         regionId.value = "";
         countryId.value = "";
 
-        if (q.length < 1) {
+        if (!q) {
             list.style.display = "none";
             list.innerHTML = "";
             return;
@@ -147,34 +227,43 @@
 
             data.forEach(item => {
                 const li = document.createElement("li");
-                const i con = iconMap[item.type] || "bi-search";
+                const icon = iconMap[item.type] || "bi-search";
+
+                let meta = "";
+                if (item.type === "HOTEL")
+                    meta = `${item.cityName}, ${item.regionName}, ${item.countryName}`;
+                if (item.type === "CITY")
+                    meta = `${item.regionName}, ${item.countryName}`;
+                if (item.type === "REGION")
+                    meta = `${item.countryName}`;
 
                 li.innerHTML = `
                     <div class="suggest-item">
                         <i class="bi ${icon} suggest-icon"></i>
                         <div>
-                            <strong>${item.name}</strong>
-                            <div class="suggest-type">${item.type}</div>
+                            <div class="suggest-name">${item.name}</div>
+                            <div class="suggest-meta">
+                                ${item.type}${meta ? " · " + meta : ""}
+                            </div>
                         </div>
                     </div>
                 `;
 
-                li.onclick = () => selectItem(item);
+                li.onclick = () => {
+                    input.value = item.name;
+                    list.style.display = "none";
+
+                    if (item.type === "CITY") cityId.value = item.cityId;
+                    if (item.type === "REGION") regionId.value = item.regionId;
+                    if (item.type === "COUNTRY") countryId.value = item.countryId;
+                };
+
                 list.appendChild(li);
             });
 
             list.style.display = data.length ? "block" : "none";
         }, 250);
     });
-
-    function selectItem(item) {
-        input.value = item.name;
-        list.style.display = "none";
-
-        if (item.type === "CITY") cityId.value = item.cityId;
-        if (item.type === "REGION") regionId.value = item.regionId;
-        if (item.type === "COUNTRY") countryId.value = item.countryId;
-    }
 
     document.addEventListener("click", e => {
         if (!e.target.closest(".position-relative")) {

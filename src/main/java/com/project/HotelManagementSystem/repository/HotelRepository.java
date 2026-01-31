@@ -41,4 +41,43 @@ public interface HotelRepository extends JpaRepository<Hotel, Long>, JpaSpecific
         )
     """)
     List<Hotel> searchByKeyword(String keyword);
+
+    @Query("""
+    SELECT DISTINCT h FROM Hotel h
+    JOIN h.address a
+    JOIN a.city c
+    WHERE c.id = :cityId
+""")
+    List<Hotel> findByCityId(Long cityId);
+
+    @Query("""
+    SELECT DISTINCT h FROM Hotel h
+    JOIN h.address a
+    JOIN a.city c
+    JOIN c.region r
+    WHERE r.id = :regionId
+""")
+    List<Hotel> findByRegionId(Long regionId);
+
+    @Query("""
+    SELECT DISTINCT h FROM Hotel h
+    JOIN h.address a
+    JOIN a.city c
+    JOIN c.region r
+    JOIN r.country co
+    WHERE co.id = :countryId
+""")
+    List<Hotel> findByCountryId(Long countryId);
+
+    @Query("""
+    SELECT DISTINCT h FROM Hotel h
+    WHERE h.id = :hotelId
+       OR h.address.city.id = (
+            SELECT a.city.id FROM Hotel h2
+            JOIN h2.address a
+            WHERE h2.id = :hotelId
+       )
+""")
+    List<Hotel> findHotelAndNearby(Long hotelId);
+
 }

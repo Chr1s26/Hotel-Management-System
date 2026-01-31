@@ -11,6 +11,7 @@ public class LocationSearchDocument {
     private Long cityId;
     private Long regionId;
     private Long countryId;
+    private String cityName;
     private String countryName;
     private String regionName;
 }
