@@ -49,4 +49,13 @@ public interface RoomRepository extends JpaRepository<Room,Long>, JpaSpecificati
       )
     """)
     List<Room> findAvailableRooms(Long hotelId, Long roomTypeId, LocalDate checkIn, LocalDate checkOut);
+
+    @Query("""
+        SELECT r FROM Room r
+        JOIN r.roomType rt
+        WHERE r.hotel.id = :hotelId
+          AND r.available = true
+        ORDER BY rt.price ASC
+    """)
+    List<Room> findAvailableRoomsCheapestFirst(Long hotelId);
 }

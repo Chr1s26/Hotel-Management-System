@@ -80,4 +80,18 @@ public interface HotelRepository extends JpaRepository<Hotel, Long>, JpaSpecific
 """)
     List<Hotel> findHotelAndNearby(Long hotelId);
 
+    @Query("""
+    SELECT DISTINCT h FROM Hotel h
+    JOIN h.address a
+    JOIN a.city c
+    JOIN c.region r
+    WHERE r.id = (
+        SELECT c2.region.id FROM Hotel h2
+        JOIN h2.address a2
+        JOIN a2.city c2
+        WHERE h2.id IN :hotelIds
+    )
+""")
+    List<Hotel> findHotelsInSameRegion(List<Long> hotelIds);
+
 }

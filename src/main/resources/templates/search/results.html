@@ -1,35 +1,384 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Search Results</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" th:href="@{/css/form-theme.css}">
+    <title>Hotel Search Results</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            background: #f4f7fb;
+        }
+
+        /* TOP SEARCH BAR */
+        .search-bar {
+            background: linear-gradient(135deg, #0f2b5b, #1e4fa1);
+            padding: 20px;
+            border-radius: 12px;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        /* FILTER */
+        .filter-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        }
+
+        /* HOTEL CARD */
+        .hotel-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .hotel-img {
+            width: 220px;
+            height: 160px;
+            border-radius: 12px;
+            object-fit: cover;
+            position: relative;
+        }
+
+        .heart {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #fff;
+            border-radius: 50%;
+            padding: 6px 8px;
+            color: red;
+            font-size: 18px;
+        }
+
+        .hotel-info {
+            flex: 1;
+        }
+
+        .hotel-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f2b5b;
+        }
+
+        .stars i {
+            color: #f5b50a;
+        }
+
+        .address {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .description {
+            font-size: 14px;
+            color: #444;
+            margin-top: 6px;
+        }
+
+        .price-box {
+            width: 180px;
+            text-align: right;
+        }
+
+        .price {
+            font-size: 22px;
+            font-weight: 700;
+            color: #e11d48;
+        }
+
+        .per-night {
+            font-size: 13px;
+            color: #666;
+        }
+        #suggestions {
+        color: black;
+    position: absolute;
+    width: 100%;
+    background: #fff;
+    border-radius: 10px;
+    margin-top: 4px;
+    list-style: none;
+    padding: 0;
+    display: none;
+    z-index: 1000;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+#suggestions li {
+    padding: 12px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+#suggestions li:hover {
+    background: #f1f5ff;
+}
+
+.suggest-item {
+    display: flex;
+    gap: 12px;
+}
+
+.suggest-icon {
+    font-size: 18px;
+    color: #1e4fa1;
+}
+
+    </style>
 </head>
 
-<body class="royal-form-page">
+<body>
 
 <div class="container mt-4">
-    <h2 class="mb-4">Available Hotels</h2>
 
-    <div class="row g-4">
-        <div class="col-md-4" th:each="hotel : ${hotels}">
-            <div class="glass-card p-3 h-100">
-                <h5 th:text="${hotel.name}"></h5>
-                <p class="text-muted" th:text="${hotel.address.city + ', ' + hotel.address.city.region.country}"></p>
+    <form th:action="@{/search}" th:object="${search}" method="post">
 
-                <a class="btn btn-outline-primary mt-3"
-                   th:href="@{/hotelDetail/{id}(
-                       id=${hotel.id},
-                       checkIn=${search.checkIn},
-                       checkOut=${search.checkOut},
-                       guests=${search.numberOfGuests}
-                   )}">
-                    View Rooms
-                </a>
+        <div class="search-bar shadow-sm">
+            <div class="row g-3 align-items-end">
+
+                <!-- Destination -->
+                <div class="col-md-5 position-relative">
+                    <label>Destination</label>
+                    <input id="keywordInput"
+                           class="form-control"
+                           th:field="*{keyword}"
+                           placeholder="City, region or hotel"
+                           autocomplete="off"
+                           onkeydown="if(event.key==='Enter'){this.form.submit();}">
+
+
+                    <ul id="suggestions"></ul>
+                </div>
+
+                <!-- Check-in -->
+                <div class="col-md-2">
+                    <label>Check-in</label>
+                    <input type="date" th:field="*{checkIn}" class="form-control">
+                </div>
+
+                <!-- Check-out -->
+                <div class="col-md-2">
+                    <label>Check-out</label>
+                    <input type="date" th:field="*{checkOut}" class="form-control">
+                </div>
+
+                <!-- Guests -->
+                <div class="col-md-1">
+                    <label>Guests</label>
+                    <input type="number" min="1"
+                           th:field="*{numberOfGuests}"
+                           class="form-control">
+                </div>
+
+                <!-- 🔵 SEARCH BUTTON -->
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        🔍 Search
+                    </button>
+                </div>
+
             </div>
+        </div>
+
+        <!-- Hidden IDs -->
+        <input type="hidden" th:field="*{hotelId}" id="hotelId">
+        <input type="hidden" th:field="*{cityId}" id="cityId">
+        <input type="hidden" th:field="*{regionId}" id="regionId">
+        <input type="hidden" th:field="*{countryId}" id="countryId">
+
+    </form>
+
+
+    <div class="row mt-4">
+
+        <!-- 🔹 FILTER (LEFT 20%) -->
+        <div class="col-md-3">
+            <div class="filter-box">
+                <h6 class="fw-bold mb-3">Filter by</h6>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox">
+                    <label class="form-check-label">Free cancellation</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox">
+                    <label class="form-check-label">Breakfast included</label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox">
+                    <label class="form-check-label">Promotion available</label>
+                </div>
+
+                <hr>
+
+                <h6 class="fw-bold">Hotel type</h6>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox">
+                    <label class="form-check-label">Resort</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔹 RESULTS -->
+        <div class="col-md-9">
+
+            <div th:each="hotel : ${results}" class="hotel-card">
+
+                <!-- IMAGE -->
+                <div style="position: relative;">
+                    <img class="hotel-img"
+                         th:src="${hotel.imageUrl}"
+                         alt="Hotel image">
+                    <div class="heart">
+                        <i class="bi bi-heart"></i>
+                    </div>
+                </div>
+
+                <!-- INFO -->
+                <div class="hotel-info">
+                    <div class="hotel-name"
+                         th:text="${hotel.hotelName}">
+                    </div>
+
+                    <!-- STARS -->
+                    <div class="stars">
+                        <span th:each="i : ${#numbers.sequence(1, T(java.lang.Math).floor(hotel.rating))}">
+                            <i class="bi bi-star-fill"></i>
+                        </span>
+                        <span th:if="${hotel.rating % 1 >= 0.5}">
+                            <i class="bi bi-star-half"></i>
+                        </span>
+                    </div>
+
+                    <div class="address">
+                        <i class="bi bi-geo-alt"></i>
+                        <span th:text="${hotel.city + ', ' + hotel.region + ', ' + hotel.country}"></span>
+                    </div>
+
+                    <div class="description"
+                         th:text="${hotel.description}">
+                    </div>
+                </div>
+
+                <!-- PRICE -->
+                <div class="price-box">
+                    <div class="price">
+                        $<span th:text="${hotel.totalPrice}"></span>
+                    </div>
+                    <div class="per-night"
+                         th:text="'Total for ' + ${hotel.nights} + ' nights'">
+                    </div>
+
+                    <a class="btn btn-primary mt-3"
+                       th:href="@{/hotelDetail/{id}(id=${hotel.hotelId})}">
+                        View rooms
+                    </a>
+                </div>
+
+            </div>
+
         </div>
     </div>
 </div>
+<script>
+    const input = document.getElementById("keywordInput");
+    const list = document.getElementById("suggestions");
+
+    const hotelId = document.getElementById("hotelId");
+    const cityId = document.getElementById("cityId");
+    const regionId = document.getElementById("regionId");
+    const countryId = document.getElementById("countryId");
+
+    const iconMap = {
+        HOTEL: "bi-building",
+        CITY: "bi-buildings",
+        REGION: "bi-geo-alt",
+        COUNTRY: "bi-globe"
+    };
+
+    let timer = null;
+
+    input.addEventListener("input", () => {
+        clearTimeout(timer);
+
+        const q = input.value.trim();
+
+        hotelId.value = "";
+        cityId.value = "";
+        regionId.value = "";
+        countryId.value = "";
+
+        if (q.length < 1) {
+            list.style.display = "none";
+            list.innerHTML = "";
+            return;
+        }
+
+        timer = setTimeout(async () => {
+            const res = await fetch(`/api/public/search/autocomplete?q=${encodeURIComponent(q)}`);
+            const data = await res.json();
+
+            list.innerHTML = "";
+
+            data.forEach(item => {
+                const li = document.createElement("li");
+                const icon = iconMap[item.type] || "bi-search";
+
+                let meta = "";
+                if (item.type === "HOTEL")
+                    meta = `${item.cityName}, ${item.regionName}, ${item.countryName}`;
+                if (item.type === "CITY")
+                    meta = `${item.regionName}, ${item.countryName}`;
+                if (item.type === "REGION")
+                    meta = `${item.countryName}`;
+
+                li.innerHTML = `
+                    <div class="suggest-item">
+                        <i class="bi ${icon} suggest-icon"></i>
+                        <div>
+                            <strong>${item.name}</strong>
+                            <div class="text-muted small">${item.type}${meta ? " · " + meta : ""}</div>
+                        </div>
+                    </div>
+                `;
+
+                li.onclick = () => selectItem(item);
+                list.appendChild(li);
+            });
+
+            list.style.display = data.length ? "block" : "none";
+        }, 250);
+    });
+
+    function selectItem(item) {
+        input.value = item.name;
+        list.style.display = "none";
+
+        if (item.type === "HOTEL") hotelId.value = item.hotelId;
+        if (item.type === "CITY") cityId.value = item.cityId;
+        if (item.type === "REGION") regionId.value = item.regionId;
+        if (item.type === "COUNTRY") countryId.value = item.countryId;
+    }
+
+    document.addEventListener("click", e => {
+        if (!e.target.closest(".position-relative")) {
+            list.style.display = "none";
+        }
+    });
+</script>
+
 </body>
 </html>

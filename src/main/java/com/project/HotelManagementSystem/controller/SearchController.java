@@ -26,9 +26,9 @@ public class SearchController {
     }
 
     @PostMapping
-    public String search(@ModelAttribute("search") HotelSearchDTO dto, Model model){
-        model.addAttribute("hotels",searchService.searchHotels(dto));
-        model.addAttribute("search",dto);
+    public String search(@ModelAttribute("search") HotelSearchDTO dto, Model model) throws Exception {
+        model.addAttribute("results", searchService.search(dto));
+        model.addAttribute("search", dto);
         return "search/results";
     }
 }
