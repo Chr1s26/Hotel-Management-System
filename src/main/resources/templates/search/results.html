@@ -142,18 +142,18 @@
 
 <div class="container mt-4">
 
-    <form th:action="@{/search}" th:object="${search}" method="post">
+    <form th:action="@{/api/v1/public/search/results}" th:object="${search}" method="post">
 
         <div class="search-bar shadow-sm">
             <div class="row g-3 align-items-end">
 
-                <!-- Destination -->
+
                 <div class="col-md-5 position-relative">
                     <label>Destination</label>
                     <input id="keywordInput"
                            class="form-control"
                            th:field="*{keyword}"
-                           placeholder="City, region or hotel"
+                           placeholder="Hotel Name ,City, region or hotel"
                            autocomplete="off"
                            onkeydown="if(event.key==='Enter'){this.form.submit();}">
 
@@ -161,19 +161,18 @@
                     <ul id="suggestions"></ul>
                 </div>
 
-                <!-- Check-in -->
                 <div class="col-md-2">
                     <label>Check-in</label>
                     <input type="date" th:field="*{checkIn}" class="form-control">
                 </div>
 
-                <!-- Check-out -->
+
                 <div class="col-md-2">
                     <label>Check-out</label>
                     <input type="date" th:field="*{checkOut}" class="form-control">
                 </div>
 
-                <!-- Guests -->
+
                 <div class="col-md-1">
                     <label>Guests</label>
                     <input type="number" min="1"
@@ -181,7 +180,7 @@
                            class="form-control">
                 </div>
 
-                <!-- 🔵 SEARCH BUTTON -->
+
                 <div class="col-md-2 d-grid">
                     <button type="submit" class="btn btn-primary btn-lg">
                         🔍 Search
@@ -191,7 +190,7 @@
             </div>
         </div>
 
-        <!-- Hidden IDs -->
+
         <input type="hidden" th:field="*{hotelId}" id="hotelId">
         <input type="hidden" th:field="*{cityId}" id="cityId">
         <input type="hidden" th:field="*{regionId}" id="regionId">
@@ -202,7 +201,6 @@
 
     <div class="row mt-4">
 
-        <!-- 🔹 FILTER (LEFT 20%) -->
         <div class="col-md-3">
             <div class="filter-box">
                 <h6 class="fw-bold mb-3">Filter by</h6>
@@ -224,20 +222,45 @@
 
                 <hr>
 
-                <h6 class="fw-bold">Hotel type</h6>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox">
-                    <label class="form-check-label">Resort</label>
+                <h6 class="fw-bold mb-3">Hotel type</h6>
+
+                <div class="form-check"
+                     th:each="type : ${T(com.project.HotelManagementSystem.entity.constants.HotelType).values()}">
+
+                    <input class="form-check-input"
+                           type="checkbox"
+                           name="hotelTypes"
+                           th:value="${type}"
+                           th:checked="${search.hotelTypes != null and search.hotelTypes.contains(type)}"
+                           onchange="this.form.submit()">
+
+                    <label class="form-check-label"
+                           th:text="${type}">
+                    </label>
                 </div>
+
             </div>
+
         </div>
 
-        <!-- 🔹 RESULTS -->
-        <div class="col-md-9">
+        <div th:if="${error}" class="alert alert-danger">
+            <i class="bi bi-exclamation-circle"></i>
+            <span th:text="${error}"></span>
+        </div>
 
-            <div th:each="hotel : ${results}" class="hotel-card">
+        <div th:if="${hotels != null and #lists.isEmpty(hotels)}"
+             class="alert alert-warning">
+            <i class="bi bi-search"></i>
+            No hotels found for your search.
+        </div>
 
-                <!-- IMAGE -->
+
+
+        <div class="col-md-9" th:if="${hotels != null and !#lists.isEmpty(hotels)}">
+
+            <div th:each="hotel : ${hotels}" class="hotel-card">
+
+
                 <div style="position: relative;">
                     <img class="hotel-img"
                          th:src="${hotel.imageUrl}"
@@ -247,13 +270,13 @@
                     </div>
                 </div>
 
-                <!-- INFO -->
+
                 <div class="hotel-info">
                     <div class="hotel-name"
                          th:text="${hotel.hotelName}">
                     </div>
 
-                    <!-- STARS -->
+
                     <div class="stars">
                         <span th:each="i : ${#numbers.sequence(1, T(java.lang.Math).floor(hotel.rating))}">
                             <i class="bi bi-star-fill"></i>
@@ -273,7 +296,7 @@
                     </div>
                 </div>
 
-                <!-- PRICE -->
+
                 <div class="price-box">
                     <div class="price">
                         $<span th:text="${hotel.totalPrice}"></span>

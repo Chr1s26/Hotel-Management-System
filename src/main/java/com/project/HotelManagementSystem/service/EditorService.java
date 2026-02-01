@@ -7,6 +7,7 @@ import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.entity.specification.EditorSpecification;
 import com.project.HotelManagementSystem.exception.DuplicateException;
+import com.project.HotelManagementSystem.exception.MissingIdentificationException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.EditorRepository;
 import com.project.HotelManagementSystem.repository.RoleRepository;
@@ -47,7 +48,7 @@ public class EditorService {
         if (editorOp.isPresent()) {
             throw new DuplicateException("editor",editorCreateDTO,"name","editors/create","An editor with the same name already exists");
         }
-        validateIdsUniqueOrThrow(null, editorCreateDTO.getPassportNumber(), editorCreateDTO.getNationalIdNumber());
+        validateIdsUniqueOrThrow(null, editorCreateDTO.getPassportNumber(), editorCreateDTO.getNationalIdNumber(),editorCreateDTO,"create");
 
         Editor editor = modelMapper.map(editorCreateDTO, Editor.class);
 
@@ -60,6 +61,8 @@ public class EditorService {
             user.setRoles(new HashSet<>());
         }
         user.getRoles().add(editorRole);
+        editor.setPassportNumber(normalize(editor.getPassportNumber()));
+        editor.setNationalIdNumber(normalize(editor.getNationalIdNumber()));
         editor.setUser(user);
         editor.setStatus(StatusType.ACTIVE);
         editor.setCreatedAt(LocalDateTime.now());
@@ -74,7 +77,7 @@ public class EditorService {
         if (editorOp.isPresent()) {
             throw new DuplicateException("editor",editorUpdateDTO,"name","editors/edit","An editor with the same name already exists");
         }
-        validateIdsUniqueOrThrow(id, editorUpdateDTO.getPassportNumber(), editorUpdateDTO.getNationalIdNumber());
+        validateIdsUniqueOrThrow(id, editorUpdateDTO.getPassportNumber(), editorUpdateDTO.getNationalIdNumber(),editorUpdateDTO,"update");
 //        Long userId = editorUpdateDTO.getUser();
         Editor savedEditor = editorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("editor",editorUpdateDTO,"id","editors/edit","An editor with the id cannot be found"));
         Editor editor = modelMapper.map(editorUpdateDTO, Editor.class);
@@ -82,8 +85,8 @@ public class EditorService {
         savedEditor.setPhone(editor.getPhone());
         savedEditor.setDateOfBirth(editor.getDateOfBirth());
         savedEditor.setNationality(editor.getNationality());
-        savedEditor.setPassportNumber(editor.getPassportNumber());
-        savedEditor.setNationalIdNumber(editor.getNationalIdNumber());
+        savedEditor.setPassportNumber(normalize(editor.getPassportNumber()));
+        savedEditor.setNationalIdNumber(normalize(editor.getNationalIdNumber()));
         savedEditor.setEditorType(editor.getEditorType());
         if (editorUpdateDTO.getUser() != null &&
                 (savedEditor.getUser() == null || !savedEditor.getUser().getId().equals(editorUpdateDTO.getUser()))) {
@@ -97,6 +100,10 @@ public class EditorService {
         savedEditor = editorRepository.save(savedEditor);
         EditorUpdateDTO dto = toUpdateDTO(savedEditor);
         return dto;
+    }
+
+    private String normalize(String v) {
+        return (v == null || v.trim().isEmpty()) ? null : v.trim();
     }
 
     public void deleteEditor(Long id) {
@@ -173,30 +180,36 @@ public class EditorService {
         return editorResponse;
     }
 
-    private void validateIdsUniqueOrThrow(Long currentEditorId, String passport, String nationalId) {
+    private void validateIdsUniqueOrThrow(Long currentEditorId, String passport, String nationalId,Object object, String type) {
         String p = (passport == null) ? null : passport.trim();
         String n = (nationalId == null) ? null : nationalId.trim();
 
-        if ((p == null || p.isEmpty()) && (n == null || n.isEmpty())) {
-            throw new IllegalArgumentException("Either passport number or national ID number must be provided.");
+        String route = switch (type.toLowerCase()) {
+            case "create" -> "editors/create";
+            case "update" -> "editors/edit";
+            default -> "editors";
+        };
+
+        if (p.isEmpty() && n.isEmpty()) {
+            throw new MissingIdentificationException("editor",object,"passportNumber",route,"Mission Identification");
         }
 
-        if (p != null && !p.isEmpty()) {
+        if (!p.isEmpty()) {
             boolean dup = (currentEditorId == null)
                     ? editorRepository.existsByPassportNumberIgnoreCase(p)
                     : editorRepository.existsByPassportNumberIgnoreCaseAndIdNot(p, currentEditorId);
-//            if (dup) {
-//                throw new DuplicateException("Passport number is already used by another editor.");
-//            }
+            if (dup) {
+                throw new DuplicateException("editor", object, "passportNumber", route, "Passport Number already exists.");
+            }
         }
 
-        if (n != null && !n.isEmpty()) {
+        if (!n.isEmpty()) {
             boolean dup = (currentEditorId == null)
                     ? editorRepository.existsByNationalIdNumberIgnoreCase(n)
                     : editorRepository.existsByNationalIdNumberIgnoreCaseAndIdNot(n, currentEditorId);
-//            if (dup) {
-//                throw new DuplicateException("National ID number is already used by another editor.");
-//            }
+            if (dup) {
+                throw new DuplicateException("editor", object, "nationalIdNumber", route, "National ID Number already exists.");
+            }
         }
     }
 

@@ -126,7 +126,7 @@
 
 <div class="search-card">
 
-    <form th:action="@{/search}" th:object="${search}" method="post">
+    <form th:action="@{/api/v1/public/search/results}" th:object="${search}" method="post">
 
         <!-- DESTINATION (FULL WIDTH) -->
         <div class="row mb-3">
@@ -220,7 +220,7 @@
         }
 
         timer = setTimeout(async () => {
-            const res = await fetch(`/api/public/search/autocomplete?q=${encodeURIComponent(q)}`);
+            const res = await fetch(`/api/v1/public/search/autocomplete?q=${encodeURIComponent(q)}`);
             const data = await res.json();
 
             list.innerHTML = "";

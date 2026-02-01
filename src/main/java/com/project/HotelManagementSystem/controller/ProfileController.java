@@ -49,6 +49,9 @@ public class ProfileController {
             } else if (profile instanceof EditorDTO editorDTO) {
                 model.addAttribute("userType", "EDITOR");
                 model.addAttribute("profile", editorDTO);
+            }else{
+                model.addAttribute("userType", "NORMAL USER");
+                model.addAttribute("profile", userDTO);
             }
         }
         model.addAttribute("user",user);
@@ -57,7 +60,7 @@ public class ProfileController {
     }
 
     @PostMapping("/updatePicture")
-    @ActiveRole({"ADMIN","EDITOR"})
+//    @ActiveRole({"ADMIN","EDITOR"})
     public String updateProfilePicture(@ModelAttribute("request") ProfileRequest profileRequest) {
         profileService.uploadProfile(profileRequest);
         return "redirect:/profiles";

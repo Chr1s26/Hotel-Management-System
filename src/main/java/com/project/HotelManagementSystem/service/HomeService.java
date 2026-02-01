@@ -31,12 +31,10 @@ public class HomeService {
 
     public HomeDTO getUrl(){
         HomeDTO homeDTO = new HomeDTO();
-
         List<FileStorage> fileList = fileStorageRepository.findByFileTypeAndFileId(FileType.HOME, 1L);
-        String url = fileService.getFileName(FileType.ADMIN,1L);
         if (!fileList.isEmpty()) {
             FileStorage storedFile = fileList.get(0);
-            homeDTO.setProfileUrl(fileService.getFileName(FileType.HOME,1L));
+            homeDTO.setProfileUrl(fileService.getFileName(storedFile.getFileType(),storedFile.getFileId()));
             homeDTO.setContentType(storedFile.getContentType());
         } else {
             homeDTO.setProfileUrl("/images/default-profile.png");

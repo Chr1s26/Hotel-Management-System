@@ -7,6 +7,7 @@ import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.entity.specification.AdminSpecification;
 import com.project.HotelManagementSystem.exception.DuplicateException;
+import com.project.HotelManagementSystem.exception.MissingIdentificationException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.AdminRepository;
 import com.project.HotelManagementSystem.repository.RoleRepository;
@@ -169,8 +170,8 @@ public class AdminService {
     }
 
     private void validateIdsUniqueOrThrow(Long currentAdminId, String passport, String nationalId, Object object, String type) {
-        String p = (passport != null) ? passport.trim() : "";
-        String n = (nationalId != null) ? nationalId.trim() : "";
+        String p = (passport != null) ? passport.trim() : null;
+        String n = (nationalId != null) ? nationalId.trim() : null;
 
         String route = switch (type.toLowerCase()) {
             case "create" -> "admins/create";
@@ -178,12 +179,10 @@ public class AdminService {
             default -> "admins";
         };
 
-        // ✅ Require at least one ID
         if (p.isEmpty() && n.isEmpty()) {
-            throw new IllegalArgumentException("Either passport number or national ID number must be provided.");
+            throw new MissingIdentificationException("admin",object,"passportNumber",route,"Mission Identification");
         }
 
-        // ✅ Only check non-empty values
         if (!p.isEmpty()) {
             boolean dup = (currentAdminId == null)
                     ? adminRepository.existsByPassportNumberIgnoreCase(p)

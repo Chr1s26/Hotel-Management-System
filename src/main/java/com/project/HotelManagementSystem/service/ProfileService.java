@@ -68,7 +68,7 @@ public class ProfileService {
             EditorDTO editorDTO = getEditorDTO(editorOp.get());
             profileResponse.setObject(editorDTO);
         }else{
-            return null;
+            profileResponse.setObject(userDTO);
         }
 
         return profileResponse;

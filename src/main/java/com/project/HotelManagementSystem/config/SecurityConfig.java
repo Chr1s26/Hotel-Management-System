@@ -35,7 +35,7 @@ public class SecurityConfig {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
-    private CustomAuthenticationSuccessHandler customAuthenticationSuccessSuccessHandler;
+    private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
     @Autowired
     private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
     @Autowired
@@ -63,11 +63,10 @@ public class SecurityConfig {
     @Bean
     @Order(1)
     public SecurityFilterChain adminSiteSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.securityMatcher("/login", "", "/logout", "/register", "/registerUser",
+        http.securityMatcher("/login", "/logout", "/register", "/registerUser","/authenticateTheUser",
                 "/addresses/**","/amenities/**","/cities/**","/countries/**",
-                "/authenticateTheUser",
                 "/exports/**","/home/**","/hotels/**","/policies/**","/profiles/**",
-                "/bookings/**","/hotelDetail/**","/search/**",
+                "/bookings/**","/hotelDetail/**",
                 "/promotions/**","/propertyDescriptions/**","/regions/**","/reviews/**",
                 "/roles/**","/rooms/**", "/admins/**", "/editors/**", "/users/**", "/customers/**",
                 "/select-role", "/set-active-role",
@@ -82,7 +81,7 @@ public class SecurityConfig {
                 .deleteCookies("JSESSIONID")
         );
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers( "/bookings/**", "/hotelDetail/**", "/search/**","/api/v1/search/autocomplete").permitAll()
+//                .requestMatchers( "/bookings/**", "/hotelDetail/**", "/search/**","/api/v1/search/autocomplete").permitAll()
                 .requestMatchers("/login","/register","/registerUser","/static/assets/**","/css/**","/confirm-account/**","/error", "/forget-password","/confirm-otp","/reset-password").permitAll()
                 .requestMatchers("/admins/**").hasRole("ADMIN")
                 .requestMatchers("/editors/**").hasAnyRole("EDITOR", "ADMIN")
@@ -93,7 +92,7 @@ public class SecurityConfig {
         http.formLogin(form -> form
                 .loginPage("/login?error=false")
                 .loginProcessingUrl("/authenticateTheUser")
-                .successHandler(customAuthenticationSuccessSuccessHandler)
+                .successHandler(customAuthenticationSuccessHandler)
                 .failureHandler(customAuthenticationFailureHandler)
                 .permitAll()
         );
@@ -112,7 +111,7 @@ public class SecurityConfig {
 //                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/api/v1/auth/**", "/api/public/search/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**", "/api/v1/public/search/**").permitAll()
                         .requestMatchers(("/swagger-ui/**")).permitAll()
                         .requestMatchers("/images/**").permitAll()
                         .anyRequest().authenticated());

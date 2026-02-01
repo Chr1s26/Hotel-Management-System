@@ -1,9 +1,11 @@
 package com.project.HotelManagementSystem.dto.booking;
 
+import com.project.HotelManagementSystem.entity.constants.HotelType;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class HotelSearchDTO {
@@ -17,4 +19,5 @@ public class HotelSearchDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate checkOut;
     private int numberOfGuests;
+    private List<HotelType> hotelTypes;
 }

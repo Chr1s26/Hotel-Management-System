@@ -16,14 +16,18 @@ public class PricingService {
     private final RoomRepository roomRepository;
 
     public double calculateTotalPrice(Long hotelId, LocalDate checkIn, LocalDate checkOut) {
-        List<Room> rooms = roomRepository.findAvailableRoomsCheapestFirst(hotelId);
 
-        if (rooms.isEmpty()) return 0;
-
-        double pricePerNight = rooms.get(0).getRoomType().getPrice();
+        if (checkIn == null || checkOut == null) return 0;
+        if (!checkOut.isAfter(checkIn)) return 0;
 
         long nights = ChronoUnit.DAYS.between(checkIn, checkOut);
-        return pricePerNight * nights;
+        if (nights <= 0) return 0;
+
+        List<Room> rooms = roomRepository.findAvailableRoomsCheapestFirst(hotelId);
+        if (rooms.isEmpty()) return 0;
+
+        return rooms.get(0).getRoomType().getPrice() * nights;
     }
+
 }
 

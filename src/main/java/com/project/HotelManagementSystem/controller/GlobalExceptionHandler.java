@@ -2,6 +2,7 @@ package com.project.HotelManagementSystem.controller;
 
 import com.project.HotelManagementSystem.exception.*;
 import com.project.HotelManagementSystem.service.*;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -82,6 +83,26 @@ public class GlobalExceptionHandler {
                 null,
                 ex.getDefaultMessage()
         ));
+        model.addAttribute(ex.getObjectName(), ex.getObjectValue());
+        model.addAttribute(MODEL_KEY_PREFIX + ex.getObjectName(), br);
+        model.addAttribute("requestURI", ex.getView());
+        return ex.getView();
+    }
+
+    @ExceptionHandler(MissingIdentificationException.class)
+    public String handleMissingId(MissingIdentificationException ex, Model model) {
+        BindingResult br = new BeanPropertyBindingResult(ex.getObjectValue(), ex.getObjectName());
+        Object rejected = new BeanWrapperImpl(ex.getObjectValue()).getPropertyValue(ex.getField());
+        br.addError(new FieldError(
+                ex.getObjectName(),
+                ex.getField(),
+                rejected,
+                false,
+                new String[]{ex.getMessageKey()},
+                null,
+                ex.getDefaultMessage()
+        ));
+        addAttributes(ex.getObjectName(),model);
         model.addAttribute(ex.getObjectName(), ex.getObjectValue());
         model.addAttribute(MODEL_KEY_PREFIX + ex.getObjectName(), br);
         model.addAttribute("requestURI", ex.getView());
