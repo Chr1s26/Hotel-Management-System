@@ -54,11 +54,17 @@ public class AdminService {
         admin.setStatus(StatusType.ACTIVE);
         User user = userRepository.findById(adminCreateDTO.getUser())
                 .orElseThrow(() -> new ResourceNotFoundException("admin",adminCreateDTO,"id","admins/create","An account with this id cannot be found"));
+
+        if (user.getAdmin() != null) {
+            throw new DuplicateException("admin", adminCreateDTO, "user", "admins/create", "This user is already an admin");
+        }
+
         Role adminRole = roleRepository.findByRoleName("ADMIN").orElseThrow(() -> new ResourceNotFoundException("admin",adminCreateDTO,"name","admins/create","Role name cannot be found"));
         if(user.getRoles() == null) {
             user.setRoles(new HashSet<>());
         }
         user.getRoles().add(adminRole);
+
         admin.setUser(user);
         admin = adminRepository.save(admin);
         AdminCreateDTO dto = toCreateDTO(admin);

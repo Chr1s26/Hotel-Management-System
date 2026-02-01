@@ -140,7 +140,9 @@ public class CustomerService {
     private Customer toCustomerEntity(CustomerCreateDTO customerCreateDTO) {
 
         User user = userRepository.findById(customerCreateDTO.getUser()).orElseThrow(() -> new ResourceNotFoundException("customer",customerCreateDTO,"user","customers/create","An account with this id cannot be found"));
-
+        if(user.getCustomer() != null){
+            throw new DuplicateException("customer", customerCreateDTO, "user", "customers/create", "This user is already an customer");
+        }
         Customer customer = new Customer();
         customer.setName(customerCreateDTO.getName());
         customer.setPhone(customerCreateDTO.getPhone());

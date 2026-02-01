@@ -11,6 +11,8 @@ import com.project.HotelManagementSystem.dto.searchFilter.hotel.HotelSearchFilte
 import com.project.HotelManagementSystem.dto.searchFilter.hotel.HotelSearchQuery;
 import com.project.HotelManagementSystem.entity.Hotel;
 import com.project.HotelManagementSystem.entity.constants.HotelMediaType;
+import com.project.HotelManagementSystem.repository.AddressRepository;
+import com.project.HotelManagementSystem.repository.PropertyDescriptionRepository;
 import com.project.HotelManagementSystem.service.*;
 import com.project.HotelManagementSystem.service.excelExport.HotelExportProcess;
 import com.project.HotelManagementSystem.service.search.HotelSearchService;
@@ -38,7 +40,8 @@ public class HotelController {
     private final PolicyService policyService;
     private final HotelSearchService hotelSearchService;
     private final HotelExportProcess hotelExportProcess;
-    private final FileService fileService;
+    private final PropertyDescriptionRepository propertyDescriptionRepository;
+    private final AddressRepository addressRepository;
 
     @ModelAttribute("query")
     public HotelSearchQuery initQuery() {
@@ -86,8 +89,8 @@ public class HotelController {
     @ActiveRole({"ADMIN", "EDITOR"})
     public String showCreateForm(Model model) {
         model.addAttribute("hotel", new HotelCreateDTO());
-        model.addAttribute("addresses", this.addressService.findAllAddress());
-        model.addAttribute("propertyDescriptions", this.propertyDescriptionService.findAllPropertyDescriptions());
+        model.addAttribute("addresses", this.addressRepository.findByHotelIsNull());
+        model.addAttribute("propertyDescriptions", this.propertyDescriptionRepository.findByHotelIsNull());
         model.addAttribute("promotions", this.promotionService.findAllPromotions());
         model.addAttribute("policies", this.policyService.findAllPolicies());
         return "hotels/create";
@@ -110,8 +113,8 @@ public class HotelController {
     @ActiveRole({"ADMIN", "EDITOR"})
     public String showEditForm(@PathVariable Long id,Model model) {
         model.addAttribute("hotel", this.hotelService.findHotelById(id));
-        model.addAttribute("addresses", this.addressService.findAllAddress());
-        model.addAttribute("propertyDescriptions", this.propertyDescriptionService.findAllPropertyDescriptions());
+        model.addAttribute("addresses", this.addressRepository.findAvailableForUpdate(id));
+        model.addAttribute("propertyDescriptions", this.propertyDescriptionRepository.findAvailableForUpdate(id));
         model.addAttribute("promotions", this.promotionService.findAllPromotions());
         model.addAttribute("policies", this.policyService.findAllPolicies());
         return "hotels/edit";

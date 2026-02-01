@@ -58,7 +58,7 @@
 
         <div class="mb-3">
             <label class="form-label">Address</label>
-            <select id="address-select" th:field="*{address.id}" class="form-select" required>
+            <select id="address-select" th:field="*{address}" class="form-select" required>
                 <option value="" disabled>-- Select Address --</option>
                 <option th:each="address : ${addresses}"
                         th:value="${address.id}"
@@ -70,7 +70,7 @@
 
         <div class="mb-3">
             <label class="form-label">Property Description</label>
-            <select id="property-select" th:field="*{propertyDescription.id}" class="form-select" required>
+            <select id="property-select" th:field="*{propertyDescription}" class="form-select" required>
                 <option value="" disabled>-- Select Property Description --</option>
                 <option th:each="propertyDescription : ${propertyDescriptions}"
                         th:value="${propertyDescription.id}"

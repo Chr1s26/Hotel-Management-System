@@ -34,6 +34,19 @@ public class Address extends MasterData{
 
     @Override
     public String toString() {
-        return " Road = "+road+". Lat = "+latitude+". Long = "+longitude+". Zip Code = "+zipCode;
+        return road + " "+(city != null ? city.getName() : null);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Address)) return false;
+        Address other = (Address) o;
+        return getId() != null && getId().equals(other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

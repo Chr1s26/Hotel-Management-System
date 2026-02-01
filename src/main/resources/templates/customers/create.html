@@ -104,6 +104,7 @@
                                         th:value="${user.id}"
                                         th:text="${user.name + ' (' + user.email + ')'}"></option>
                             </select>
+                            <div class="text-danger" th:if="${#fields.hasErrors('user')}" th:errors="*{user}"></div>
                         </div>
 
                     </div>

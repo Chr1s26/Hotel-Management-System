@@ -54,6 +54,11 @@ public class EditorService {
 
         User user = userRepository.findById(editorCreateDTO.getUser())
                 .orElseThrow(() -> new ResourceNotFoundException("editor",editorCreateDTO,"id","editors/create","An editor with the id cannot be found"));
+
+        if (user.getEditor() != null) {
+            throw new DuplicateException("editor", editorCreateDTO, "user", "editors/create", "This user is already an editor");
+        }
+
         Role editorRole = roleRepository.findByRoleName("EDITOR")
                 .orElseThrow(() -> new ResourceNotFoundException("editor",editorCreateDTO,"id","editors/create","An editor with the id cannot be found"));
 

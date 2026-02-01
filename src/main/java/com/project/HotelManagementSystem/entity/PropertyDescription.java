@@ -32,4 +32,17 @@ public class PropertyDescription extends MasterData {
     public String toString() {
         return description;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PropertyDescription)) return false;
+        PropertyDescription other = (PropertyDescription) o;
+        return getId() != null && getId().equals(other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
