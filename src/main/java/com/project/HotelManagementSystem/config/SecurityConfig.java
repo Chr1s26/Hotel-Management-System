@@ -64,7 +64,7 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain adminSiteSecurityFilterChain(HttpSecurity http) throws Exception {
         http.securityMatcher("/login", "/logout", "/register", "/registerUser","/authenticateTheUser",
-                "/addresses/**","/amenities/**","/cities/**","/countries/**",
+                "/addresses/**","/amenities/**","/cities/**","/countries/**","/reindex",
                 "/exports/**","/home/**","/hotels/**","/policies/**","/profiles/**",
                 "/bookings/**","/hotelDetail/**",
                 "/promotions/**","/propertyDescriptions/**","/regions/**","/reviews/**",

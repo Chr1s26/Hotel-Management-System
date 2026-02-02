@@ -66,8 +66,9 @@ public class CountryService {
     }
 
     @CacheEvict(cacheNames = "countries", key = "#id")
-    public void deleteCountry(Long id) {
+    public void deleteCountry(Long id) throws Exception {
         Optional<Country> country = countryRepository.findById(id);
+        locationIndexService.deleteIndex(Long.toString(id));
         if(country.isEmpty()){
             throw new ResourceNotFoundException("country",country,"id","countries"," A Country with the id cannot be found");
         }

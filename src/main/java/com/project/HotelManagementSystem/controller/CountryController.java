@@ -96,7 +96,7 @@ public class CountryController {
 
     @GetMapping("/delete/{id}")
     @ActiveRole({"ADMIN", "EDITOR"})
-    public String deleteCountry(@PathVariable Long id) {
+    public String deleteCountry(@PathVariable Long id) throws Exception {
         this.countryService.deleteCountry(id);
         return "redirect:/countries";
     }

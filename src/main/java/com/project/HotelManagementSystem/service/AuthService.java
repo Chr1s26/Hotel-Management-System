@@ -48,6 +48,18 @@ public class AuthService {
         return (String) session.getAttribute("activeRole");
     }
 
+    //checking is user admin before doing export. cannot use above method because async no requestcontextholder is null
+    public boolean isAdmin() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || auth.getAuthorities() == null) {
+            return false;
+        }
+
+        return auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+    }
+
 
     public void resetPassword(String email, String password) {
         Optional<User> userOp = userRepository.findByEmail(email);

@@ -12,6 +12,9 @@ import com.project.HotelManagementSystem.service.excelExport.CommonExportProcess
 import com.project.HotelManagementSystem.service.search.LocationIndexService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +35,8 @@ public class RegionService {
     private final AuthService authService;
     private final LocationIndexService locationIndexService;
 
-    public RegionCreateDTO createRegion(RegionCreateDTO regionCreateDTO) throws Exception {
+//    @CachePut(cacheNames = "regions", key = "#result.id")
+    public RegionDTO createRegion(RegionCreateDTO regionCreateDTO) throws Exception {
         Optional<Region> regionOp = regionRepository.findByNameIgnoreCaseAndCountryId(regionCreateDTO.getName(),regionCreateDTO.getCountry().getId());
         if(regionOp.isPresent()) {
             throw new DuplicateException("region",regionCreateDTO,"name","regions/create","A region with this name already exists");
@@ -43,10 +47,11 @@ public class RegionService {
         region.setStatus(StatusType.ACTIVE);
         this.regionRepository.save(region);
         locationIndexService.indexRegion(region);
-        return modelMapper.map(region, RegionCreateDTO.class);
+        return modelMapper.map(region, RegionDTO.class);
     }
 
-    public RegionUpdateDTO updateRegion(Long id, RegionUpdateDTO regionUpdateDTO) {
+//    @CachePut(cacheNames = "regions", key = "#result.id")
+    public RegionDTO updateRegion(Long id, RegionUpdateDTO regionUpdateDTO) {
         Optional<Region> regionOp = regionRepository.findByNameIgnoreCaseAndCountryIdAndIdNot(regionUpdateDTO.getName(),regionUpdateDTO.getCountry().getId(),id);
         if(regionOp.isPresent() && !regionOp.get().getId().equals(id)) {
             throw new DuplicateException("region",regionUpdateDTO,"name","regions/edit","A region with this name already exists");
@@ -59,18 +64,21 @@ public class RegionService {
         updatedRegionOp.setUpdatedAt(LocalDateTime.now());
         updatedRegionOp.setUpdatedBy(authService.getCurrentUser());
         Region savedRegion = regionRepository.save(updatedRegionOp);
-        return modelMapper.map(savedRegion, RegionUpdateDTO.class);
+        return modelMapper.map(savedRegion, RegionDTO.class);
 
     }
 
-    public void deleteRegion(Long id) {
+//    @CacheEvict(cacheNames = "regions", key = "#id")
+    public void deleteRegion(Long id) throws Exception {
         Optional<Region> regionOp = regionRepository.findById(id);
+        locationIndexService.deleteIndex(Long.toString(id));
         if(regionOp.isEmpty()) {
             throw new ResourceNotFoundException("regions",regionOp,"id","regions","A region with this id cannot be found");
         }
         regionRepository.deleteById(id);
     }
 
+//    @Cacheable(cacheNames = "regions", key = "#id")
     public RegionDTO findRegionById(Long id) {
         Optional<Region> regionOp = regionRepository.findById(id);
         if(regionOp.isEmpty()) {

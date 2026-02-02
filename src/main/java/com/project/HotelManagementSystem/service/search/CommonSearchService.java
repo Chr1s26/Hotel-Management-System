@@ -65,7 +65,7 @@ public class CommonSearchService {
             return spec;
         }
         Long currentUserId = currentUser.getId();
-        boolean isAdmin = authService.getCurrentUserRole().equalsIgnoreCase("ROLE_ADMIN");
+        boolean isAdmin = authService.isAdmin();
         if(!isAdmin){
             return spec;
         }

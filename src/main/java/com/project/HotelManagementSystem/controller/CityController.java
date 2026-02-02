@@ -112,7 +112,7 @@ public class CityController {
 
     @GetMapping("/delete/{id}")
     @ActiveRole({"ADMIN", "EDITOR"})
-    public String deleteCity(@PathVariable Long id) {
+    public String deleteCity(@PathVariable Long id) throws Exception {
         cityService.deleteCity(id);
         return "redirect:/cities";
     }

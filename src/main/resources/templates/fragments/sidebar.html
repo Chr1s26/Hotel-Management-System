@@ -79,6 +79,11 @@
                         <a class="nav-link" th:classappend="${requestURI.startsWith('/exports')} ? ' active' : ''"
                            th:href="@{/exports}">Exported Lists</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${requestURI.startsWith('/reindex')} ? ' active' : ''"
+                           th:href="@{/reindex}">Re-Index</a>
+                    </li>
+
                 </ul>
             </nav>
 

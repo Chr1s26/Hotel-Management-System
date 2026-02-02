@@ -111,7 +111,7 @@ public class RegionController {
 
     @GetMapping("/delete/{id}")
     @ActiveRole({"ADMIN", "EDITOR"})
-    public String deleteRegion(@PathVariable Long id){
+    public String deleteRegion(@PathVariable Long id) throws Exception {
         regionService.deleteRegion(id);
         return "redirect:/regions";
     }

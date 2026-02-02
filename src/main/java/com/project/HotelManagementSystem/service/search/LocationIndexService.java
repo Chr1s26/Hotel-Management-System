@@ -4,14 +4,39 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import com.project.HotelManagementSystem.config.AppConstants;
 import com.project.HotelManagementSystem.dto.booking.LocationSearchDocument;
 import com.project.HotelManagementSystem.entity.*;
+import com.project.HotelManagementSystem.repository.CityRepository;
+import com.project.HotelManagementSystem.repository.CountryRepository;
+import com.project.HotelManagementSystem.repository.HotelRepository;
+import com.project.HotelManagementSystem.repository.RegionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class LocationIndexService {
 
     private final ElasticsearchClient client;
+    private final CountryRepository countryRepository;
+    private final RegionRepository regionRepository;
+    private final CityRepository cityRepository;
+    private final HotelRepository hotelRepository;
+
+    @Transactional(readOnly = true)
+    public void reindexAllLocations() throws Exception {
+        for (Country c : countryRepository.findAll()) {
+            indexCountry(c);
+        }
+        for (Region r : regionRepository.findAll()) {
+            indexRegion(r);
+        }
+        for (City c : cityRepository.findAll()) {
+            indexCity(c);
+        }
+        for (Hotel h : hotelRepository.findAll()) {
+            indexHotel(h);
+        }
+    }
 
     public void indexHotel(Hotel hotel) throws Exception {
         Address a = hotel.getAddress();
@@ -88,6 +113,13 @@ public class LocationIndexService {
                 .index(AppConstants.LOCATION_INDEX)
                 .id(doc.getId())
                 .document(doc)
+        );
+    }
+
+    public void deleteIndex(String id) throws Exception {
+        client.delete(d -> d
+                .index(AppConstants.LOCATION_INDEX)
+                .id(id)
         );
     }
 }

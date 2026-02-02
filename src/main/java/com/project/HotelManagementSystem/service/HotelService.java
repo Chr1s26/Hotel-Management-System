@@ -132,7 +132,7 @@
         }
 
         @Transactional
-        public void deleteHotel(Long id) {
+        public void deleteHotel(Long id) throws Exception {
             Hotel hotel = hotelRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException(
                             "hotel", id, "id", "hotels", "Hotel not found"));
@@ -149,7 +149,7 @@
 
             hotel.getPolicies().clear();
             hotel.getPromotions().clear();
-
+            locationIndexService.deleteIndex(Long.toString(id));
             roomRepository.deleteAll(hotel.getRooms());
             bookingRepository.deleteAll(hotel.getBookings());
             reviewRepository.deleteAll(hotel.getReviews());

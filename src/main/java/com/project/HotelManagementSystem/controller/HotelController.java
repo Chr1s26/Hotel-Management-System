@@ -136,7 +136,7 @@ public class HotelController {
 
     @GetMapping("/delete/{id}")
     @ActiveRole({"ADMIN", "EDITOR"})
-    public String deleteHotel(@PathVariable Long id) {
+    public String deleteHotel(@PathVariable Long id) throws Exception {
         this.hotelService.deleteHotel(id);
         return "redirect:/hotels";
     }

@@ -84,8 +84,9 @@ public class CityService {
     }
 
 //    @CacheEvict(cacheNames = "cities", key = "#id")
-    public void deleteCity(Long id) {
+    public void deleteCity(Long id) throws Exception {
         Optional<City> city = cityRepository.findById(id);
+        locationIndexService.deleteIndex(Long.toString(id));
         if(city.isEmpty()){
             throw new ResourceNotFoundException("city",city,"id","cities"," Cities with the id cannot be found");
         }
