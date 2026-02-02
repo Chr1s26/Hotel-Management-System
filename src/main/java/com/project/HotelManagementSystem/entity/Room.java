@@ -29,9 +29,8 @@ public class Room extends MasterData {
     @JoinColumn(name = "room_type_id")
     private RoomType roomType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "hotel_id")
-    @JsonIgnore
     private Hotel hotel;
 
     @ManyToMany(mappedBy = "rooms")
@@ -59,12 +58,6 @@ public class Room extends MasterData {
     @OneToMany(mappedBy = "room")
     @JsonIgnore
     private List<CartItem> cartItems = new ArrayList<>();
-
-    public boolean isAvailable() { return available;}
-
-    public void setAvailable(boolean available) {
-        this.available = available;
-    }
 
     @Override
     public int hashCode() {

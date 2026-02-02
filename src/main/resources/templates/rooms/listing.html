@@ -122,7 +122,7 @@
 
     <table class="table table-bordered">
         <thead>
-        <tr><th>ID</th><th>Price</th><th>Is Available</th><th>Description</th><th>Room Type</th><th>Max Capacity</th><th>Hotel</th><th>Amenities</th><th>Promotion</th><th>ACTIONS</th></tr>
+        <tr><th>ID</th><th>Price</th><th>Is Available</th><th>Description</th><th>Room Type</th><th>Room Size</th><th>Max Capacity</th><th>Hotel</th><th>Amenities</th><th>Promotion</th><th>ACTIONS</th></tr>
         </thead>
         <tbody>
         <tr th:each="room : ${rooms}">
@@ -131,9 +131,10 @@
             <td th:text="${room.isAvailable}"></td>
             <td th:text="${room.description}"></td>
             <td th:text="${room.roomTypeName}"></td>
+            <td th:text="${room.roomSize + ' m²'}"></td>
             <td th:text="${room.capacity}"></td>
-            <td th:text="${room.roomSize}"></td>
-            <td th:text="${room.hotel}"></td>
+
+            <td th:text="${room.hotel != null ? room.hotel.name : '-'}"></td>
             <td>
                 <ul class="list-unstyled mb-0" th:if="${room.amenities != null}">
                     <li th:each="a : ${room.amenities}" th:text="${a.name}"></li>

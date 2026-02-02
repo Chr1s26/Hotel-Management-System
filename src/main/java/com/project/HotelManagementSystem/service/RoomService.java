@@ -136,13 +136,14 @@ public class RoomService {
         }
         Room room = roomOp.get();
         RoomUpdateDTO dto = new RoomUpdateDTO();
+        dto.setId(room.getId());
         dto.setAvailable(room.isAvailable());
         dto.setDescription(room.getDescription());
-        dto.setRoomSize(room.getRoomType().getRoomSize());
-        dto.setHotel(room.getHotel());
-        dto.setPrice(room.getRoomType().getPrice());
         dto.setRoomTypeName(room.getRoomType().getName());
+        dto.setPrice(room.getRoomType().getPrice());
+        dto.setRoomSize(room.getRoomType().getRoomSize());
         dto.setCapacity(room.getRoomType().getCapacity());
+        dto.setHotel(room.getHotel());
         dto.setAmenityIds(room.getAmenities().stream().map(Amenities::getId).collect(Collectors.toSet()));
         dto.setPromotionIds(room.getPromotions().stream().map(Promotion::getId).collect(Collectors.toSet()));
         return dto;
@@ -162,6 +163,7 @@ public class RoomService {
         roomDTO.setAvailable(room.isAvailable());
         roomDTO.setDescription(room.getDescription());
         roomDTO.setRoomSize(room.getRoomType().getRoomSize());
+        roomDTO.setCapacity(room.getRoomType().getCapacity());
         roomDTO.setRoomTypeName(room.getRoomType().getName());
         roomDTO.setPrice(room.getRoomType().getPrice());
         roomDTO.setHotel(room.getHotel());

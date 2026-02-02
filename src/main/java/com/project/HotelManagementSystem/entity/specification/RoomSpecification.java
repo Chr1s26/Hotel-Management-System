@@ -39,7 +39,7 @@ public class RoomSpecification {
                 return null;
             }
             boolean available = "true".equalsIgnoreCase(f.getValue());
-            return cb.equal(root.get("isAvailable"), available);
+            return cb.equal(root.get("available"), available);
         };
     }
 

@@ -114,7 +114,6 @@ public class HotelController {
     @ActiveRole({"ADMIN", "EDITOR"})
     public String showEditForm(@PathVariable Long id,Model model) {
         model.addAttribute("hotel", this.hotelService.findHotelById(id));
-        List<Address> address = addressRepository.findAvailableForUpdate(id);
         model.addAttribute("addresses", this.addressRepository.findAvailableForUpdate(id));
         model.addAttribute("propertyDescriptions", this.propertyDescriptionRepository.findAvailableForUpdate(id));
         model.addAttribute("promotions", this.promotionService.findAllPromotions());

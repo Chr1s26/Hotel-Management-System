@@ -26,13 +26,13 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Room Size (people)</label>
+            <label class="form-label">Room Size (room size)</label>
             <input type="number" th:field="*{roomSize}" class="form-control" required />
             <div class="text-danger" th:if="${#fields.hasErrors('roomSize')}" th:errors="*{roomSize}"></div>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Capacity (number of rooms)</label>
+            <label class="form-label">Capacity (number of people)</label>
             <input type="number" th:field="*{capacity}" class="form-control" required />
             <div class="text-danger" th:if="${#fields.hasErrors('capacity')}" th:errors="*{capacity}"></div>
         </div>
@@ -71,12 +71,12 @@
                         th:text="${am.name}">
                 </option>
             </select>
-            <button type="button"
-            class="btn btn-outline-secondary"
-            data-bs-toggle="modal"
-            data-bs-target="#amenityModal">
-                + New
-            </button>
+<!--            <button type="button"-->
+<!--            class="btn btn-outline-secondary"-->
+<!--            data-bs-toggle="modal"-->
+<!--            data-bs-target="#amenityModal">-->
+<!--                + New-->
+<!--            </button>-->
             </div>
             <div class="text-danger" th:if="${#fields.hasErrors('amenityIds')}" th:errors="*{amenityIds}"></div>
         </div>

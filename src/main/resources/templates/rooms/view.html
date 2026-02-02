@@ -43,13 +43,12 @@
     <div class="tab-pane fade show active" id="home" role="tabpanel">
       <div class="glass-card p-4 mb-4">
         <h4 class="text-bluegray mb-3">Room Information</h4>
+        <p><strong>Room Type:</strong> <span th:text="${room.roomTypeName}"></span></p>
         <p><strong>Price:</strong> <span th:text="${room.price}"></span></p>
         <p><strong>Available: </strong><span th:text="${room.available}"></span></p>
-        <p><strong>Room Type:</strong> <span th:text="${room.roomTypeName}"></span></p>
         <p><strong>Room Size:</strong> <span th:text="${room.roomSize}"></span></p>
-        <p><strong>Description: </strong> <span th:text="${room.description}"></span></p>
-        <p><strong>Room Type: </strong><span th:text="${room.roomTypeName}"></span></p>
         <p><strong>Max Capacity:</strong> <span th:text="${room.capacity}"></span></p>
+        <p><strong>Description: </strong> <span th:text="${room.description}"></span></p>
         <p><strong>Hotel Name: </strong><span th:text="${hotel.name}"></span></p>
         <p>
           <strong>Amenities: </strong>

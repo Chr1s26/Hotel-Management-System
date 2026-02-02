@@ -82,12 +82,22 @@
             hotel.setStatus(StatusType.ACTIVE);
             hotel.setPropertyDescription(hotelCreateDTO.getPropertyDescription());
             Hotel savedHotel = hotelRepository.save(hotel);
+
+            //Real implementation of elastic search
+            //Indexing hotel for booking flow
             locationIndexService.indexHotel(savedHotel);
+
+            //To save photos, change object type
             HotelSearchDocument hotelSearchDocument = this.mapToSearchDoc(savedHotel);
+
+            //Testing elastic search with hotel search
             IndexResponse response = elasticsearchClient.index(i -> i.index(AppConstants.HOTEL_INDEX_NAME)
                                             .id(savedHotel.getId().toString())
                                             .document(hotelSearchDocument));
+
+            //save photos
             this.addAttachment(hotelCreateDTO.getFiles(), savedHotel.getId(), hotelCreateDTO.getHotelMediaType());
+
             return modelMapper.map(savedHotel,HotelCreateDTO.class);
         }
 
@@ -167,21 +177,6 @@
             }
             return toDTO(optionalHotel.get());
         }
-
-//        public HotelResponse findAllHotelsWithPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
-//            Sort sortByAndSortOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-//            Pageable pageable = PageRequest.of(pageNumber,pageSize,sortByAndSortOrder);
-//            Page<Hotel> page = this.hotelRepository.findAll(pageable);
-//            List<HotelDTO> hotelDTOS = page.getContent().stream().map(hotel -> modelMapper.map(hotel, HotelDTO.class)).toList();
-//            HotelResponse hotelResponse = new HotelResponse();
-//            hotelResponse.setHotels(hotelDTOS);
-//            hotelResponse.setPageNumber(page.getNumber());
-//            hotelResponse.setPageSize(page.getSize());
-//            hotelResponse.setTotalPages(page.getTotalPages());
-//            hotelResponse.setTotalElements(page.getTotalElements());
-//            hotelResponse.setLastPage(page.isLast());
-//            return hotelResponse;
-//        }
 
         public List<HotelDTO> findAllHotels() {
             List<Hotel> hotels = this.hotelRepository.findAll();

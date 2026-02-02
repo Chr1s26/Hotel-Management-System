@@ -68,9 +68,6 @@ public class FileService {
 
 
     public void handleFileUpload(MultipartFile file, FileType fileType,Long id,String serviceName) {
-//        if (file.isEmpty()) {
-//            throw new ResourceNotFoundException("MultipartFile","file not found","file");
-//        }
 
         String originalFilename = file.getOriginalFilename();
         String uuid = UUID.randomUUID().toString();

@@ -11,6 +11,8 @@ import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
 import com.project.HotelManagementSystem.dto.searchFilter.room.RoomSearchField;
 import com.project.HotelManagementSystem.dto.searchFilter.room.RoomSearchFilter;
 import com.project.HotelManagementSystem.dto.searchFilter.room.RoomSearchQuery;
+import com.project.HotelManagementSystem.entity.Amenities;
+import com.project.HotelManagementSystem.entity.Hotel;
 import com.project.HotelManagementSystem.entity.Room;
 import com.project.HotelManagementSystem.entity.constants.RoomMediaType;
 import com.project.HotelManagementSystem.service.AmenitiesService;
@@ -30,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
@@ -68,7 +71,7 @@ public class RoomController {
                 .stream()
                 .map(roomService::toDTO)
                 .toList();
-
+        Hotel hotel = roomDTOs.getFirst().getHotel();
         model.addAttribute("rooms", roomDTOs);
         model.addAttribute("totalPages",page.getTotalPages());
         model.addAttribute("totalElements",page.getTotalElements());
@@ -84,7 +87,6 @@ public class RoomController {
                 .toList();
 
         model.addAttribute("rooms", roomDTOs);
-        model.addAttribute("rooms",page.getContent());
         model.addAttribute("totalPages",page.getTotalPages());
         model.addAttribute("totalElements",page.getTotalElements());
         return "rooms/listing";
