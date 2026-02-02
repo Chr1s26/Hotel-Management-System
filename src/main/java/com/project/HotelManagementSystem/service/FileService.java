@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -185,11 +186,11 @@ public class FileService {
 
 
     public String getFileNames(FileType fileType, Long fileId) {
-        FileStorageV2 file = fileStorageV2Repository.findByFileTypeAndFileId(fileType,fileId).orElse(null);
-        if(file == null){
+        List<FileStorageV2> files = fileStorageV2Repository.findAllByFileTypeAndFileIdOrderByIdDesc(fileType, fileId);
+        if (files.isEmpty()) {
             return "/images/default-profile.png";
         }
-        return getFileUrl(file.getKey(), file.getServiceName());
+        return getFileUrl(files.get(0).getKey(), files.get(0).getServiceName());
     }
 
     public void saveExportFileWithFailStatus(ExportListing exportListing) {
