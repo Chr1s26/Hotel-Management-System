@@ -20,6 +20,7 @@ public class PropertyDescriptionCreateDTO {
     @NotNull(message = "Opening Date cannot be empty.")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate openingDate;
+    @NotNull(message = "Rooms cannot be null")
     @Min(value = 1, message = "Number of room cannot be less than 1.")
     private Integer numberOfRooms;
 }

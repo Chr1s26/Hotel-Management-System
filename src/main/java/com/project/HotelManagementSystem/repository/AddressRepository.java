@@ -16,8 +16,9 @@ public interface AddressRepository extends JpaRepository<Address, Long> , JpaSpe
     Optional<Address> findByLatitudeAndLongitudeAndIdNot(Double latitude, Double longitude, Long id);
     List<Address> findByHotelIsNull();
     @Query("""
-        select a from Address a
-        where a.hotel is null or a.hotel.id = :hotelId
-    """)
+    select distinct a from Address a
+    left join a.hotel h
+    where h is null or h.id = :hotelId
+""")
     List<Address> findAvailableForUpdate(@Param("hotelId") Long hotelId);
 }

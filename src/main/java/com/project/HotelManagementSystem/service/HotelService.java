@@ -7,10 +7,7 @@
     import com.project.HotelManagementSystem.config.AppConstants;
     import com.project.HotelManagementSystem.dto.document.hotel.HotelSearchDocument;
     import com.project.HotelManagementSystem.dto.hotel.*;
-    import com.project.HotelManagementSystem.entity.Address;
-    import com.project.HotelManagementSystem.entity.FileStorage;
-    import com.project.HotelManagementSystem.entity.Hotel;
-    import com.project.HotelManagementSystem.entity.HotelAttachment;
+    import com.project.HotelManagementSystem.entity.*;
     import com.project.HotelManagementSystem.entity.constants.FileType;
     import com.project.HotelManagementSystem.entity.constants.StatusType;
     import com.project.HotelManagementSystem.entity.constants.HotelMediaType;
@@ -46,6 +43,12 @@
         private final ElasticsearchClient elasticsearchClient;
         private final LocationIndexService locationIndexService;
         private final AddressRepository addressRepository;
+        private final RoomRepository roomRepository;
+        private final BookingRepository bookingRepository;
+        private final ReviewRepository reviewRepository;
+        private final InvoiceRepository invoiceRepository;
+        private final EditorRepository editorRepository;
+        private final RoomAttachmentRepository roomAttachment;
 
         public HotelCreateDTO createHotel(HotelCreateDTO hotelCreateDTO) throws Exception {
             boolean existAddress = hotelRepository.existsByAddress(hotelCreateDTO.getAddress());
@@ -120,19 +123,31 @@
 
         @Transactional
         public void deleteHotel(Long id) {
-            Hotel hotel = hotelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("hotel", id, "id", "hotels", "Hotel not found"));
+            Hotel hotel = hotelRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "hotel", id, "id", "hotels", "Hotel not found"));
+
+            if (hotel.getAddress() != null) {
+                hotel.getAddress().setHotel(null);
+                hotel.setAddress(null);
+            }
+
+            if (hotel.getPropertyDescription() != null) {
+                hotel.getPropertyDescription().setHotel(null);
+                hotel.setPropertyDescription(null);
+            }
+
             hotel.getPolicies().clear();
             hotel.getPromotions().clear();
 
-            hotel.getRooms().clear();
-            hotel.getBookings().clear();
-            hotel.getReviews().clear();
-            hotel.getInvoices().clear();
-            hotel.getEditors().clear();
-            hotel.getHotelAttachments().clear();
-            hotel.getRoomAttachments().clear();
-
-            hotelRepository.saveAndFlush(hotel);
+            roomRepository.deleteAll(hotel.getRooms());
+            bookingRepository.deleteAll(hotel.getBookings());
+            reviewRepository.deleteAll(hotel.getReviews());
+            invoiceRepository.deleteAll(hotel.getInvoices());
+            editorRepository.deleteAll(hotel.getEditors());
+            hotelAttachmentRepository.deleteAll(hotel.getHotelAttachments());
+            roomAttachment.deleteAll(hotel.getRoomAttachments());
+            hotelRepository.flush();
             hotelRepository.delete(hotel);
         }
 

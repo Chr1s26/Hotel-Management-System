@@ -30,8 +30,10 @@ public class RoomCreateDTO {
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0.")
     private double price;
     @Min(1)
+    @NotNull
     private int roomSize;
     @Min(1)
+    @NotNull
     private int capacity;
     @NotNull(message = "Hotel must be selected.")
     private Hotel hotel;

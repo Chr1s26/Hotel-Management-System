@@ -56,10 +56,8 @@ public class RoomService {
 
     public RoomCreateDTO createRoom(RoomCreateDTO roomCreateDTO) throws IOException {
         RoomType roomType = roomTypeService.findOrCreate(roomCreateDTO.getRoomTypeName(),roomCreateDTO.getPrice(),roomCreateDTO.getRoomSize(),roomCreateDTO.getCapacity());
-        Hotel hotel = hotelRepository.findById(roomCreateDTO.getHotel().getId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "hotel", roomCreateDTO.getHotel().getId(), "id", "rooms/create",
-                        "Hotel not found"));
+        Hotel hotel = hotelRepository.findById(roomCreateDTO.getHotel().getId()).orElseThrow(() -> new ResourceNotFoundException("hotel", roomCreateDTO.getHotel().getId(), "id", "rooms/create", "Hotel not found"));
+
         Room room = new Room();
         room.setAvailable(roomCreateDTO.isAvailable());
         room.setDescription(roomCreateDTO.getDescription());
@@ -80,12 +78,9 @@ public class RoomService {
     }
 
     public RoomUpdateDTO updateRoom(Long id, RoomUpdateDTO roomUpdateDTO) throws IOException {
-        RoomType roomType = roomTypeService.findOrCreate(roomUpdateDTO.getRoomTypeName(),roomUpdateDTO.getPrice(),roomUpdateDTO.getRoomSize(),roomUpdateDTO.getCapacity());
+        RoomType roomType = roomTypeService.findOrUpdate(roomUpdateDTO.getRoomTypeName(),roomUpdateDTO.getPrice(),roomUpdateDTO.getRoomSize(),roomUpdateDTO.getCapacity());
         Room roomOp = roomRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("room",roomUpdateDTO,"id","rooms/edit","A room with this id cannot be found"));
-        Hotel hotel = hotelRepository.findById(roomUpdateDTO.getHotel().getId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "hotel", roomUpdateDTO.getHotel().getId(), "id", "rooms/edit",
-                        "Hotel not found"));
+        Hotel hotel = hotelRepository.findById(roomUpdateDTO.getHotel().getId()).orElseThrow(() -> new ResourceNotFoundException("hotel", roomUpdateDTO.getHotel().getId(), "id", "rooms/edit", "Hotel not found"));
 
         roomOp.setAvailable(roomUpdateDTO.isAvailable());
         roomOp.setDescription(roomUpdateDTO.getDescription());

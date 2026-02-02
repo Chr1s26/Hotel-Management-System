@@ -9,6 +9,7 @@ import com.project.HotelManagementSystem.dto.searchFilter.SortDirection;
 import com.project.HotelManagementSystem.dto.searchFilter.hotel.HotelSearchField;
 import com.project.HotelManagementSystem.dto.searchFilter.hotel.HotelSearchFilter;
 import com.project.HotelManagementSystem.dto.searchFilter.hotel.HotelSearchQuery;
+import com.project.HotelManagementSystem.entity.Address;
 import com.project.HotelManagementSystem.entity.Hotel;
 import com.project.HotelManagementSystem.entity.constants.HotelMediaType;
 import com.project.HotelManagementSystem.repository.AddressRepository;
@@ -113,6 +114,7 @@ public class HotelController {
     @ActiveRole({"ADMIN", "EDITOR"})
     public String showEditForm(@PathVariable Long id,Model model) {
         model.addAttribute("hotel", this.hotelService.findHotelById(id));
+        List<Address> address = addressRepository.findAvailableForUpdate(id);
         model.addAttribute("addresses", this.addressRepository.findAvailableForUpdate(id));
         model.addAttribute("propertyDescriptions", this.propertyDescriptionRepository.findAvailableForUpdate(id));
         model.addAttribute("promotions", this.promotionService.findAllPromotions());
@@ -123,8 +125,8 @@ public class HotelController {
     @PostMapping("/update/{id}")
     public String updateHotel(@PathVariable Long id,@Valid @ModelAttribute("hotel") HotelUpdateDTO hotelUpdateDTO, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("addresses", this.addressService.findAllAddress());
-            model.addAttribute("propertyDescriptions", this.propertyDescriptionService.findAllPropertyDescriptions());
+            model.addAttribute("addresses", this.addressRepository.findAvailableForUpdate(id));
+            model.addAttribute("propertyDescriptions", this.propertyDescriptionRepository.findAvailableForUpdate(id));
             model.addAttribute("promotions", this.promotionService.findAllPromotions());
             model.addAttribute("policies", this.policyService.findAllPolicies());
             return "hotels/edit";

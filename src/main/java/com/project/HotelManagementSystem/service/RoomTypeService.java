@@ -30,8 +30,22 @@ public class RoomTypeService {
             rt.setCapacity(capacity);
             rt.setStatus(StatusType.ACTIVE);
             rt.setCreatedAt(LocalDateTime.now());
-            rt.setUpdatedAt(LocalDateTime.now());
             rt.setCreatedBy(authService.getCurrentUser());
+            return roomTypeRepository.save(rt);
+        }
+        return roomTypeOp.get();
+    }
+
+    public RoomType findOrUpdate(String name, double price, int roomSize, int capacity){
+        Optional<RoomType> roomTypeOp = roomTypeRepository.findByNameAndPriceAndRoomSizeAndCapacity(name,price,roomSize,capacity);
+        if(roomTypeOp.isEmpty()){
+            RoomType rt = new RoomType();
+            rt.setName(name);
+            rt.setPrice(price);
+            rt.setRoomSize(roomSize);
+            rt.setCapacity(capacity);
+            rt.setStatus(StatusType.ACTIVE);
+            rt.setUpdatedAt(LocalDateTime.now());
             rt.setUpdatedBy(authService.getCurrentUser());
             return roomTypeRepository.save(rt);
         }

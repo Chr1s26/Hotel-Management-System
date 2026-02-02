@@ -36,7 +36,7 @@ public class CityService {
     private final AuthService authService;
     private final LocationIndexService locationIndexService;
 
-    @CachePut(cacheNames = "cities", key = "#result.id")
+//    @CachePut(cacheNames = "cities", key = "#result.id")
     public CityDTO createCity(CityCreateDTO cityCreateDTO) throws Exception {
 
         Region region = regionRepository.findById(cityCreateDTO.getRegion().getId())
@@ -66,7 +66,7 @@ public class CityService {
         return modelMapper.map(savedCity,CityDTO.class);
     }
 
-    @CachePut(cacheNames = "cities", key = "#id")
+//    @CachePut(cacheNames = "cities", key = "#id")
     public CityDTO updateCity(Long id, CityUpdateDTO cityUpdateDTO) {
         Optional<City> cityOptional = this.cityRepository.findByNameIgnoreCaseAndRegionAndIdNot(cityUpdateDTO.getName(),cityUpdateDTO.getRegion(),cityUpdateDTO.getId());
         if(cityOptional.isPresent() && !cityOptional.get().getId().equals(id)) {
@@ -83,7 +83,7 @@ public class CityService {
         return modelMapper.map(savedCity,CityDTO.class);
     }
 
-    @CacheEvict(cacheNames = "cities", key = "#id")
+//    @CacheEvict(cacheNames = "cities", key = "#id")
     public void deleteCity(Long id) {
         Optional<City> city = cityRepository.findById(id);
         if(city.isEmpty()){
@@ -92,7 +92,7 @@ public class CityService {
         cityRepository.delete(city.get());
     }
 
-    @Cacheable(cacheNames = "cities", key = "#id")
+//    @Cacheable(cacheNames = "cities", key = "#id")
     public CityDTO findCityById(Long id) {
         Optional<City> city = cityRepository.findById(id);
         if(city.isEmpty()){

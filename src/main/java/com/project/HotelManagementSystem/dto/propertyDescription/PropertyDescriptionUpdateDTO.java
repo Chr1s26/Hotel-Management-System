@@ -24,6 +24,7 @@ public class PropertyDescriptionUpdateDTO {
     @NotNull(message = "Revnovation Date cannot be empty.")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate renovationDate;
+    @NotNull(message = "Rooms cannot be null")
     @Min(value = 1, message = "Number of room cannot be less than 1.")
     private Integer numberOfRooms;
 }

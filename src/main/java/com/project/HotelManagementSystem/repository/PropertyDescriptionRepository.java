@@ -17,9 +17,9 @@ public interface PropertyDescriptionRepository extends JpaRepository<PropertyDes
     Optional<PropertyDescription> findByDescriptionIgnoreCase(@NotBlank(message = "Description cannot be empty.") @Size(min = 5, message = "Description must include at least 5 characters.") String description);
     List<PropertyDescription> findByHotelIsNull();
     @Query("""
-        select pd from PropertyDescription pd
-        where pd.hotel is null or pd.hotel.id = :hotelId
+        select distinct pd from PropertyDescription pd
+        left join pd.hotel h
+        where h is null or h.id = :hotelId
     """)
     List<PropertyDescription> findAvailableForUpdate(@Param("hotelId") Long hotelId);
-
 }
