@@ -3,7 +3,7 @@ package com.project.HotelManagementSystem.controller.api.v1;
 import com.project.HotelManagementSystem.dto.booking.HotelSearchDTO;
 import com.project.HotelManagementSystem.dto.booking.HotelSearchResultDTO;
 import com.project.HotelManagementSystem.exception.InvalidSearchException;
-import com.project.HotelManagementSystem.service.SearchService;
+import com.project.HotelManagementSystem.service.search.elasticSearch.SearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

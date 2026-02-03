@@ -5,22 +5,18 @@
 
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <style>
-        body {
-            background: #f4f7fb;
-        }
+        body { background: #f4f7fb; }
 
-        /* TOP SEARCH BAR */
+        /* SEARCH BAR */
         .search-bar {
             background: linear-gradient(135deg, #0f2b5b, #1e4fa1);
             padding: 20px;
             border-radius: 12px;
             color: #fff;
-            margin-bottom: 20px;
         }
 
         /* FILTER */
@@ -40,30 +36,68 @@
             margin-bottom: 20px;
             display: flex;
             gap: 16px;
+            cursor: pointer;
         }
 
-        .hotel-img {
+        .hotel-card {
+    position: relative;
+}
+
+        .hotel-card .image-slider {
+    padding-right: 16px;
+    border-right: 1px solid #e5e7eb;
+}
+
+.hotel-card .hotel-info {
+    padding: 0 16px;
+    border-right: 1px solid #e5e7eb;
+}
+
+.hotel-card .price-box {
+    padding-left: 16px;
+}
+
+        .hotel-card:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        }
+
+        /* IMAGE SLIDER */
+        .image-slider {
             width: 220px;
             height: 160px;
-            border-radius: 12px;
-            object-fit: cover;
             position: relative;
+            overflow: hidden;
+            border-radius: 12px;
         }
 
-        .heart {
+        .image-slider img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            display: none;
+        }
+
+        .image-slider img.active {
+            display: block;
+        }
+
+        .slider-btn {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            background: #fff;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.9);
+            border: none;
             border-radius: 50%;
-            padding: 6px 8px;
-            color: red;
-            font-size: 18px;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
         }
 
-        .hotel-info {
-            flex: 1;
-        }
+        .slider-btn.left { left: 6px; }
+        .slider-btn.right { right: 6px; }
+
+        /* INFO */
+        .hotel-info { flex: 1; }
 
         .hotel-name {
             font-size: 20px;
@@ -71,9 +105,7 @@
             color: #0f2b5b;
         }
 
-        .stars i {
-            color: #f5b50a;
-        }
+        .stars i { color: #f5b50a; }
 
         .address {
             font-size: 14px;
@@ -86,9 +118,26 @@
             margin-top: 6px;
         }
 
+        /* PRICE */
         .price-box {
-            width: 180px;
+            width: 200px;
             text-align: right;
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .discount-label {
+            background: #16a34a;
+            color: #fff;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 4px;
         }
 
         .price {
@@ -97,43 +146,57 @@
             color: #e11d48;
         }
 
-        .per-night {
-            font-size: 13px;
-            color: #666;
+        .review-box {
+            font-size: 14px;
+            color: #444;
+            margin-bottom: 8px;
         }
+
         #suggestions {
-        color: black;
-    position: absolute;
-    width: 100%;
-    background: #fff;
-    border-radius: 10px;
-    margin-top: 4px;
-    list-style: none;
-    padding: 0;
-    display: none;
-    z-index: 1000;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-}
+            position: absolute;
+            width: 100%;
+            color : black;
+            background: #ffffff;
+            border-radius: 10px;
+            margin-top: 4px;
+            list-style: none;
+            padding: 0;
+            display: none;
+            z-index: 1000;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        }
 
-#suggestions li {
-    padding: 12px 14px;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
-}
+        #suggestions li {
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+        }
 
-#suggestions li:hover {
-    background: #f1f5ff;
-}
+        #suggestions li:hover {
+            background: #eef2ff;
+        }
 
-.suggest-item {
-    display: flex;
-    gap: 12px;
-}
+        .suggest-item {
+            display: flex;
+            gap: 12px;
+        }
 
-.suggest-icon {
-    font-size: 18px;
-    color: #1e4fa1;
-}
+        .suggest-icon {
+            font-size: 18px;
+            color: #1e40af;
+            margin-top: 2px;
+        }
+
+        .suggest-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .suggest-meta {
+            font-size: 12px;
+            color: #6b7280;
+        }
 
     </style>
 </head>
@@ -144,183 +207,232 @@
 
     <form th:action="@{/api/v1/public/search/results}" th:object="${search}" method="post">
 
-        <div class="search-bar shadow-sm">
+        <div class="search-bar mb-4">
             <div class="row g-3 align-items-end">
-
-
-                <div class="col-md-5 position-relative">
+                <div class="col-md-4 position-relative">
                     <label>Destination</label>
                     <input id="keywordInput"
-                           class="form-control"
+                           type="text"
                            th:field="*{keyword}"
-                           placeholder="Hotel Name ,City, region or hotel"
+                           class="form-control"
+                           placeholder="Hotel, city, region, country..."
                            autocomplete="off"
-                           onkeydown="if(event.key==='Enter'){this.form.submit();}">
-
+                           required>
 
                     <ul id="suggestions"></ul>
-                </div>
 
+                    <input type="hidden" th:field="*{cityId}" id="cityId">
+                    <input type="hidden" th:field="*{regionId}" id="regionId">
+                    <input type="hidden" th:field="*{countryId}" id="countryId">
+                </div>
                 <div class="col-md-2">
                     <label>Check-in</label>
-                    <input type="date" th:field="*{checkIn}" class="form-control">
+                    <input type="date" class="form-control" th:field="*{checkIn}">
                 </div>
-
-
                 <div class="col-md-2">
                     <label>Check-out</label>
-                    <input type="date" th:field="*{checkOut}" class="form-control">
+                    <input type="date" class="form-control" th:field="*{checkOut}">
                 </div>
-
-
-                <div class="col-md-1">
+                <div class="col-md-2">
                     <label>Guests</label>
-                    <input type="number" min="1"
-                           th:field="*{numberOfGuests}"
-                           class="form-control">
+                    <input type="number" class="form-control" th:field="*{numberOfGuests}">
                 </div>
-
-
                 <div class="col-md-2 d-grid">
-                    <button type="submit" class="btn btn-primary btn-lg">
-                        🔍 Search
-                    </button>
+                    <button class="btn btn-warning btn-lg">Search</button>
                 </div>
-
             </div>
         </div>
 
+        <div class="row">
 
-        <input type="hidden" th:field="*{hotelId}" id="hotelId">
-        <input type="hidden" th:field="*{cityId}" id="cityId">
-        <input type="hidden" th:field="*{regionId}" id="regionId">
-        <input type="hidden" th:field="*{countryId}" id="countryId">
+            <!-- FILTERS -->
+            <div class="col-md-3">
 
-    </form>
-
-
-    <div class="row mt-4">
-
-        <div class="col-md-3">
-            <div class="filter-box">
-                <h6 class="fw-bold mb-3">Filter by</h6>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox">
-                    <label class="form-check-label">Free cancellation</label>
+                <!-- HOTEL TYPE -->
+                <div class="filter-box mb-3">
+                    <h6 class="fw-bold">Hotel Type</h6>
+                    <div th:each="type : ${T(com.project.HotelManagementSystem.entity.constants.HotelType).values()}">
+                        <label class="d-flex align-items-center gap-2">
+                            <input type="checkbox"
+                                   name="hotelTypes"
+                                   th:value="${type}"
+                                   th:checked="${search.hotelTypes != null and search.hotelTypes.contains(type)}"
+                                   onchange="this.form.submit()">
+                            <span th:text="${type}"></span>
+                        </label>
+                    </div>
                 </div>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox">
-                    <label class="form-check-label">Breakfast included</label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox">
-                    <label class="form-check-label">Promotion available</label>
-                </div>
-
-                <hr>
-
-                <h6 class="fw-bold mb-3">Hotel type</h6>
-
-                <div class="form-check"
-                     th:each="type : ${T(com.project.HotelManagementSystem.entity.constants.HotelType).values()}">
-
-                    <input class="form-check-input"
-                           type="checkbox"
-                           name="hotelTypes"
-                           th:value="${type}"
-                           th:checked="${search.hotelTypes != null and search.hotelTypes.contains(type)}"
+                <!-- MIN RATING -->
+                <div class="filter-box mb-3">
+                    <h6 class="fw-bold">Min Rating</h6>
+                    <input type="number"
+                           step="0.5"
+                           class="form-control"
+                           th:field="*{minRating}"
                            onchange="this.form.submit()">
+                </div>
 
-                    <label class="form-check-label"
-                           th:text="${type}">
+                <!-- PRICE RANGE -->
+                <div class="filter-box mb-3">
+                    <h6 class="fw-bold">Price Range</h6>
+                    <input type="number"
+                           placeholder="Min"
+                           class="form-control mb-2"
+                           th:field="*{minPrice}"
+                           onchange="this.form.submit()">
+                    <input type="number"
+                           placeholder="Max"
+                           class="form-control"
+                           th:field="*{maxPrice}"
+                           onchange="this.form.submit()">
+                </div>
+
+                <!-- ROOM TYPES -->
+                <div class="filter-box mb-3">
+                    <h6 class="fw-bold">Room Type</h6>
+                    <div th:each="rt : ${roomTypes}">
+                        <label class="d-flex align-items-center gap-2">
+                            <input type="checkbox"
+                                   name="roomTypeNames"
+                                   th:value="${rt.name}"
+                                   th:checked="${search.roomTypeNames != null and search.roomTypeNames.contains(rt.name)}"
+                                   onchange="this.form.submit()">
+                            <span th:text="${rt.name}"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- AMENITIES -->
+                <div class="filter-box mb-3">
+                    <h6 class="fw-bold">Amenities</h6>
+                    <div th:each="a : ${amenities}">
+                        <label class="d-flex align-items-center gap-2">
+                            <input type="checkbox"
+                                   name="amenities"
+                                   th:value="${a.name}"
+                                   th:checked="${search.amenities != null and search.amenities.contains(a.name)}"
+                                   onchange="this.form.submit()">
+                            <span th:text="${a.name}"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- PROMOTION -->
+                <div class="filter-box">
+                    <label class="d-flex align-items-center gap-2 fw-bold">
+                        <input type="checkbox"
+                               name="isPromotion"
+                               value="true"
+                               th:checked="${search.isPromotion}"
+                               onchange="this.form.submit()">
+                        Only hotels with promotion
                     </label>
                 </div>
 
             </div>
 
-        </div>
 
-        <div th:if="${error}" class="alert alert-danger">
-            <i class="bi bi-exclamation-circle"></i>
-            <span th:text="${error}"></span>
-        </div>
+            <!-- RESULTS -->
+            <div class="col-md-9">
 
-        <div th:if="${hotels != null and #lists.isEmpty(hotels)}"
-             class="alert alert-warning">
-            <i class="bi bi-search"></i>
-            No hotels found for your search.
-        </div>
+                <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-
-
-        <div class="col-md-9" th:if="${hotels != null and !#lists.isEmpty(hotels)}">
-
-            <div th:each="hotel : ${hotels}" class="hotel-card">
-
-
-                <div style="position: relative;">
-                    <img class="hotel-img"
-                         th:src="${hotel.imageUrl}"
-                         alt="Hotel image">
-                    <div class="heart">
-                        <i class="bi bi-heart"></i>
-                    </div>
+                <div th:if="${hotels == null or #lists.isEmpty(hotels)}"
+                     class="alert alert-warning">
+                    No hotels found.
                 </div>
 
+                <div th:each="hotel : ${hotels}"
+                     class="hotel-card"
+                     th:onclick="|window.location='/hotel/'+${hotel.hotelId}|">
 
-                <div class="hotel-info">
-                    <div class="hotel-name"
-                         th:text="${hotel.hotelName}">
+                    <!-- IMAGE SLIDER -->
+                    <div class="image-slider" th:attr="data-slider-id=${hotel.hotelId}">
+                        <img th:each="img, i : ${hotel.imageUrls}"
+                             th:src="${img}"
+                             th:classappend="${i.index == 0} ? 'active'">
+                        <button type="button" class="slider-btn left"
+                                onclick="slide(event, -1)">‹</button>
+                        <button type="button" class="slider-btn right"
+                                onclick="slide(event, 1)">›</button>
                     </div>
 
 
-                    <div class="stars">
-                        <span th:each="i : ${#numbers.sequence(1, T(java.lang.Math).floor(hotel.rating))}">
-                            <i class="bi bi-star-fill"></i>
-                        </span>
-                        <span th:if="${hotel.rating % 1 >= 0.5}">
-                            <i class="bi bi-star-half"></i>
-                        </span>
+                    <!-- INFO -->
+                    <div class="hotel-info">
+                        <div class="hotel-name" th:text="${hotel.hotelName}"></div>
+
+                        <div class="stars">
+                            <span th:each="i : ${#numbers.sequence(1, T(java.lang.Math).floor(hotel.rating))}">
+                                <i class="bi bi-star-fill"></i>
+                            </span>
+                            <span th:if="${hotel.rating % 1 >= 0.5}">
+                                <i class="bi bi-star-half"></i>
+                            </span>
+                        </div>
+
+                        <div class="address">
+                            <i class="bi bi-geo-alt"></i>
+                            <span th:text="${hotel.city + ', ' + hotel.region + ', ' + hotel.country}"></span>
+                        </div>
+
+                        <div class="description"
+                             th:text="${#strings.abbreviate(hotel.description, 140)}">
+                        </div>
+
                     </div>
 
-                    <div class="address">
-                        <i class="bi bi-geo-alt"></i>
-                        <span th:text="${hotel.city + ', ' + hotel.region + ', ' + hotel.country}"></span>
+                    <!-- PRICE -->
+                    <div class="price-box">
+                        <div class="review-box">
+                            <strong th:text="${hotel.rating}"></strong> / 5<br>
+                            <span th:text="${hotel.reviewCount + ' reviews'}"></span>
+                        </div>
+
+                        <div th:if="${hotel.discountLabel != null}"
+                             class="discount-label"
+                             th:text="${hotel.discountLabel}">
+                        </div>
+
+                        <div th:if="${hotel.originalPrice != hotel.discountedPrice}"
+                             class="old-price">
+                            $<span th:text="${hotel.originalPrice}"></span>
+                        </div>
+
+                        <div class="price">
+                            $<span th:text="${hotel.discountedPrice}"></span>
+                        </div>
+
+                        <div class="text-muted small"
+                             th:text="'Total for ' + ${hotel.nights} + ' nights'"></div>
                     </div>
 
-                    <div class="description"
-                         th:text="${hotel.description}">
-                    </div>
                 </div>
-
-
-                <div class="price-box">
-                    <div class="price">
-                        $<span th:text="${hotel.totalPrice}"></span>
-                    </div>
-                    <div class="per-night"
-                         th:text="'Total for ' + ${hotel.nights} + ' nights'">
-                    </div>
-
-                    <a class="btn btn-primary mt-3"
-                       th:href="@{/hotelDetail/{id}(id=${hotel.hotelId})}">
-                        View rooms
-                    </a>
-                </div>
-
             </div>
-
         </div>
-    </div>
+    </form>
 </div>
+
+<!-- IMAGE SLIDER JS -->
 <script>
+    function slide(event, direction) {
+        event.stopPropagation();
+
+        const slider = event.target.closest(".image-slider");
+        const images = slider.querySelectorAll("img");
+        let index = Array.from(images).findIndex(img => img.classList.contains("active"));
+
+        images[index].classList.remove("active");
+        index = (index + direction + images.length) % images.length;
+        images[index].classList.add("active");
+    }
+
+document.addEventListener("DOMContentLoaded", () => {
+
     const input = document.getElementById("keywordInput");
     const list = document.getElementById("suggestions");
 
-    const hotelId = document.getElementById("hotelId");
     const cityId = document.getElementById("cityId");
     const regionId = document.getElementById("regionId");
     const countryId = document.getElementById("countryId");
@@ -339,19 +451,18 @@
 
         const q = input.value.trim();
 
-        hotelId.value = "";
         cityId.value = "";
         regionId.value = "";
         countryId.value = "";
 
-        if (q.length < 1) {
+        if (!q) {
             list.style.display = "none";
             list.innerHTML = "";
             return;
         }
 
         timer = setTimeout(async () => {
-            const res = await fetch(`/api/public/search/autocomplete?q=${encodeURIComponent(q)}`);
+            const res = await fetch(`/api/v1/public/search/autocomplete?q=${encodeURIComponent(q)}`);
             const data = await res.json();
 
             list.innerHTML = "";
@@ -372,13 +483,23 @@
                     <div class="suggest-item">
                         <i class="bi ${icon} suggest-icon"></i>
                         <div>
-                            <strong>${item.name}</strong>
-                            <div class="text-muted small">${item.type}${meta ? " · " + meta : ""}</div>
+                            <div class="suggest-name">${item.name}</div>
+                            <div class="suggest-meta">
+                                ${item.type}${meta ? " · " + meta : ""}
+                            </div>
                         </div>
                     </div>
                 `;
 
-                li.onclick = () => selectItem(item);
+                li.onclick = () => {
+                    input.value = item.name;
+                    list.style.display = "none";
+
+                    if (item.type === "CITY") cityId.value = item.cityId;
+                    if (item.type === "REGION") regionId.value = item.regionId;
+                    if (item.type === "COUNTRY") countryId.value = item.countryId;
+                };
+
                 list.appendChild(li);
             });
 
@@ -386,21 +507,13 @@
         }, 250);
     });
 
-    function selectItem(item) {
-        input.value = item.name;
-        list.style.display = "none";
-
-        if (item.type === "HOTEL") hotelId.value = item.hotelId;
-        if (item.type === "CITY") cityId.value = item.cityId;
-        if (item.type === "REGION") regionId.value = item.regionId;
-        if (item.type === "COUNTRY") countryId.value = item.countryId;
-    }
-
     document.addEventListener("click", e => {
         if (!e.target.closest(".position-relative")) {
             list.style.display = "none";
         }
     });
+});
+
 </script>
 
 </body>

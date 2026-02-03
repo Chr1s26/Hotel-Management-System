@@ -6,6 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Data
 public class HotelSearchDTO {
@@ -20,4 +21,10 @@ public class HotelSearchDTO {
     private LocalDate checkOut;
     private int numberOfGuests;
     private List<HotelType> hotelTypes;
+    private Double minPrice;
+    private Double maxPrice;
+    private Double minRating;
+    private Set<String> roomTypeNames;
+    private Set<String> amenities;
+    private boolean promotion;
 }

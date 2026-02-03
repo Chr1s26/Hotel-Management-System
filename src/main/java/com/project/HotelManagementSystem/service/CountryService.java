@@ -7,7 +7,7 @@ import com.project.HotelManagementSystem.entity.specification.CountrySpecificati
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CountryRepository;
-import com.project.HotelManagementSystem.service.search.LocationIndexService;
+import com.project.HotelManagementSystem.service.search.elasticSearch.LocationIndexService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;

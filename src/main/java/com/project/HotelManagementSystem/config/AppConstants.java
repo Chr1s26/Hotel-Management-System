@@ -8,5 +8,5 @@ public class AppConstants {
     public static final String HOTEL_INDEX_NAME = "hotels";
     public static final String ROOM_INDEX_NAME = "rooms";
     public static final String LOCATION_INDEX = "location_autocomplete";
-
+    public static final String HOTEL_INDEX = "hotels-index";
 }

@@ -1,6 +1,6 @@
 package com.project.HotelManagementSystem.controller;
 
-import com.project.HotelManagementSystem.service.search.LocationIndexService;
+import com.project.HotelManagementSystem.service.search.elasticSearch.LocationIndexService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

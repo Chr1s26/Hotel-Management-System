@@ -1,4 +1,4 @@
-package com.project.HotelManagementSystem.service.search;
+package com.project.HotelManagementSystem.service.search.elasticSearch;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import com.project.HotelManagementSystem.config.AppConstants;
@@ -21,6 +21,7 @@ public class LocationIndexService {
     private final RegionRepository regionRepository;
     private final CityRepository cityRepository;
     private final HotelRepository hotelRepository;
+    private final HotelIndexService hotelIndexService;
 
     @Transactional(readOnly = true)
     public void reindexAllLocations() throws Exception {
@@ -35,6 +36,7 @@ public class LocationIndexService {
         }
         for (Hotel h : hotelRepository.findAll()) {
             indexHotel(h);
+            hotelIndexService.reindexHotel(h.getId());
         }
     }
 

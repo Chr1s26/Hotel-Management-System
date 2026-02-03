@@ -24,7 +24,7 @@ public class Promotion extends MasterData {
 
     @Column(name = "discount_type", nullable = false)
     @Convert(converter = DiscountTypeConverter.class)
-    private DiscountType discountType;
+    private DiscountType discountType; //percentage or normal
 
     @Column(nullable = false)
     private double discountAmount;

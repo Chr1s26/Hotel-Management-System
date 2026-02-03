@@ -2,6 +2,7 @@ package com.project.HotelManagementSystem.repository;
 
 import com.project.HotelManagementSystem.dto.booking.RoomTypeAvailabilityDTO;
 import com.project.HotelManagementSystem.entity.Room;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -58,4 +59,14 @@ public interface RoomRepository extends JpaRepository<Room,Long>, JpaSpecificati
         ORDER BY rt.price ASC
     """)
     List<Room> findAvailableRoomsCheapestFirst(Long hotelId);
+
+    @Query("""
+        SELECT DISTINCT r
+        FROM Room r
+        JOIN r.roomType rt
+        WHERE r.hotel.id = :hotelId
+          AND r.available = true
+          AND rt.capacity >= :guests
+    """)
+    List<Room> findAvailableRoomsByHotelAndGuests(@Param("hotelId") Long hotelId, @Param("guests") int guests);
 }

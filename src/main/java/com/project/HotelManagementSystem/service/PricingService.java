@@ -1,12 +1,15 @@
 package com.project.HotelManagementSystem.service;
 
+import com.project.HotelManagementSystem.entity.Hotel;
 import com.project.HotelManagementSystem.entity.Room;
 import com.project.HotelManagementSystem.repository.RoomRepository;
+import com.project.HotelManagementSystem.dto.booking.PricingResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -14,19 +17,24 @@ import java.util.List;
 public class PricingService {
 
     private final RoomRepository roomRepository;
+    private final PromotionCalculator promotionCalculator;
 
-    public double calculateTotalPrice(Long hotelId, LocalDate checkIn, LocalDate checkOut) {
+    public PricingResult calculateHotelPrice(Hotel hotel, LocalDate checkIn, LocalDate checkOut, int guests) {
 
-        if (checkIn == null || checkOut == null) return 0;
-        if (!checkOut.isAfter(checkIn)) return 0;
+        List<Room> rooms = roomRepository.findAvailableRoomsByHotelAndGuests(hotel.getId(), guests);
+
+        if (rooms.isEmpty()) {
+            return new PricingResult(0, 0, null, false);
+        }
+
+        Room cheapestRoom = rooms.stream()
+                .min(Comparator.comparingDouble(r -> r.getRoomType().getPrice()))
+                .orElseThrow();
 
         long nights = ChronoUnit.DAYS.between(checkIn, checkOut);
-        if (nights <= 0) return 0;
+        double basePrice = cheapestRoom.getRoomType().getPrice() * nights;
 
-        List<Room> rooms = roomRepository.findAvailableRoomsCheapestFirst(hotelId);
-        if (rooms.isEmpty()) return 0;
-
-        return rooms.get(0).getRoomType().getPrice() * nights;
+        return promotionCalculator.applyPromotion(basePrice, cheapestRoom.getPromotions(), hotel.getPromotions(), checkIn);
     }
 
 }

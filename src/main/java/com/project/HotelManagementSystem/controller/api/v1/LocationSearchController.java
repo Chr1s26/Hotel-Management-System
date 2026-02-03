@@ -1,7 +1,7 @@
 package com.project.HotelManagementSystem.controller.api.v1;
 
 import com.project.HotelManagementSystem.dto.booking.LocationSearchDocument;
-import com.project.HotelManagementSystem.service.search.LocationSearchService;
+import com.project.HotelManagementSystem.service.search.elasticSearch.LocationSearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

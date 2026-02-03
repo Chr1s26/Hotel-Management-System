@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface HotelAttachmentRepository extends JpaRepository<HotelAttachment, Long> {
     List<HotelAttachment> findByHotelIdAndHotelMediaType(Long hotelId, HotelMediaType hotelMediaType);
     Optional<HotelAttachment> findTopByHotelIdAndHotelMediaTypeOrderByCreatedAtDesc(Long hotelId, HotelMediaType hotelMediaType);
+    List<HotelAttachment> findTop5ByHotel_IdOrderByCreatedAtDesc(Long hotelId);
 }

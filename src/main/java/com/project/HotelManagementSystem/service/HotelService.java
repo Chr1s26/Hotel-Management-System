@@ -14,7 +14,7 @@
     import com.project.HotelManagementSystem.exception.DuplicateException;
     import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
     import com.project.HotelManagementSystem.repository.*;
-    import com.project.HotelManagementSystem.service.search.LocationIndexService;
+    import com.project.HotelManagementSystem.service.search.elasticSearch.LocationIndexService;
     import jakarta.transaction.Transactional;
     import lombok.RequiredArgsConstructor;
     import org.modelmapper.ModelMapper;

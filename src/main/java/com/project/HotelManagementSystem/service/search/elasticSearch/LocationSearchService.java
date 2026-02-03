@@ -1,4 +1,4 @@
-package com.project.HotelManagementSystem.service.search;
+package com.project.HotelManagementSystem.service.search.elasticSearch;
 
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
@@ -17,29 +17,6 @@ import java.util.Objects;
 public class LocationSearchService {
 
     private final ElasticsearchClient client;
-
-//    public List<LocationSearchDocument> autocomplete(String keyword) throws Exception {
-//
-//        SearchResponse<LocationSearchDocument> res =
-//                client.search(s -> s
-//                                .index(AppConstants.LOCATION_INDEX)
-//                                .size(10)
-//                                .query(q -> q.multiMatch(m -> m
-//                                        .query(keyword)
-//                                        .fields(
-//                                                "name^5",
-//                                                "regionName^2",
-//                                                "countryName^2"
-//                                        )
-//                                )),
-//                        LocationSearchDocument.class
-//                );
-//
-//        return res.hits().hits().stream()
-//                .map(Hit::source)
-//                .filter(Objects::nonNull)
-//                .toList();
-//    }
 
     public List<LocationSearchDocument> autocomplete(String keyword) throws Exception {
 
