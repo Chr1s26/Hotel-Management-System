@@ -7,6 +7,7 @@ import com.project.HotelManagementSystem.entity.Hotel;
 import com.project.HotelManagementSystem.entity.Review;
 import com.project.HotelManagementSystem.entity.Room;
 import com.project.HotelManagementSystem.repository.HotelRepository;
+import com.project.HotelManagementSystem.service.PromotionCalculator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ public class HotelIndexService {
 
     private final ElasticsearchClient esClient;
     private final HotelRepository hotelRepository;
+    private final PromotionCalculator promotionCalculator;
 
     public void reindexHotel(Long hotelId) throws IOException {
         Hotel hotel = hotelRepository.findById(hotelId)
@@ -40,12 +42,22 @@ public class HotelIndexService {
         List<Room> rooms = hotel.getRooms();
 
         double minPrice = rooms.stream()
-                .mapToDouble(r -> r.getRoomType().getPrice())
-                .min().orElse(0);
+                .mapToDouble(room -> promotionCalculator.applyPromotionPrice(
+                        room.getRoomType().getPrice(),
+                        room.getPromotions(),
+                        hotel.getPromotions()
+                ))
+                .min()
+                .orElse(0);
 
         double maxPrice = rooms.stream()
-                .mapToDouble(r -> r.getRoomType().getPrice())
-                .max().orElse(0);
+                .mapToDouble(room -> promotionCalculator.applyPromotionPrice(
+                        room.getRoomType().getPrice(),
+                        room.getPromotions(),
+                        hotel.getPromotions()
+                ))
+                .max()
+                .orElse(0);
 
 
         Set<String> roomTypes = rooms.stream()

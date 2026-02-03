@@ -31,10 +31,10 @@ public class PricingService {
                 .min(Comparator.comparingDouble(r -> r.getRoomType().getPrice()))
                 .orElseThrow();
 
-        long nights = ChronoUnit.DAYS.between(checkIn, checkOut);
-        double basePrice = cheapestRoom.getRoomType().getPrice() * nights;
+//        long nights = ChronoUnit.DAYS.between(checkIn, checkOut);
+//        double basePrice = cheapestRoom.getRoomType().getPrice() * nights;
 
-        return promotionCalculator.applyPromotion(basePrice, cheapestRoom.getPromotions(), hotel.getPromotions(), checkIn);
+        return promotionCalculator.applyPromotion(cheapestRoom.getRoomType().getPrice(), cheapestRoom.getPromotions(), hotel.getPromotions(), checkIn);
     }
 
 }

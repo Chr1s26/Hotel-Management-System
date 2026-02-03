@@ -44,4 +44,25 @@ public class PromotionCalculator {
                 .findFirst()
                 .orElse(null);
     }
+
+    public double applyPromotionPrice(double basePrice, Set<Promotion> roomPromotions, Set<Promotion> hotelPromotions) {
+        LocalDate today = LocalDate.now();
+
+        Promotion promo = findBestPromotion(roomPromotions, today);
+
+        if (promo == null) {
+            promo = findBestPromotion(hotelPromotions, today);
+        }
+
+        if (promo == null) {
+            return basePrice;
+        }
+
+        if (promo.getDiscountType() == DiscountType.PERCENTAGE) {
+            return basePrice * (1 - promo.getDiscountAmount() / 100);
+        } else {
+            return Math.max(0, basePrice - promo.getDiscountAmount());
+        }
+    }
+
 }
