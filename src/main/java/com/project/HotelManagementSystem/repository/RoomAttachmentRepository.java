@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface RoomAttachmentRepository extends JpaRepository<RoomAttachment, Long> {
     List<RoomAttachment> findByRoomIdAndRoomMediaType(Long roomId, RoomMediaType roomMediaType);
+    List<RoomAttachment> findByRoomId(Long roomId);
 }

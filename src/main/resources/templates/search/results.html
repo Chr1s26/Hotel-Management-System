@@ -295,13 +295,15 @@
                         <label class="d-flex align-items-center gap-2">
                             <input type="checkbox"
                                    name="roomTypeNames"
-                                   th:value="${rt.name}"
-                                   th:checked="${search.roomTypeNames != null and search.roomTypeNames.contains(rt.name)}"
+                                   th:value="${rt}"
+                                   th:checked="${search.roomTypeNames != null and search.roomTypeNames.contains(rt)}"
                                    onchange="this.form.submit()">
-                            <span th:text="${rt.name}"></span>
+                            <span th:text="${rt}"></span>
                         </label>
                     </div>
                 </div>
+
+
 
                 <!-- AMENITIES -->
                 <div class="filter-box mb-3">
@@ -322,9 +324,9 @@
                 <div class="filter-box">
                     <label class="d-flex align-items-center gap-2 fw-bold">
                         <input type="checkbox"
-                               name="isPromotion"
+                               name="promotion"
                                value="true"
-                               th:checked="${search.isPromotion}"
+                               th:checked="${search.promotion}"
                                onchange="this.form.submit()">
                         Only hotels with promotion
                     </label>
@@ -345,7 +347,7 @@
 
                 <div th:each="hotel : ${hotels}"
                      class="hotel-card"
-                     th:onclick="|window.location='/hotel/'+${hotel.hotelId}|">
+                     th:onclick="|window.location='/api/v1/public/hotel/'+${hotel.hotelId}|">
 
                     <!-- IMAGE SLIDER -->
                     <div class="image-slider" th:attr="data-slider-id=${hotel.hotelId}">

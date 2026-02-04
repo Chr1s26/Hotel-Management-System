@@ -12,4 +12,5 @@ public interface HotelAttachmentRepository extends JpaRepository<HotelAttachment
     List<HotelAttachment> findByHotelIdAndHotelMediaType(Long hotelId, HotelMediaType hotelMediaType);
     Optional<HotelAttachment> findTopByHotelIdAndHotelMediaTypeOrderByCreatedAtDesc(Long hotelId, HotelMediaType hotelMediaType);
     List<HotelAttachment> findTop5ByHotel_IdOrderByCreatedAtDesc(Long hotelId);
+    List<HotelAttachment> findByHotelId(Long hotelId);
 }

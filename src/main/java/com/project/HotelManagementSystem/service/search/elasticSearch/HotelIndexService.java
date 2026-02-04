@@ -70,9 +70,12 @@ public class HotelIndexService {
                 .map(a -> a.getName().toLowerCase())
                 .collect(Collectors.toSet());
 
-        boolean hasPromotion =
-                !hotel.getPromotions().isEmpty() ||
-                        rooms.stream().anyMatch(r -> !r.getPromotions().isEmpty());
+//        boolean hasPromotion =
+//                !hotel.getPromotions().isEmpty() ||
+//                        rooms.stream().anyMatch(r -> !r.getPromotions().isEmpty());
+
+        // For now , i only consider room promotion.
+        boolean hasPromotion = rooms.stream().anyMatch(r -> !r.getPromotions().isEmpty());
 
         return new HotelSearchDocument(
                 hotel.getId(),
