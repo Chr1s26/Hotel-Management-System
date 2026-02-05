@@ -94,4 +94,11 @@ public interface HotelRepository extends JpaRepository<Hotel, Long>, JpaSpecific
 """)
     List<Hotel> findHotelsInSameRegion(List<Long> hotelIds);
 
+    @Query("""
+    select h from Hotel h
+    left join fetch h.policies
+    where h.id = :hotelId
+""")
+    Optional<Hotel> findByIdWithPolicies(Long hotelId);
+
 }

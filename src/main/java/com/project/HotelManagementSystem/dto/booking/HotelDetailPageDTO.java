@@ -2,6 +2,7 @@ package com.project.HotelManagementSystem.dto.booking;
 
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -9,10 +10,17 @@ import java.util.Set;
 public class HotelDetailPageDTO {
     private Long hotelId;
     private String hotelName;
-    private String address;
-    private double rating;
-    private int reviewCount;
     private String description;
+    private double rating;
+    private String address;
+    private int reviewCount;
+
+    private String propertyDescription;
+    private Integer numberOfRooms;
+    private LocalDate openingDate;
+    private LocalDate renovationDate;
+
+    private List<PolicyDTO> policies;
     private List<PhotoDTO> photos;
     private List<ReviewDTO> reviews;
     private Set<String> amenities;

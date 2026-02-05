@@ -1,9 +1,6 @@
 package com.project.HotelManagementSystem.service;
 
-import com.project.HotelManagementSystem.dto.booking.HotelDetailPageDTO;
-import com.project.HotelManagementSystem.dto.booking.PhotoDTO;
-import com.project.HotelManagementSystem.dto.booking.ReviewDTO;
-import com.project.HotelManagementSystem.dto.booking.RoomDetailDTO;
+import com.project.HotelManagementSystem.dto.booking.*;
 import com.project.HotelManagementSystem.entity.Amenities;
 import com.project.HotelManagementSystem.entity.Hotel;
 import com.project.HotelManagementSystem.entity.Room;
@@ -21,13 +18,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class HotelDetailPageService {
     private final HotelRepository hotelRepository;
-    private final RoomRepository roomRepository;
     private final ReviewRepository reviewRepository;
     private final HotelAttachmentRepository hotelAttachmentRepository;
     private final RoomAttachmentRepository roomAttachmentRepository;
     private final FileService fileService;
 
-    public HotelDetailPageDTO getHotelDetailPage(Long hotelId) {
+    public HotelDetailPageDTO getHotelDetailPage(Long hotelId,Long currentCustomerId) {
 
         Hotel hotel = hotelRepository.findById(hotelId).orElseThrow();
 
@@ -41,6 +37,27 @@ public class HotelDetailPageService {
                         hotel.getAddress().getCity().getRegion().getName() + ", " +
                         hotel.getAddress().getCity().getRegion().getCountry().getName());
 
+        if (hotel.getPropertyDescription() != null) {
+            dto.setPropertyDescription(hotel.getPropertyDescription().getDescription());
+            dto.setNumberOfRooms(hotel.getPropertyDescription().getNumberOfRooms());
+            dto.setOpeningDate(hotel.getPropertyDescription().getOpeningDate());
+            dto.setRenovationDate(hotel.getPropertyDescription().getRenovationDate());
+        }
+
+        Hotel hotel_policy = hotelRepository.findByIdWithPolicies(hotelId)
+                .orElseThrow(() -> new RuntimeException("Hotel not found"));
+
+
+        dto.setPolicies(hotel_policy.getPolicies().stream()
+                        .map(p -> new PolicyDTO(
+                                p.getTitle(),
+                                p.getDescription(),
+                                p.getApplicableTo()
+                        ))
+                        .toList()
+        );
+
+
         List<PhotoDTO> photos = new ArrayList<>();
 
         hotelAttachmentRepository.findByHotelId(hotelId)
@@ -50,21 +67,23 @@ public class HotelDetailPageService {
                                 "HOTEL"))
                 );
 
-        roomAttachmentRepository.findByRoomId(hotelId)
-                .forEach(att -> photos.add(
-                        new PhotoDTO(
-                                att.getId(),
-                                fileService.getFileNames(FileType.ROOM_ATTACHMENT, att.getId()),
-                                "ROOM"))
-                );
-
-        dto.setPhotos(photos);
-
         dto.setReviews(
-                reviewRepository.findByHotelId(hotelId).stream().map(r -> new ReviewDTO(
-                                r.getCustomer().getName(),
+                reviewRepository.findByHotelId(hotelId)
+                        .stream()
+                        .map(r -> new ReviewDTO(
+                                r.getId(),
+                                r.getCustomer().getUser().getName(),
                                 r.getDescription(),
-                                r.getRating()))
+                                r.getRating(),
+                                r.getLikes().size(),
+                                currentCustomerId != null &&
+                                        r.getLikes().stream()
+                                                .anyMatch(l ->
+                                                        l.getCustomer().getId().equals(currentCustomerId)
+                                                ),
+                                currentCustomerId != null &&
+                                        r.getCustomer().getId().equals(currentCustomerId)
+                        ))
                         .toList()
         );
 
@@ -78,6 +97,14 @@ public class HotelDetailPageService {
         List<RoomDetailDTO> roomDTOs = new ArrayList<>();
 
         for (Room room : hotel.getRooms()) {
+
+            roomAttachmentRepository.findByRoomId(room.getId())
+                    .forEach(att -> photos.add(
+                            new PhotoDTO(
+                                    att.getId(),
+                                    fileService.getFileNames(FileType.ROOM_ATTACHMENT, att.getId()),
+                                    "ROOM"))
+                    );
 
             RoomDetailDTO rd = new RoomDetailDTO();
             rd.setRoomId(room.getId());
@@ -102,6 +129,7 @@ public class HotelDetailPageService {
             roomDTOs.add(rd);
         }
 
+        dto.setPhotos(photos);
         dto.setRooms(roomDTOs);
         return dto;
     }

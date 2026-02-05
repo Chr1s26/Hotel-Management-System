@@ -29,7 +29,7 @@ public class ReviewCreateDTO {
     private LocalDate reviewDate;
 
     @NotNull(message = "customer cannot be empty.")
-    private Customer customer;
+    private Long customer;
 
     @NotNull(message = "Hotel cannot be emoty.")
     private Hotel hotel;

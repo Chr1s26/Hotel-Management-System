@@ -1,93 +1,75 @@
 package com.project.HotelManagementSystem.controller;
 
-import com.project.HotelManagementSystem.annotation.ActiveRole;
-import com.project.HotelManagementSystem.config.AppConstants;
-import com.project.HotelManagementSystem.dto.review.ReviewCreateDTO;
-import com.project.HotelManagementSystem.dto.review.ReviewDTO;
-import com.project.HotelManagementSystem.dto.review.ReviewResponse;
-import com.project.HotelManagementSystem.dto.review.ReviewUpdateDTO;
-import com.project.HotelManagementSystem.service.HotelService;
-import com.project.HotelManagementSystem.service.ReviewService;
-import com.project.HotelManagementSystem.service.UserService;
-import jakarta.validation.Valid;
+
+import com.project.HotelManagementSystem.dto.booking.ReviewCreateDTO;
+import com.project.HotelManagementSystem.entity.*;
+import com.project.HotelManagementSystem.repository.CustomerRepository;
+import com.project.HotelManagementSystem.repository.HotelRepository;
+import com.project.HotelManagementSystem.repository.ReviewLikeRepository;
+import com.project.HotelManagementSystem.repository.ReviewRepository;
+import com.project.HotelManagementSystem.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
 
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/reviews")
+@RequestMapping("/api/v1/public/reviews")
 public class ReviewController {
+    private final ReviewRepository reviewRepository;
+    private final ReviewLikeRepository reviewLikeRepository;
+    private final HotelRepository hotelRepository;
+    private final CustomerRepository customerRepository;
+    private final AuthService authService;
 
-    private final ReviewService reviewService;
-    private final HotelService hotelService;
-    private final UserService userService;
+    @PostMapping("/{hotelId}")
+    public void writeReview(@PathVariable Long hotelId, @RequestBody ReviewCreateDTO dto) {
+        User user = authService.getCurrentUser();
+        Customer customer = customerRepository.findByUser(user).orElseThrow();
 
-    @GetMapping
-    public String findAllReviews(Model model,
-                                 @RequestParam(defaultValue = AppConstants.PAGE_NUMBER) Integer pageNumber,
-                                 @RequestParam(defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
-                                 @RequestParam(defaultValue = AppConstants.SORT_BY_Id) String sortBy,
-                                 @RequestParam(defaultValue = AppConstants.SORT_ORDER) String sortOrder) {
+        Hotel hotel = hotelRepository.findById(hotelId).orElseThrow();
 
-        ReviewResponse reviewResponse = reviewService.findAllReviewsWithPagination(pageNumber,pageSize,sortBy,sortOrder);
-        List<ReviewDTO> reviewDTOList = reviewResponse.getReviews();
-        model.addAttribute("reviews", reviewDTOList);
-        model.addAttribute("response", reviewResponse);
-        model.addAttribute("sortBy", sortBy);
-        model.addAttribute("sortOrder", sortOrder);
+        Review review = new Review();
+        review.setHotel(hotel);
+        review.setCustomer(customer);
+        review.setDescription(dto.getComment());
+        review.setRating(dto.getRating());
+        review.setReviewDate(LocalDate.now());
 
-        return "reviews/listing";
+        reviewRepository.save(review);
     }
 
-    @GetMapping("/new")
-    @ActiveRole({"ADMIN", "EDITOR"})
-    public String showCreateForm(Model model) {
-        model.addAttribute("review", new ReviewCreateDTO());
-        model.addAttribute("hotels",hotelService.findAllHotels());
-        model.addAttribute("users",userService.findAllUsers());
-        return "reviews/create";
+    @PostMapping("/{reviewId}/like")
+    public int toggleLike(@PathVariable Long reviewId) {
+        User user = authService.getCurrentUser();
+        Customer customer = customerRepository.findByUser(user).orElseThrow();
+
+        Review review = reviewRepository.findById(reviewId).orElseThrow();
+
+        reviewLikeRepository.findByReviewAndCustomer(review, customer)
+                .ifPresentOrElse(
+                        reviewLikeRepository::delete,
+                        () -> reviewLikeRepository.save(
+                                new ReviewLike(review, customer)
+                        )
+                );
+
+        return reviewLikeRepository.countByReview(review);
     }
 
-    @PostMapping("/create")
-    public String createReview(@Valid @ModelAttribute("review") ReviewCreateDTO reviewCreateDTO, BindingResult bindingResult,Model model) {
-        if(bindingResult.hasErrors()){
-            model.addAttribute("hotels",hotelService.findAllHotels());
-            model.addAttribute("users",userService.findAllUsers());
-            return "reviews/create";
+    @DeleteMapping("/{reviewId}")
+    public void deleteReview(@PathVariable Long reviewId) {
+        User user = authService.getCurrentUser();
+        Customer customer = customerRepository.findByUser(user).orElseThrow();
+
+        Review review = reviewRepository.findById(reviewId).orElseThrow();
+
+        if (!review.getCustomer().getId().equals(customer.getId())) {
+            throw new RuntimeException("Not your review");
         }
-        reviewService.createReview(reviewCreateDTO);
-        return "redirect:/reviews";
-    }
 
-    @GetMapping("/edit/{id}")
-    @ActiveRole({"ADMIN", "EDITOR"})
-    public String showUpdateForm(@PathVariable Long id, Model model) {
-        model.addAttribute("review", reviewService.findReviewById(id));
-        model.addAttribute("hotels",hotelService.findAllHotels());
-        model.addAttribute("users",userService.findAllUsers());
-        return "reviews/edit";
-    }
-
-    @PostMapping("/update/{id}")
-    public String updateReview(@PathVariable Long id,@Valid @ModelAttribute("review") ReviewUpdateDTO reviewUpdateDTO,BindingResult bindingResult,Model model) {
-        if(bindingResult.hasErrors()){
-            model.addAttribute("hotels",hotelService.findAllHotels());
-            model.addAttribute("users",userService.findAllUsers());
-            return "reviews/edit";
-        }
-        reviewService.updateReview(id, reviewUpdateDTO);
-        return "redirect:/reviews";
-    }
-
-    @GetMapping("/delete/{id}")
-    @ActiveRole({"ADMIN", "EDITOR"})
-    public String deleteReview(@PathVariable Long id) {
-        reviewService.deleteReview(id);
-        return "redirect:/reviews";
+        reviewRepository.delete(review);
     }
 }
