@@ -13,7 +13,7 @@ import java.time.LocalDate;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/booking")
+@RequestMapping("/api/v1/public/bookings")
 public class BookingController {
     private final BookingPageService bookingPageService;
     private final BookingService bookingService;

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Booking Details</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+    <style>
+        body {
+            background: #f3f6fb;
+            font-family: "Segoe UI", system-ui;
+        }
+
+        .stepper {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .step {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 10px;
+            font-weight: 600;
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .step.active {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .section-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.08);
+            margin-bottom: 20px;
+        }
+
+        .summary-img {
+            width: 72px;
+            height: 72px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .total-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #dc2626;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container mt-4 mb-5">
+
+    <!-- ===== STEPPER ===== -->
+    <div class="stepper">
+        <div class="step active">1 Customer Info</div>
+        <div class="step">2 Payment</div>
+        <div class="step">3 Confirmed</div>
+    </div>
+
+    <form th:action="@{/bookings/confirm}"
+          th:object="${bookingRequest}"
+          method="post">
+
+        <div class="row">
+
+            <!-- ================= LEFT SIDE ================= -->
+            <div class="col-md-8">
+
+                <!-- LEAD GUEST -->
+                <div class="section-card">
+                    <h5 class="mb-3">Who’s the lead guest?</h5>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <input class="form-control"
+                                   placeholder="First name"
+                                   th:field="*{firstName}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <input class="form-control"
+                                   placeholder="Last name"
+                                   th:field="*{lastName}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <input class="form-control"
+                                   placeholder="Email"
+                                   th:field="*{email}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <input class="form-control"
+                                   placeholder="Country / Region"
+                                   th:field="*{country}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <input class="form-control"
+                                   placeholder="Phone (optional)"
+                                   th:field="*{phone}">
+                        </div>
+                    </div>
+
+                    <p class="text-muted small mt-3">
+                        Please make sure your contact information is correct.
+                        We'll use it to send your booking confirmation and reminders.
+                    </p>
+                </div>
+
+                <!-- SPECIAL REQUESTS -->
+                <div class="section-card">
+                    <h5 class="mb-2">Special Requests</h5>
+                    <p class="text-muted small">Subject to availability</p>
+
+                    <label class="small">Smoking preference</label>
+                    <select class="form-select mb-2"
+                            th:field="*{smokingPreference}">
+                        <option value="">No preference</option>
+                        <option value="NON_SMOKING">Non-smoking</option>
+                        <option value="SMOKING">Smoking</option>
+                    </select>
+
+                    <label class="small">Bed setup</label>
+                    <select class="form-select mb-3"
+                            th:field="*{bedPreference}">
+                        <option value="">No preference</option>
+                        <option value="LARGE_BED">Large bed</option>
+                        <option value="TWIN_BEDS">Twin beds</option>
+                    </select>
+
+                    <label class="small">Additional requests</label>
+                    <textarea class="form-control"
+                              rows="3"
+                              placeholder="Any additional requests?"
+                              th:field="*{description}">
+                    </textarea>
+                </div>
+
+                <button class="btn btn-primary btn-lg w-100">
+                    Continue to Payment
+                </button>
+
+            </div>
+
+            <!-- ================= RIGHT SIDE ================= -->
+            <div class="col-md-4">
+
+                <!-- STAY DETAILS -->
+                <div class="section-card">
+                    <h6>Your stay</h6>
+
+                    <div class="small text-muted">
+                        <div>Check-in: <strong th:text="${summary.checkIn}"></strong></div>
+                        <div>Check-out: <strong th:text="${summary.checkOut}"></strong></div>
+                        <div>
+                            <strong th:text="${summary.nights}"></strong> nights
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HOTEL SUMMARY -->
+                <div class="section-card">
+                    <div class="d-flex gap-3">
+                        <img th:src="${summary.hotelImage}"
+                             class="summary-img">
+
+                        <div>
+                            <div class="fw-bold"
+                                 th:text="${summary.hotelName}"></div>
+                            ⭐ <span th:text="${summary.rating}"></span>
+                            · <span th:text="${summary.reviewCount}"></span> reviews
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROOM SUMMARY -->
+                <div class="section-card">
+                    <h6 th:text="${summary.roomType}"></h6>
+                    <div class="small text-muted">
+                        <div>
+                            <span th:text="${summary.roomSize}"></span> sqm ·
+                            <span th:text="${summary.capacity}"></span> guests
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRICE BREAKDOWN -->
+                <div class="section-card">
+                    <div class="price-row">
+                        <span>Original price</span>
+                        <span>$<span th:text="${summary.originalTotal}"></span></span>
+                    </div>
+
+                    <div class="price-row text-success"
+                         th:if="${summary.discount > 0}">
+                        <span>Promotion</span>
+                        <span>- $<span th:text="${summary.discount}"></span></span>
+                    </div>
+
+                    <div class="price-row">
+                        <span>Tax</span>
+                        <span>$<span th:text="${summary.tax}"></span></span>
+                    </div>
+
+                    <hr>
+
+                    <div class="price-row">
+                        <span>Total</span>
+                        <span class="total-price">
+                            $<span th:text="${summary.totalPrice}"></span>
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
