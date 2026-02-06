@@ -9,6 +9,7 @@ import com.project.HotelManagementSystem.repository.ReviewLikeRepository;
 import com.project.HotelManagementSystem.repository.ReviewRepository;
 import com.project.HotelManagementSystem.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
@@ -25,7 +26,7 @@ public class ReviewController {
     private final AuthService authService;
 
     @PostMapping("/{hotelId}")
-    public void writeReview(@PathVariable Long hotelId, @RequestBody ReviewCreateDTO dto) {
+    public ResponseEntity<Void> writeReview(@PathVariable Long hotelId, @RequestBody ReviewCreateDTO dto) {
         User user = authService.getCurrentUser();
         Customer customer = customerRepository.findByUser(user).orElseThrow();
 
@@ -39,10 +40,11 @@ public class ReviewController {
         review.setReviewDate(LocalDate.now());
 
         reviewRepository.save(review);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{reviewId}/like")
-    public int toggleLike(@PathVariable Long reviewId) {
+    public  ResponseEntity<Integer> toggleLike(@PathVariable Long reviewId) {
         User user = authService.getCurrentUser();
         Customer customer = customerRepository.findByUser(user).orElseThrow();
 
@@ -56,11 +58,13 @@ public class ReviewController {
                         )
                 );
 
-        return reviewLikeRepository.countByReview(review);
+        int likeCount = reviewLikeRepository.countByReview(review);
+
+        return ResponseEntity.ok(likeCount);
     }
 
     @DeleteMapping("/{reviewId}")
-    public void deleteReview(@PathVariable Long reviewId) {
+    public ResponseEntity<Void> deleteReview(@PathVariable Long reviewId) {
         User user = authService.getCurrentUser();
         Customer customer = customerRepository.findByUser(user).orElseThrow();
 
@@ -71,5 +75,7 @@ public class ReviewController {
         }
 
         reviewRepository.delete(review);
+
+        return ResponseEntity.ok().build();
     }
 }

@@ -18,8 +18,8 @@
         /* SEARCH BAR */
         .search-bar {
             background: linear-gradient(135deg, #0f2b5b, #1e4fa1);
-            padding: 18px;
-            border-radius: 14px;
+            padding: 20px;
+            border-radius: 12px;
             color: #fff;
         }
 
@@ -173,6 +173,67 @@
             margin-top: 4px;
         }
 
+/* AUTOCOMPLETE DROPDOWN */
+#suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+
+    background: #ffffff;
+    border-radius: 10px;
+    margin-top: 6px;
+    list-style: none;
+    padding: 0;
+
+    display: none;
+    z-index: 2000;
+
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+/* EACH ITEM */
+#suggestions li {
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* HOVER */
+#suggestions li:hover {
+    background: #eef2ff;
+}
+
+/* CONTENT LAYOUT */
+.suggest-item {
+    display: flex;
+    gap: 12px;
+}
+
+/* ICON */
+.suggest-icon {
+    font-size: 18px;
+    color: #1e40af;
+    margin-top: 2px;
+}
+
+/* NAME */
+.suggest-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1f2937;
+}
+
+/* META */
+.suggest-meta {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+
+
+
     </style>
 
 
@@ -210,8 +271,12 @@
                     <input type="number" class="form-control" th:field="*{numberOfGuests}">
                 </div>
                 <div class="col-md-2 d-grid">
-                    <button class="btn btn-warning btn-lg">Search</button>
+                    <label class="invisible">Search</label>
+                    <button class="btn btn-warning btn-lg h-100">
+                        Search
+                    </button>
                 </div>
+
             </div>
         </div>
     </form>
@@ -224,9 +289,12 @@
         </div>
 
         <div class="text-end mt-3">
-            <button class="btn btn-outline-primary btn-sm">
+            <button class="btn btn-outline-primary btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#allPhotosModal">
                 View all photos
             </button>
+
         </div>
     </div>
 
@@ -269,15 +337,28 @@
 
         <div class="col-md-4">
             <div class="section-card">
-                <h5 class="mb-3">Guest Reviews</h5>
+                <h5 class="mb-3">Guest Review Preview</h5>
 
-                <div th:each="r : ${hotel.reviews}" class="review-card">
-                    <strong th:text="${r.customerName}"></strong>
-                    <div class="text-muted small" th:text="${r.rating + ' / 5'}"></div>
-                    <p class="mt-2 mb-0" th:text="${r.comment}"></p>
+                <div th:if="${hotel.reviews.size() > 0}">
+                    <div class="review-card">
+                        <strong id="previewUser"></strong>
+                        <div class="text-muted small" id="previewRating"></div>
+                        <p class="mt-2 mb-0" id="previewComment"></p>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-3">
+                        <button class="btn btn-sm btn-outline-primary"
+                                onclick="prevPreview()">◀</button>
+                        <button class="btn btn-sm btn-outline-primary"
+                                onclick="nextPreview()">▶</button>
+                    </div>
+                </div>
+
+                <div class="text-muted small"
+                     th:if="${hotel.reviews.size() == 0}">
+                    No reviews yet.
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -287,27 +368,104 @@
 
         <div th:each="room : ${hotel.rooms}" class="room-row">
 
-            <img class="room-photo"
-                 th:src="${room.photos[0].url}">
+            <!-- ROOM IMAGE -->
+            <div class="position-relative">
+                <img class="room-photo"
+                     th:src="${room.photos[0].url}"
+                     data-bs-toggle="modal"
+                     th:data-bs-target="'#roomModal-' + ${room.roomId}">
+            </div>
 
+            <!-- ROOM INFO -->
             <div class="room-meta">
                 <div class="room-title" th:text="${room.roomTypeName}"></div>
-                <div class="text-muted small">
-                    Size: <span th:text="${room.roomSize}"></span> sqm ·
-                    Capacity: <span th:text="${room.capacity}"></span>
+
+                <div class="text-muted small mt-1">
+                    <i class="bi bi-rulers"></i>
+                    <span th:text="${room.roomSize}"></span> sqm ·
+                    <i class="bi bi-people"></i>
+                    <span th:text="${room.capacity}"></span> guests
                 </div>
 
-                <div class="room-amenities mt-1">
-                    👨‍👩‍👧 Kids stay free
+                <div class="room-amenities mt-2">
+                    ✔ Free Wi-Fi · ✔ Air conditioning
                 </div>
             </div>
 
+            <!-- PRICE + ACTION -->
             <div class="price-box">
-                <div class="price">$<span th:text="${room.price}"></span></div>
-                <button class="btn btn-primary btn-sm book-btn">Book</button>
+
+                <!-- ORIGINAL PRICE -->
+                <div th:if="${room.promotionApplied}"
+                     class="text-muted text-decoration-line-through small">
+                    $<span th:text="${room.originalPrice}"></span>
+                </div>
+
+                <!-- FINAL PRICE -->
+                <div class="price">
+                    $<span th:text="${room.finalPrice}"></span>
+                </div>
+
+                <!-- PROMO BADGE -->
+                <div th:if="${room.promotionApplied}"
+                     class="badge bg-danger mt-1">
+                    <span th:text="${room.promotionLabel}"></span>
+                </div>
+
+                <button class="btn btn-primary btn-sm book-btn mt-2 w-100">
+                    Book now
+                </button>
             </div>
+
+
+            <div class="modal fade"
+                 th:id="'roomModal-' + ${room.roomId}"
+                 tabindex="-1">
+
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title"
+                                th:text="${room.roomTypeName} + ' Photos'"></h5>
+                            <button type="button" class="btn-close"
+                                    data-bs-dismiss="modal"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div th:id="'carousel-room-' + ${room.roomId}"
+                                 class="carousel slide">
+
+                                <div class="carousel-inner">
+                                    <div th:each="p, i : ${room.photos}"
+                                         th:classappend="${i.index == 0} ? 'carousel-item active' : 'carousel-item'">
+                                        <img th:src="${p.url}"
+                                             class="d-block w-100 rounded">
+                                    </div>
+                                </div>
+
+                                <button class="carousel-control-prev" type="button"
+                                        th:data-bs-target="'#carousel-room-' + ${room.roomId}"
+                                        data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon"></span>
+                                </button>
+
+                                <button class="carousel-control-next" type="button"
+                                        th:data-bs-target="'#carousel-room-' + ${room.roomId}"
+                                        data-bs-slide="next">
+                                    <span class="carousel-control-next-icon"></span>
+                                </button>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
 
         </div>
+
     </div>
 
     <div class="section-card">
@@ -354,9 +512,83 @@
         </div>
     </div>
 
+    <div class="section-card">
+        <h5 class="mb-3">Guest Reviews</h5>
+
+        <h6 class="mb-2">Write a Review</h6>
+
+        <textarea id="newComment"
+                  class="form-control mb-2"
+                  rows="3"
+                  placeholder="Your review..."></textarea>
+
+        <select id="newRating" class="form-select mb-2">
+            <option value="5">⭐⭐⭐⭐⭐</option>
+            <option value="4">⭐⭐⭐⭐</option>
+            <option value="3">⭐⭐⭐</option>
+            <option value="2">⭐⭐</option>
+            <option value="1">⭐</option>
+        </select>
+
+        <button class="btn btn-primary w-100"
+                onclick="submitReview()">
+            Submit Review
+        </button>
+
+        <hr>
+
+        <div id="reviewList"></div>
+
+        <div class="text-center mt-3">
+            <button class="btn btn-outline-primary btn-sm"
+                    onclick="loadMoreReviews()">
+                Read more
+            </button>
+        </div>
+
+    </div>
+
 
 </div>
 
+<div class="modal fade" id="allPhotosModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">All Photos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div id="allPhotosCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+
+                        <div th:each="p, i : ${hotel.photos}"
+                             th:classappend="${i.index == 0} ? 'carousel-item active' : 'carousel-item'">
+                            <img th:src="${p.url}" class="d-block w-100 rounded">
+                        </div>
+
+                    </div>
+
+                    <button class="carousel-control-prev" type="button"
+                            data-bs-target="#allPhotosCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+
+                    <button class="carousel-control-next" type="button"
+                            data-bs-target="#allPhotosCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -392,7 +624,34 @@
 
                 data.forEach(item => {
                     const li = document.createElement("li");
-                    li.textContent = item.name;
+                    const iconMap = {
+    HOTEL: "bi-building",
+    CITY: "bi-buildings",
+    REGION: "bi-geo-alt",
+    COUNTRY: "bi-globe"
+};
+
+const icon = iconMap[item.type] || "bi-search";
+
+let meta = "";
+if (item.type === "HOTEL")
+    meta = `${item.cityName}, ${item.regionName}, ${item.countryName}`;
+if (item.type === "CITY")
+    meta = `${item.regionName}, ${item.countryName}`;
+if (item.type === "REGION")
+    meta = `${item.countryName}`;
+
+li.innerHTML = `
+    <div class="suggest-item">
+        <i class="bi ${icon} suggest-icon"></i>
+        <div>
+            <div class="suggest-name">${item.name}</div>
+            <div class="suggest-meta">
+                ${item.type}${meta ? " · " + meta : ""}
+            </div>
+        </div>
+    </div>
+`;
                     li.onclick = () => {
                         input.value = item.name;
                         list.style.display = "none";
@@ -409,6 +668,138 @@
         });
     });
 </script>
+
+<script th:inline="javascript">
+    const previewReviews = /*[[${hotel.reviews}]]*/ [];
+    let previewIndex = 0;
+
+    function renderPreview() {
+        const r = previewReviews[previewIndex];
+        document.getElementById("previewUser").innerText = r.customerName;
+        document.getElementById("previewRating").innerText = `${r.rating} / 5`;
+        document.getElementById("previewComment").innerText = r.comment;
+    }
+
+    function nextPreview() {
+        previewIndex = (previewIndex + 1) % previewReviews.length;
+        renderPreview();
+    }
+
+    function prevPreview() {
+        previewIndex = (previewIndex - 1 + previewReviews.length) % previewReviews.length;
+        renderPreview();
+    }
+
+    if (previewReviews.length > 0) {
+        renderPreview();
+    }
+</script>
+
+<script th:inline="javascript">
+    const allReviews = /*[[${hotel.reviews}]]*/ [];
+    let page = 0;
+    const PAGE_SIZE = 4;
+
+    function loadMoreReviews() {
+        const start = page * PAGE_SIZE;
+        const end = start + PAGE_SIZE;
+        const slice = allReviews.slice(start, end);
+
+        const container = document.getElementById("reviewList");
+
+        slice.forEach(r => {
+            const div = document.createElement("div");
+            div.className = "review-card";
+
+            div.innerHTML = `
+                <strong>${r.customerName}</strong>
+                <div class="text-muted small">${r.rating} / 5</div>
+                <p class="mt-2">${r.comment}</p>
+
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <button class="btn btn-sm ${r.likedByMe ? "btn-danger" : "btn-outline-danger"}"
+                            onclick="toggleLike(${r.id}, this)">
+                        ❤️ ${r.likeCount}
+                    </button>
+
+                    ${r.mine ? `
+                        <button class="btn btn-sm btn-outline-secondary"
+                                onclick="deleteReview(${r.id})">
+                            🗑 Delete
+                        </button>` : ""}
+                </div>
+            `;
+
+            container.appendChild(div);
+        });
+
+        page++;
+    }
+
+    async function toggleLike(reviewId, btn) {
+        const res = await fetch(`/api/v1/public/reviews/${reviewId}/like`, {
+            method: "POST"
+        });
+
+        const count = await res.text();
+        btn.innerHTML = `❤️ ${count}`;
+        btn.classList.toggle("btn-danger");
+        btn.classList.toggle("btn-outline-danger");
+    }
+
+    async function deleteReview(reviewId) {
+        if (!confirm("Delete your review?")) return;
+
+        await fetch(`/api/v1/public/reviews/${reviewId}`, {
+            method: "DELETE"
+        });
+
+        location.reload();
+    }
+
+    if (allReviews.length > 0) {
+        loadMoreReviews();
+    }
+</script>
+
+<script th:inline="javascript">
+    async function submitReview() {
+        const comment = document.getElementById("newComment").value;
+        const rating = document.getElementById("newRating").value;
+
+        if (!comment.trim()) {
+            alert("Please write a review");
+            return;
+        }
+
+        const res = await fetch(
+            `/api/v1/public/reviews/[[${hotel.hotelId}]]`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    comment: comment,
+                    rating: rating
+                })
+            }
+        );
+
+        if (!res.ok) {
+            alert("Failed to submit review");
+            return;
+        }
+
+        // Clear form
+        document.getElementById("newComment").value = "";
+        document.getElementById("newRating").value = "5";
+
+        // Reload to show new review
+        location.reload();
+    }
+</script>
+
 
 </body>
 </html>

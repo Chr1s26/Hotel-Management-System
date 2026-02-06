@@ -9,6 +9,7 @@ import com.project.HotelManagementSystem.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,7 @@ public class HotelDetailPageService {
     private final HotelAttachmentRepository hotelAttachmentRepository;
     private final RoomAttachmentRepository roomAttachmentRepository;
     private final FileService fileService;
+    private final PromotionCalculator promotionCalculator;
 
     public HotelDetailPageDTO getHotelDetailPage(Long hotelId,Long currentCustomerId) {
 
@@ -111,7 +113,19 @@ public class HotelDetailPageService {
             rd.setRoomTypeName(room.getRoomType().getName());
             rd.setRoomSize(room.getRoomType().getRoomSize());
             rd.setCapacity(room.getRoomType().getCapacity());
-            rd.setPrice(room.getRoomType().getPrice());
+            double basePrice = room.getRoomType().getPrice();
+
+            PricingResult pricing = promotionCalculator.applyPromotion(
+                    basePrice,
+                    room.getPromotions(),
+                    hotel.getPromotions(),
+                    LocalDate.now()
+            );
+
+            rd.setOriginalPrice(pricing.getOriginalPrice());
+            rd.setFinalPrice(pricing.getDiscountedPrice());
+            rd.setPromotionApplied(pricing.isHasPromotion());
+            rd.setPromotionLabel(pricing.getDiscountLabel());
             rd.setAmenities(
                     room.getAmenities().stream()
                             .map(Amenities::getName)

@@ -31,31 +31,27 @@ public class Booking extends MasterData {
     @Column(nullable = false)
     private LocalDate checkOutDate;
 
-    @Column(nullable = true)
-    private String description;
-
     @Column(name = "booking_status",nullable = false)
     @Convert(converter = BookingStatusConverter.class)
     private BookingStatus bookingStatus;
-//    confirm cancel complete onprogess
 
     @Column(nullable = false)
-    private int numberOfGuests;
+    private int totalNights;
 
     @Column(nullable = false)
-    private int numberOfRooms;
+    private boolean paid;
 
     @Column(nullable = false)
-    private boolean isPaid;
+    private double originalTotalPrice;
 
     @Column(nullable = true)
-    private double tax;
+    private double discountAmount;
 
     @Column(nullable = true)
-    private double discountPrice;
+    private double taxAmount;
 
     @Column(nullable = false)
-    private double totalPrice;
+    private double finalTotalPrice;
 
     @Column(name = "currency_type",nullable = false)
     @Convert(converter = CurrencyTypeConverter.class)
@@ -65,20 +61,26 @@ public class Booking extends MasterData {
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
 
-    @ManyToMany(fetch =  FetchType.LAZY)
-    @JoinTable(name = "booking_room",
-            joinColumns = @JoinColumn(name = "booking_id"),
-            inverseJoinColumns = @JoinColumn(name = "room_id"))
-    private Set<Room> rooms = new HashSet<>();
-
-
-    @OneToOne(mappedBy = "booking",cascade = CascadeType.ALL)
-    private Invoice invoice;
-
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @OneToOne(mappedBy = "booking")
+    @Column(nullable = true)
+    private String description;
+
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
+    private BookingGuest leadGuest;
+
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    private List<BookingRoom> bookingRooms = new ArrayList<>();
+
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
+    private BookingPreference preference;
+
+    @OneToOne(mappedBy = "booking",cascade = CascadeType.ALL)
+    private Invoice invoice;
+
+
+    @OneToOne(mappedBy = "booking",cascade = CascadeType.ALL)
     private Payment payment;
 }

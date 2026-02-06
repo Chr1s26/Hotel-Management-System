@@ -11,7 +11,10 @@ public class RoomDetailDTO {
     private String roomTypeName;
     private int roomSize;
     private int capacity;
-    private double price;
+    private double originalPrice;
+    private double finalPrice;
+    private boolean promotionApplied;
+    private String promotionLabel;
     private Set<String> amenities;
     private List<PhotoDTO> photos;
 }
