@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookingGuest {
+public class BookingGuest extends MasterData{
 
     @OneToOne
     @JoinColumn(name = "booking_id")

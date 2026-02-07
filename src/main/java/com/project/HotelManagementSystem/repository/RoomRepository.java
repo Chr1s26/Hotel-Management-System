@@ -14,51 +14,52 @@ import java.util.List;
 @Repository
 public interface RoomRepository extends JpaRepository<Room,Long>, JpaSpecificationExecutor<Room> {
     @Query("""
-    SELECT new com.project.HotelManagementSystem.dto.booking.RoomTypeAvailabilityDTO(
-        rt.id,
-        rt.name,
-        rt.roomSize,
-        rt.capacity,
-        rt.price,
+SELECT new com.project.HotelManagementSystem.dto.booking.RoomTypeAvailabilityDTO(
+    rt.id,
+    rt.name,
+    rt.roomSize,
+    rt.capacity,
+    rt.price,
     COUNT(r)
-    )
-    FROM Room r
-    JOIN r.roomType rt
-    WHERE r.hotel.id = :hotelId
-    AND rt.capacity >= :guests
-    AND r.id NOT IN (
-        SELECT br.id FROM Booking b
-        JOIN b.rooms br
-        WHERE b.bookingStatus <> 0
-        AND b.checkInDate < :checkOut
-        AND :checkIn < b.checkOutDate
-    )
-    GROUP BY rt.id, rt.name, rt.roomSize, rt.capacity, rt.price
-    """)
+)
+FROM Room r
+JOIN r.roomType rt
+WHERE r.hotel.id = :hotelId
+AND rt.capacity >= :guests
+AND r.id NOT IN (
+    SELECT br.room.id
+    FROM Booking b
+    JOIN b.bookingRooms br
+    WHERE b.bookingStatus <> 0
+    AND b.checkInDate < :checkOut
+    AND :checkIn < b.checkOutDate
+)
+GROUP BY rt.id, rt.name, rt.roomSize, rt.capacity, rt.price
+""")
     List<RoomTypeAvailabilityDTO> findRoomTypeAvailability(Long hotelId, LocalDate checkIn, LocalDate checkOut, int guests);
 
-    @Query("""
-    SELECT r FROM Room r
-    WHERE r.hotel.id = :hotelId
-      AND r.roomType.id = :roomTypeId
-      AND r.id NOT IN (
-          SELECT br.id FROM Booking b
-          JOIN b.rooms br
-          WHERE b.bookingStatus <> 0
-            AND b.checkInDate < :checkOut
-            AND :checkIn < b.checkOutDate
-      )
-    """)
-    List<Room> findAvailableRooms(Long hotelId, Long roomTypeId, LocalDate checkIn, LocalDate checkOut);
+//    @Query("""
+//    SELECT r FROM Room r
+//    WHERE r.hotel.id = :hotelId
+//      AND r.roomType.id = :roomTypeId
+//      AND r.id NOT IN (
+//          SELECT br.id FROM Booking b
+//          JOIN b.rooms br
+//          WHERE b.bookingStatus <> 0
+//            AND b.checkInDate < :checkOut
+//            AND :checkIn < b.checkOutDate
+//      )
+//    """)
+//    List<Room> findAvailableRooms(Long hotelId, Long roomTypeId, LocalDate checkIn, LocalDate checkOut);
 
-    @Query("""
-        SELECT r FROM Room r
-        JOIN r.roomType rt
-        WHERE r.hotel.id = :hotelId
-          AND r.available = true
-        ORDER BY rt.price ASC
-    """)
-    List<Room> findAvailableRoomsCheapestFirst(Long hotelId);
+//    @Query("""
+//        SELECT r FROM Room r
+//        JOIN r.roomType rt
+//        WHERE r.hotel.id = :hotelId
+//          AND r.available = true
+//        ORDER BY rt.price ASC
+//    """)
+//    List<Room> findAvailableRoomsCheapestFirst(Long hotelId);
 
     @Query("""
         SELECT DISTINCT r

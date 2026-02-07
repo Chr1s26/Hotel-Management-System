@@ -67,7 +67,6 @@
 
 <div class="container mt-4 mb-5">
 
-    <!-- ===== STEPPER ===== -->
     <div class="stepper">
         <div class="step active">1 Customer Info</div>
         <div class="step">2 Payment</div>
@@ -80,10 +79,8 @@
 
         <div class="row">
 
-            <!-- ================= LEFT SIDE ================= -->
             <div class="col-md-8">
 
-                <!-- LEAD GUEST -->
                 <div class="section-card">
                     <h5 class="mb-3">Who’s the lead guest?</h5>
 
@@ -167,7 +164,7 @@
                         <div>Check-in: <strong th:text="${summary.checkIn}"></strong></div>
                         <div>Check-out: <strong th:text="${summary.checkOut}"></strong></div>
                         <div>
-                            <strong th:text="${summary.nights}"></strong> nights
+                            <strong th:text="${summary.totalNights}"></strong> nights
                         </div>
                     </div>
                 </div>
@@ -175,13 +172,21 @@
                 <!-- HOTEL SUMMARY -->
                 <div class="section-card">
                     <div class="d-flex gap-3">
-                        <img th:src="${summary.hotelImage}"
-                             class="summary-img">
+                        <img th:if="${summary.photos != null and !summary.photos.isEmpty()}"
+                             th:src="${summary.photos[0].url}"
+                             class="summary-img"
+                             alt="Hotel image">
+
+                        <img th:if="${summary.photos == null or summary.photos.isEmpty()}"
+                             src="/images/hotel-placeholder.jpg"
+                             class="summary-img"
+                             alt="Hotel image">
+
 
                         <div>
                             <div class="fw-bold"
                                  th:text="${summary.hotelName}"></div>
-                            ⭐ <span th:text="${summary.rating}"></span>
+                            ⭐ <span th:text="${summary.hotelRating}"></span>
                             · <span th:text="${summary.reviewCount}"></span> reviews
                         </div>
                     </div>
@@ -202,7 +207,7 @@
                 <div class="section-card">
                     <div class="price-row">
                         <span>Original price</span>
-                        <span>$<span th:text="${summary.originalTotal}"></span></span>
+                        <span>$<span th:text="${summary.originalPrice}"></span></span>
                     </div>
 
                     <div class="price-row text-success"
@@ -221,7 +226,7 @@
                     <div class="price-row">
                         <span>Total</span>
                         <span class="total-price">
-                            $<span th:text="${summary.totalPrice}"></span>
+                            $<span th:text="${summary.finalPrice}"></span>
                         </span>
                     </div>
                 </div>

@@ -1,8 +1,11 @@
 package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.dto.booking.BookingSummaryDTO;
+import com.project.HotelManagementSystem.dto.booking.PhotoDTO;
 import com.project.HotelManagementSystem.entity.Hotel;
 import com.project.HotelManagementSystem.entity.Room;
+import com.project.HotelManagementSystem.entity.constants.FileType;
+import com.project.HotelManagementSystem.repository.HotelAttachmentRepository;
 import com.project.HotelManagementSystem.repository.HotelRepository;
 import com.project.HotelManagementSystem.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +22,8 @@ public class BookingPageService {
 
     private final HotelRepository hotelRepository;
     private final RoomRepository roomRepository;
+    private final HotelAttachmentRepository hotelAttachmentRepository;
+    private final FileService fileService;
 
     public BookingSummaryDTO prepareBooking(Long hotelId, Long roomId, LocalDate checkIn, LocalDate checkOut) {
 
@@ -47,6 +54,16 @@ public class BookingPageService {
         dto.setDiscount(discount);
         dto.setTax(tax);
         dto.setFinalPrice(originalTotal - discount + tax);
+
+        List<PhotoDTO> photos = new ArrayList<>();
+
+        hotelAttachmentRepository.findByHotelId(hotelId)
+                .forEach(att -> photos.add(
+                        new PhotoDTO(att.getId(),
+                                fileService.getFileNames(FileType.HOTEL_ATTACHMENT, att.getId()),
+                                "HOTEL"))
+                );
+        dto.setPhotos(photos);
 
         return dto;
     }

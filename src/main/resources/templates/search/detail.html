@@ -412,9 +412,14 @@
                     <span th:text="${room.promotionLabel}"></span>
                 </div>
 
-                <button class="btn btn-primary btn-sm book-btn mt-2 w-100">
+                <a class="btn btn-primary btn-sm book-btn mt-2 w-100"
+                   th:href="@{/api/v1/public/bookings(
+                        hotelId=${hotel.hotelId},
+                        roomId=${room.roomId},
+                        checkIn=${search.checkIn},
+                        checkOut=${search.checkOut})}">
                     Book now
-                </button>
+                </a>
             </div>
 
 

@@ -21,11 +21,9 @@ public class BookingController {
     @GetMapping
     public String bookingPage(@RequestParam Long hotelId, @RequestParam Long roomId, @RequestParam LocalDate checkIn, @RequestParam LocalDate checkOut, Model model) {
         BookingSummaryDTO summary = bookingPageService.prepareBooking(hotelId, roomId, checkIn, checkOut);
-
         model.addAttribute("summary", summary);
         model.addAttribute("bookingRequest", new BookingRequestDTO());
-
-        return "booking/booking-page";
+        return "bookings/booking-page";
     }
 
     @PostMapping("/confirm")

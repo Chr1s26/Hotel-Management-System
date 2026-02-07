@@ -4,7 +4,6 @@ import com.project.HotelManagementSystem.dto.booking.HotelSearchDTO;
 import com.project.HotelManagementSystem.dto.booking.HotelSearchResultDTO;
 import com.project.HotelManagementSystem.exception.InvalidSearchException;
 import com.project.HotelManagementSystem.repository.AmenitiesRepository;
-import com.project.HotelManagementSystem.repository.RoomRepository;
 import com.project.HotelManagementSystem.repository.RoomTypeRepository;
 import com.project.HotelManagementSystem.service.search.elasticSearch.SearchService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,6 @@ public class HotelSearchController {
     @Autowired
     private AmenitiesRepository amenitiesRepository;
 
-
     @ModelAttribute("search")
     public HotelSearchDTO searchDTO() {
         return new HotelSearchDTO();
@@ -49,7 +47,6 @@ public class HotelSearchController {
         } catch (InvalidSearchException e) {
             model.addAttribute("error", e.getMessage());
         }
-
         model.addAttribute("search", dto);
         return "search/results";
     }

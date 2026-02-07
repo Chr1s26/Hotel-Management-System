@@ -3,6 +3,7 @@ package com.project.HotelManagementSystem.dto.booking;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -24,4 +25,5 @@ public class BookingSummaryDTO {
     private double discount;
     private double tax;
     private double finalPrice;
+    private List<PhotoDTO> photos;
 }

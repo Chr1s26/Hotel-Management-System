@@ -33,9 +33,9 @@ public class Room extends MasterData {
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
 
-    @ManyToMany(mappedBy = "rooms")
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     @JsonIgnore
-    private Set<Booking> bookings = new HashSet<>();
+    private List<BookingRoom> bookingRooms = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "room_amenities",
