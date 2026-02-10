@@ -23,7 +23,7 @@ import java.util.Set;
 public class Booking extends MasterData {
 
     @Column(nullable = false)
-    private LocalDateTime bookingDate;
+    private LocalDateTime bookingDate;//
 
     @Column(nullable = false)
     private LocalDate checkInDate;
@@ -33,7 +33,7 @@ public class Booking extends MasterData {
 
     @Column(name = "booking_status",nullable = false)
     @Convert(converter = BookingStatusConverter.class)
-    private BookingStatus bookingStatus;
+    private BookingStatus bookingStatus;//
 
     @Column(nullable = false)
     private int totalNights;
@@ -66,20 +66,19 @@ public class Booking extends MasterData {
     private Customer customer;
 
     @Column(nullable = true)
-    private String description;
+    private String description;//
 
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
-    private BookingGuest leadGuest;
+    private BookingGuest leadGuest;//
 
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
     private List<BookingRoom> bookingRooms = new ArrayList<>();
 
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
-    private BookingPreference preference;
+    private BookingPreference preference;//
 
     @OneToOne(mappedBy = "booking",cascade = CascadeType.ALL)
     private Invoice invoice;
-
 
     @OneToOne(mappedBy = "booking",cascade = CascadeType.ALL)
     private Payment payment;

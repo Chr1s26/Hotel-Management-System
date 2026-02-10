@@ -26,7 +26,7 @@ public class HotelPublicController {
         User user = authService.getCurrentUser();
         Customer customer = customerRepository.findByUser(user).orElseThrow();
 
-        HotelDetailPageDTO hotel = hotelDetailPageService.getHotelDetailPage(hotelId,customer.getId());
+        HotelDetailPageDTO hotel = hotelDetailPageService.getHotelDetailPage(hotelId,customer.getId(),searchDTO.getCheckIn());
         if (searchDTO == null) {
             searchDTO = new HotelSearchDTO();
         }

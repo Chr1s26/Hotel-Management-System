@@ -25,7 +25,7 @@ public class HotelDetailPageService {
     private final FileService fileService;
     private final PromotionCalculator promotionCalculator;
 
-    public HotelDetailPageDTO getHotelDetailPage(Long hotelId,Long currentCustomerId) {
+    public HotelDetailPageDTO getHotelDetailPage(Long hotelId,Long currentCustomerId,LocalDate checkIn) {
 
         Hotel hotel = hotelRepository.findById(hotelId).orElseThrow();
 
@@ -119,7 +119,7 @@ public class HotelDetailPageService {
                     basePrice,
                     room.getPromotions(),
                     hotel.getPromotions(),
-                    LocalDate.now()
+                    checkIn
             );
 
             rd.setOriginalPrice(pricing.getOriginalPrice());
