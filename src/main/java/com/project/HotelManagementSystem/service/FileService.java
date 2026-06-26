@@ -7,6 +7,7 @@ import com.project.HotelManagementSystem.entity.FileStorageV2;
 import com.project.HotelManagementSystem.entity.User;
 import com.project.HotelManagementSystem.entity.constants.FileType;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
+import com.project.HotelManagementSystem.exception.FileNotUploadException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.ExportListingRepository;
 import com.project.HotelManagementSystem.repository.HotelAttachmentRepository;
@@ -69,6 +70,10 @@ public class FileService {
 
 
     public void handleFileUpload(MultipartFile file, FileType fileType,Long id,String serviceName) {
+
+        if (file == null || file.isEmpty()) {
+            throw new FileNotUploadException("Profile picture not found");
+        }
 
         String originalFilename = file.getOriginalFilename();
         String uuid = UUID.randomUUID().toString();

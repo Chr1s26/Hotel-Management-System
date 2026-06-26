@@ -96,6 +96,7 @@ public class SecurityConfig {
                 .failureHandler(customAuthenticationFailureHandler)
                 .permitAll()
         );
+        //UsernamePasswordAuthenticationFilter extract name and email => authentication manager.authenticate (we write authentication Manger in above)=> authentication manager calls daoauthenticationprovider => provider calls load by user name
         http.exceptionHandling(exception -> exception.accessDeniedPage("/access_denied"));
 
         return http.build();

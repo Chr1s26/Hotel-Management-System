@@ -36,9 +36,9 @@ public class UserDetailsServiceImpl implements AbstractService{
                 .orElseGet(() -> userRepository.findByNameIgnoreCase(parameter)
                         .orElseThrow(() -> new UserNameNotFoundException("Username is not found","/login")));
 
-        if(user.getConfirmedAt() == null){
-            throw new AccountNotConfirmedException("Account not found");
-        }
+//        if(user.getConfirmedAt() == null){
+//            throw new AccountNotConfirmedException("Account not found");
+//        }
         return UserDetailsImpl.build(user);
     }
 

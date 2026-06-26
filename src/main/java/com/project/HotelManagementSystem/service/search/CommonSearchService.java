@@ -38,14 +38,8 @@ public class CommonSearchService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(dir, sortBy));
 
-        Specification<E> spec = Specification.where(null);
-        if (query.getFilterList() != null) {
-            for (F filter : query.getFilterList()) {
-                Specification<E> s = specFunction.apply(filter);
-                if (s != null) spec = (spec == null) ? Specification.where(s) : spec.and(s);
-            }
-        }
-        spec = createdByUserFilter(spec);
+        Specification<E> spec = buildSpecification(query,specFunction);
+//        spec = createdByUserFilter(spec);
         return repository.findAll(spec, pageable);
     }
 
@@ -55,7 +49,7 @@ public class CommonSearchService {
             SearchQuery<F> query
     ) {
         Specification<E> spec = buildSpecification(query, specFunction);
-        spec = createdByUserFilter(spec);
+//        spec = createdByUserFilter(spec);
         return repository.findAll(spec);
     }
 
@@ -80,7 +74,11 @@ public class CommonSearchService {
             SearchQuery<F> query,
             Function<F, Specification<E>> specFunction
     ) {
-        Specification<E> spec = Specification.where(null);
+//        Specification<E> spec = Specification.where(null);
+        Specification<E> spec = (root, queryObj, cb) ->
+                cb.isFalse(root.get("deleted"));
+//        Specification<E> spec = (root, queryObj, cb) ->
+//                cb.isTrue(root.get("deleted"));
 
         if (query.getFilterList() != null) {
             for (F filter : query.getFilterList()) {

@@ -71,7 +71,6 @@ public class RoomController {
                 .stream()
                 .map(roomService::toDTO)
                 .toList();
-        Hotel hotel = roomDTOs.getFirst().getHotel();
         model.addAttribute("rooms", roomDTOs);
         model.addAttribute("totalPages",page.getTotalPages());
         model.addAttribute("totalElements",page.getTotalElements());

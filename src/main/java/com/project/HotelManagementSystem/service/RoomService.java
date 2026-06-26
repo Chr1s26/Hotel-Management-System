@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -54,6 +55,7 @@ public class RoomService {
     @Autowired
     private RoomTypeService roomTypeService;
 
+    @Transactional
     public RoomCreateDTO createRoom(RoomCreateDTO roomCreateDTO) throws IOException {
         RoomType roomType = roomTypeService.findOrCreate(roomCreateDTO.getRoomTypeName(),roomCreateDTO.getPrice(),roomCreateDTO.getRoomSize(),roomCreateDTO.getCapacity());
         Hotel hotel = hotelRepository.findById(roomCreateDTO.getHotel().getId()).orElseThrow(() -> new ResourceNotFoundException("hotel", roomCreateDTO.getHotel().getId(), "id", "rooms/create", "Hotel not found"));

@@ -16,6 +16,7 @@ import java.util.concurrent.Executor;
 @EnableAsync
 @Slf4j
 public class AsyncConfig implements AsyncConfigurer {
+    //AsyncConfigurer allows to define thread pool and async exception handler
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
         return customAsyncExceptionHandler();
@@ -24,10 +25,11 @@ public class AsyncConfig implements AsyncConfigurer {
     @Override
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        //if pool size full, goes into queue capacity. if queue full, goes max pool size.
+//        Minimum number of threads always available.
         executor.setCorePoolSize(5);
         executor.setMaxPoolSize(10);
         executor.setQueueCapacity(100);
+        //if pool size full, goes into queue capacity. if queue full, goes max pool size.
         executor.setThreadNamePrefix("AsyncExecutor-");
         executor.initialize();
         return executor;

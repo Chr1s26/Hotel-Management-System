@@ -34,7 +34,7 @@ public class User extends MasterData{
     @Column
     private Long otpGeneratedAt;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -51,7 +51,7 @@ public class User extends MasterData{
     @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
     private Admin admin;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Cart> carts = new ArrayList<>();
 
     @Override

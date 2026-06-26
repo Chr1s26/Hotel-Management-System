@@ -48,6 +48,7 @@ public class UserService {
     @Autowired
     private FileService fileService;
 
+    @Transactional
     public UserCreateDTO createUser(UserCreateDTO userCreateDTO) {
         if(userRepository.existsByName(userCreateDTO.getName())) throw new DuplicateException("user",userCreateDTO,"name","users/create","An account with this name already exists");
         if(userRepository.existsByEmail(userCreateDTO.getEmail())) throw new DuplicateException("user",userCreateDTO,"email","users/create","An account with this email already exists");
@@ -82,6 +83,7 @@ public class UserService {
         return modelMapper.map(savedUser, UserUpdateDTO.class);
     }
 
+    @Transactional
     public void deleteUser( Long id) {
         Optional<User> optionalUser = this.userRepository.findById(id);
         if(optionalUser.isEmpty()){

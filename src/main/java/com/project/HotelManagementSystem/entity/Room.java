@@ -1,7 +1,6 @@
 package com.project.HotelManagementSystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.HotelManagementSystem.converter.RoomTypeConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

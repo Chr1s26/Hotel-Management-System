@@ -56,3 +56,67 @@ public class LocationSearchService {
     }
 
 }
+
+//
+//curl -X PUT "http://localhost:9200/hotel_search" \
+//        -H "Content-Type: application/json" \
+//        -d '{
+//        "settings": {
+//        "analysis": {
+//        "analyzer": {
+//        "autocomplete": {
+//        "tokenizer": "edge_ngram_tokenizer",
+//        "filter": ["lowercase"]
+//        }
+//        },
+//        "tokenizer": {
+//        "edge_ngram_tokenizer": {
+//        "type": "edge_ngram",
+//        "min_gram": 1,
+//        "max_gram": 20,
+//        "token_chars": ["letter"]
+//        }
+//        }
+//        }
+//        },
+//        "mappings": {
+//        "properties": {
+//        "hotelId": { "type": "long" },
+//
+//        "hotelName": {
+//        "type": "text",
+//        "analyzer": "autocomplete",
+//        "search_analyzer": "standard"
+//        },
+//
+//        "city": {
+//        "type": "text",
+//        "analyzer": "autocomplete",
+//        "search_analyzer": "standard"
+//        },
+//        "region": {
+//        "type": "text",
+//        "analyzer": "autocomplete",
+//        "search_analyzer": "standard"
+//        },
+//        "country": {
+//        "type": "text",
+//        "analyzer": "autocomplete",
+//        "search_analyzer": "standard"
+//        },
+//
+//        "hotelType": { "type": "keyword" },
+//
+//        "minRoomPrice": { "type": "double" },
+//        "maxRoomPrice": { "type": "double" },
+//
+//        "reviewAvg": { "type": "double" },
+//        "reviewCount": { "type": "integer" },
+//
+//        "roomTypeNames": { "type": "keyword" },
+//        "amenities": { "type": "keyword" },
+//
+//        "hasPromotion": { "type": "boolean" }
+//        }
+//        }
+//        }'

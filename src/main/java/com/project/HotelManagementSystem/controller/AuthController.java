@@ -74,7 +74,12 @@ public class AuthController {
     }
 
     @GetMapping("/confirm-otp")
-    public String showConfirmOtpForm() {
+    public String showConfirmOtpForm(HttpSession session) {
+        String email = (String) session.getAttribute("resetEmail");
+
+        if (email == null) {
+            return "redirect:/forget-password";
+        }
         return "confirm-otp";
     }
 
@@ -101,7 +106,12 @@ public class AuthController {
     }
 
     @GetMapping("/reset-password")
-    public String showResetPasswordForm(Model model) {
+    public String showResetPasswordForm(Model model, HttpSession session) {
+        String email = (String) session.getAttribute("resetEmail");
+
+        if (email == null) {
+            return "redirect:/forget-password";
+        }
         model.addAttribute("resetPasswordForm", new ResetPasswordDTO());
         return "reset-password";
     }

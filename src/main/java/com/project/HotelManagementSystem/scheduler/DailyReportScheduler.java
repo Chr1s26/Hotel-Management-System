@@ -22,7 +22,7 @@ public class DailyReportScheduler {
     private final CustomerExportProcess customerExportProcess;
 
 //    @Async("schedulerExecutor")
-//    @Scheduled(fixedRate = 60000)
+//    @Scheduled(fixedRate = 60000)  //ms
 //    public void customerReport(){
 //        log.info("Report Export Customer Report {}", LocalDateTime.now());
 //        CustomerSearchQuery customerSearchQuery = new CustomerSearchQuery();

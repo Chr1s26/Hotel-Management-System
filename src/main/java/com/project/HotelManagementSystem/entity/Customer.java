@@ -35,7 +35,7 @@ public class Customer extends UserMasterData{
 
     @OneToMany(mappedBy = "customer")
     private List<Booking> bookings = new ArrayList<>();
-
+    //need to delete
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "customer_promotion",
             joinColumns = @JoinColumn(name = "customer_id"),

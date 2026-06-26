@@ -36,4 +36,9 @@ public abstract class MasterData implements Serializable {
     @JoinColumn(name = "updated_by_id",referencedColumnName = "ID")
     @JsonIgnore
     private User updatedBy;
+
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean deleted;
+
+    private LocalDateTime deletedAt;
 }

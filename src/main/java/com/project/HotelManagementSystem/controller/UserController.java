@@ -78,7 +78,7 @@ public class UserController {
     }
 
     @GetMapping("/edit/{id}")
-    @PreAuthorize("hasRole('ADMIN') and @userSecurity.isOwner(#id)")
+    @PreAuthorize("hasRole('ADMIN')")
     @ActiveRole({"ADMIN", "EDITOR"})
     public String showEditForm(@PathVariable Long id, Model model) {
         UserUpdateDTO user = this.userService.findUserById(id);
@@ -95,7 +95,7 @@ public class UserController {
     }
 
     @GetMapping("/delete/{id}")
-    @PreAuthorize("hasRole('ADMIN') and @userSecurity.isOwner(#id)")
+    @PreAuthorize("hasRole('ADMIN')")
     @ActiveRole("ADMIN")
     public String deleteUser(@PathVariable Long id) {
         this.userService.deleteUser(id);
@@ -109,7 +109,7 @@ public class UserController {
     }
 
     @GetMapping("/view/{id}")
-    @PreAuthorize("hasRole('ADMIN') and @userSecurity.isOwner(#id)")
+    @PreAuthorize("hasRole('ADMIN')")
     @ActiveRole({"ADMIN", "EDITOR"})
     public String showView(@PathVariable("id") Long id, Model model) {
         UserDTO user = this.userService.findById(id);
