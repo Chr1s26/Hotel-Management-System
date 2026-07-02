@@ -9,6 +9,7 @@ import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.PropertyDescriptionRepository;
+import com.project.HotelManagementSystem.service.support.SoftDeleteSupport;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,10 @@ public class PropertyDescriptionService {
         PropertyDescription savedPropertyDescription = propertyDescriptionRepository.save(updatedPropertyDescription);
 
         return modelMapper.map(savedPropertyDescription, PropertyDescriptionUpdateDTO.class);
+    }
+
+    public void softDeletePropertyDescription(Long id) {
+        SoftDeleteSupport.softDelete(propertyDescriptionRepository, id, "propertyDescription");
     }
 
     public void deletePropertyDescription(Long id) {

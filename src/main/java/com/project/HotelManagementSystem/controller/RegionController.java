@@ -23,6 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -111,8 +112,14 @@ public class RegionController {
 
     @GetMapping("/delete/{id}")
     @ActiveRole({"ADMIN", "EDITOR"})
-    public String deleteRegion(@PathVariable Long id) throws Exception {
-        regionService.deleteRegion(id);
+    public String deleteRegion(@PathVariable Long id, @RequestParam(name = "hard", defaultValue = "false") boolean hard, RedirectAttributes redirectAttributes) throws Exception {
+        if (hard) {
+            regionService.deleteRegion(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record permanently deleted.");
+        } else {
+            regionService.softDeleteRegion(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record moved to Deleted (recoverable).");
+        }
         return "redirect:/regions";
     }
 

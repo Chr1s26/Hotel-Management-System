@@ -9,6 +9,7 @@ import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.PromotionRepository;
+import com.project.HotelManagementSystem.service.support.SoftDeleteSupport;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -67,6 +68,10 @@ public class PromotionService {
         Promotion savedPromotion = this.promotionRepository.save(promotionOp);
         return modelMapper.map(savedPromotion,PromotionUpdateDTO.class);
 
+    }
+
+    public void softDeletePromotion(Long id) {
+        SoftDeleteSupport.softDelete(promotionRepository, id, "promotion");
     }
 
     public void deletePromotion(Long id) {

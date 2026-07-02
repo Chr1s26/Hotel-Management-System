@@ -148,7 +148,7 @@
             <td>
                 <a class="btn btn-sm btn-view" th:href="@{'/promotions/view/' + ${pro.id}}">View</a>
                 <a class="btn btn-sm btn-warning" th:href="@{'/promotions/edit/' + ${pro.id}}">Edit</a>
-                <a class="btn btn-sm btn-danger" th:href="@{'/promotions/delete/' + ${pro.id}}">Delete</a>
+                <div th:replace="~{fragments/delete-control :: deleteControl('/promotions', ${pro.id})}"></div>
             </td>
         </tr>
         </tbody>

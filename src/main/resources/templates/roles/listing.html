@@ -99,7 +99,7 @@
             <td th:text="${role.roleName}">ADMIN</td>
             <td>
                 <a class="btn btn-sm btn-warning" th:href="@{'/roles/edit/' + ${role.id}}">Edit</a>
-                <a class="btn btn-sm btn-danger" th:href="@{'/roles/delete/' + ${role.id}}">Delete</a>
+                <div th:replace="~{fragments/delete-control :: deleteControl('/roles', ${role.id})}"></div>
             </td>
         </tr>
         </tbody>

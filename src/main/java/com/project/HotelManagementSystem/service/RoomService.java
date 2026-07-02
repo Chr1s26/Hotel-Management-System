@@ -13,6 +13,7 @@ import com.project.HotelManagementSystem.entity.constants.RoomMediaType;
 import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.*;
+import com.project.HotelManagementSystem.service.support.SoftDeleteSupport;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,6 +122,10 @@ public class RoomService {
             roomAttachment = roomAttachmentRepository.save(roomAttachment);
             fileService.handleFileUpload(multipartFile, FileType.ROOM_ATTACHMENT, roomAttachment.getId(), "s3");
         }
+    }
+
+    public void softDeleteRoom(Long id) {
+        SoftDeleteSupport.softDelete(roomRepository, id, "room");
     }
 
     public void deleteRoom(Long id) {

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -99,8 +100,14 @@ public class PolicyController {
 
     @GetMapping("/delete/{id}")
     @ActiveRole({"ADMIN", "EDITOR"})
-    public String deletePolicy(@PathVariable Long id) {
-        policyService.deletePolicy(id);
+    public String deletePolicy(@PathVariable Long id, @RequestParam(name = "hard", defaultValue = "false") boolean hard, RedirectAttributes redirectAttributes) {
+        if (hard) {
+            policyService.deletePolicy(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record permanently deleted.");
+        } else {
+            policyService.softDeletePolicy(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record moved to Deleted (recoverable).");
+        }
         return "redirect:/policies";
     }
 

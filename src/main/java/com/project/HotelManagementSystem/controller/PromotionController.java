@@ -25,6 +25,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -108,8 +109,14 @@ public class PromotionController {
 
     @GetMapping("/delete/{id}")
     @ActiveRole({"ADMIN", "EDITOR"})
-    public String deletePromotion(@PathVariable Long id) {
-        this.promotionService.deletePromotion(id);
+    public String deletePromotion(@PathVariable Long id, @RequestParam(name = "hard", defaultValue = "false") boolean hard, RedirectAttributes redirectAttributes) {
+        if (hard) {
+            this.promotionService.deletePromotion(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record permanently deleted.");
+        } else {
+            this.promotionService.softDeletePromotion(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record moved to Deleted (recoverable).");
+        }
         return "redirect:/promotions";
     }
 

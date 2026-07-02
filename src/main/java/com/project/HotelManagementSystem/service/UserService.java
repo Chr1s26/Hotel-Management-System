@@ -12,6 +12,7 @@ import com.project.HotelManagementSystem.exception.InvalidRoleException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.RoleRepository;
 import com.project.HotelManagementSystem.repository.UserRepository;
+import com.project.HotelManagementSystem.service.support.SoftDeleteSupport;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +82,10 @@ public class UserService {
         updatedUser.setUpdatedBy(authService.getCurrentUser());
         User savedUser = userRepository.save(updatedUser);
         return modelMapper.map(savedUser, UserUpdateDTO.class);
+    }
+
+    public void softDeleteUser(Long id) {
+        SoftDeleteSupport.softDelete(userRepository, id, "user");
     }
 
     @Transactional

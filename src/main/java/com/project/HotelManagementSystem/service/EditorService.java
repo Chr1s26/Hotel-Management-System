@@ -12,6 +12,7 @@ import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.EditorRepository;
 import com.project.HotelManagementSystem.repository.RoleRepository;
 import com.project.HotelManagementSystem.repository.UserRepository;
+import com.project.HotelManagementSystem.service.support.SoftDeleteSupport;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,6 +110,10 @@ public class EditorService {
 
     private String normalize(String v) {
         return (v == null || v.trim().isEmpty()) ? null : v.trim();
+    }
+
+    public void softDeleteEditor(Long id) {
+        SoftDeleteSupport.softDelete(editorRepository, id, "editor");
     }
 
     public void deleteEditor(Long id) {

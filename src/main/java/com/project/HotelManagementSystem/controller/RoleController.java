@@ -26,6 +26,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -104,8 +105,14 @@ public class RoleController {
 
     @GetMapping("/delete/{id}")
     @ActiveRole({"ADMIN", "EDITOR"})
-    public String deleteRole(@PathVariable Long id) {
-        roleService.deleteRole(id);
+    public String deleteRole(@PathVariable Long id, @RequestParam(name = "hard", defaultValue = "false") boolean hard, RedirectAttributes redirectAttributes) {
+        if (hard) {
+            roleService.deleteRole(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record permanently deleted.");
+        } else {
+            roleService.softDeleteRole(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record moved to Deleted (recoverable).");
+        }
         return "redirect:/roles";
     }
 

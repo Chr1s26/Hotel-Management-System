@@ -9,6 +9,7 @@ import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.RoleRepository;
+import com.project.HotelManagementSystem.service.support.SoftDeleteSupport;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -55,6 +56,10 @@ public class RoleService {
         roleOp.setUpdatedBy(authService.getCurrentUser());
         Role savedRole = roleRepository.save(roleOp);
         return modelMapper.map(savedRole,RoleUpdateDTO.class);
+    }
+
+    public void softDeleteRole(Long id) {
+        SoftDeleteSupport.softDelete(roleRepository, id, "role");
     }
 
     public void deleteRole(Long id) {

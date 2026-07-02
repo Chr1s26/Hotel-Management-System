@@ -12,6 +12,7 @@ import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CustomerRepository;
 import com.project.HotelManagementSystem.repository.RoleRepository;
 import com.project.HotelManagementSystem.repository.UserRepository;
+import com.project.HotelManagementSystem.service.support.SoftDeleteSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -65,6 +66,10 @@ public class CustomerService {
 
         customer = customerRepository.save(customer);
         return toUpdateDto(customer);
+    }
+
+    public void softDeleteCustomer(Long id) {
+        SoftDeleteSupport.softDelete(customerRepository, id, "customer");
     }
 
     public void deleteCustomer(Long id) {

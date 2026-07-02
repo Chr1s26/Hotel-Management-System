@@ -31,6 +31,26 @@ public class GlobalExceptionHandler {
     private final CountryService countryService;
     private final RegionService regionService;
 
+    @ExceptionHandler(RelationshipInUseException.class)
+    public String handleRelationshipInUse(RelationshipInUseException ex,
+                                          RedirectAttributes redirectAttributes,
+                                          HttpServletRequest request) {
+        redirectAttributes.addFlashAttribute("alertMessage", ex.getMessage());
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/");
+    }
+
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public String handleDataIntegrity(org.springframework.dao.DataIntegrityViolationException ex,
+                                      RedirectAttributes redirectAttributes,
+                                      HttpServletRequest request) {
+        redirectAttributes.addFlashAttribute("alertMessage",
+                "This record can't be permanently deleted because other records still depend on it. "
+                        + "Remove or reassign those first, or use Soft delete instead.");
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/");
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public String handleResourceNotFound(ResourceNotFoundException ex, Model model) {
         BindingResult br = new BeanPropertyBindingResult(ex.getObjectValue(), ex.getObjectName());

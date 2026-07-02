@@ -12,6 +12,7 @@ import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.ExportListingRepository;
 import com.project.HotelManagementSystem.repository.document.FileStorageV2Repository;
+import com.project.HotelManagementSystem.service.support.SoftDeleteSupport;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -56,6 +57,10 @@ public class ExportListingService {
 
     public List<ExportListing> getAllExports() {
         return exportListingRepository.findAll();
+    }
+
+    public void softDeleteExportListing(Long id) {
+        SoftDeleteSupport.softDelete(exportListingRepository, id, "export");
     }
 
     public void deleteExportListing(Long id) {

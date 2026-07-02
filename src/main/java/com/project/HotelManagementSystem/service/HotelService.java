@@ -15,6 +15,7 @@
     import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
     import com.project.HotelManagementSystem.repository.*;
     import com.project.HotelManagementSystem.service.search.elasticSearch.LocationIndexService;
+    import com.project.HotelManagementSystem.service.support.SoftDeleteSupport;
     import jakarta.transaction.Transactional;
     import lombok.RequiredArgsConstructor;
     import org.modelmapper.ModelMapper;
@@ -129,6 +130,11 @@
             Hotel savedHotel = this.hotelRepository.save(optionalHotel);
             this.addAttachment(hotelUpdateDTO.getFiles(), savedHotel.getId(),hotelUpdateDTO.getHotelMediaType());
             return modelMapper.map(savedHotel,HotelUpdateDTO.class);
+        }
+
+        @Transactional
+        public void softDeleteHotel(Long id) {
+            SoftDeleteSupport.softDelete(hotelRepository, id, "hotel");
         }
 
         @Transactional

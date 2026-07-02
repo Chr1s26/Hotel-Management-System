@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.List;
@@ -77,8 +78,14 @@ public class ExportListingController {
 
     @PostMapping("/delete/{id}")
     @ActiveRole("ADMIN")
-    public String deleteFile(@PathVariable Long id) {
-        this.exportListingService.deleteExportListing(id);
+    public String deleteFile(@PathVariable Long id, @RequestParam(name = "hard", defaultValue = "false") boolean hard, RedirectAttributes redirectAttributes) {
+        if (hard) {
+            this.exportListingService.deleteExportListing(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record permanently deleted.");
+        } else {
+            this.exportListingService.softDeleteExportListing(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record moved to Deleted (recoverable).");
+        }
         return "redirect:/exports";
     }
 

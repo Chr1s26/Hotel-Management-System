@@ -25,6 +25,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.List;
@@ -136,8 +137,14 @@ public class HotelController {
 
     @GetMapping("/delete/{id}")
     @ActiveRole({"ADMIN", "EDITOR"})
-    public String deleteHotel(@PathVariable Long id) throws Exception {
-        this.hotelService.deleteHotel(id);
+    public String deleteHotel(@PathVariable Long id, @RequestParam(name = "hard", defaultValue = "false") boolean hard, RedirectAttributes redirectAttributes) throws Exception {
+        if (hard) {
+            this.hotelService.deleteHotel(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record permanently deleted.");
+        } else {
+            this.hotelService.softDeleteHotel(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record moved to Deleted (recoverable).");
+        }
         return "redirect:/hotels";
     }
 

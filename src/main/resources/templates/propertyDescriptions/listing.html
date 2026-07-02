@@ -120,7 +120,7 @@
             <td>
                 <a class="btn btn-sm btn-view" th:href="@{'/propertyDescriptions/view/' + ${pro.id}}">View</a>
                 <a class="btn btn-sm btn-warning" th:href="@{'/propertyDescriptions/edit/' + ${pro.id}}">Edit</a>
-                <a class="btn btn-sm btn-danger" th:href="@{'/propertyDescriptions/delete/' + ${pro.id}}">Delete</a>
+                <div th:replace="~{fragments/delete-control :: deleteControl('/propertyDescriptions', ${pro.id})}"></div>
             </td>
         </tr>
         </tbody>

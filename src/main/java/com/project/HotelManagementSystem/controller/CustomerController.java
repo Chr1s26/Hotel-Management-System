@@ -21,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -111,8 +112,14 @@ public class CustomerController {
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteCustomer(@PathVariable("id") Long id) {
-        customerService.deleteCustomer(id);
+    public String deleteCustomer(@PathVariable("id") Long id, @RequestParam(name = "hard", defaultValue = "false") boolean hard, RedirectAttributes redirectAttributes) {
+        if (hard) {
+            customerService.deleteCustomer(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record permanently deleted.");
+        } else {
+            customerService.softDeleteCustomer(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record moved to Deleted (recoverable).");
+        }
         return "redirect:/customers";
     }
 

@@ -9,6 +9,7 @@ import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.PolicyRepository;
+import com.project.HotelManagementSystem.service.support.SoftDeleteSupport;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -58,6 +59,10 @@ public class PolicyService {
         policyOp.setUpdatedBy(authService.getCurrentUser());
         Policy savedPolicy = policyRepository.save(policyOp);
         return modelMapper.map(savedPolicy,PolicyUpdateDTO.class);
+    }
+
+    public void softDeletePolicy(Long id) {
+        SoftDeleteSupport.softDelete(policyRepository, id, "policy");
     }
 
     public void deletePolicy(Long id) {

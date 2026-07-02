@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -97,8 +98,14 @@ public class UserController {
     @GetMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ActiveRole("ADMIN")
-    public String deleteUser(@PathVariable Long id) {
-        this.userService.deleteUser(id);
+    public String deleteUser(@PathVariable Long id, @RequestParam(name = "hard", defaultValue = "false") boolean hard, RedirectAttributes redirectAttributes) {
+        if (hard) {
+            this.userService.deleteUser(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record permanently deleted.");
+        } else {
+            this.userService.softDeleteUser(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record moved to Deleted (recoverable).");
+        }
         return "redirect:/users";
     }
 

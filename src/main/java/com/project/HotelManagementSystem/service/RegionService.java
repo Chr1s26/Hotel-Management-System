@@ -8,6 +8,7 @@ import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.RegionRepository;
 import com.project.HotelManagementSystem.service.search.elasticSearch.LocationIndexService;
+import com.project.HotelManagementSystem.service.support.SoftDeleteSupport;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -61,6 +62,11 @@ public class RegionService {
         Region savedRegion = regionRepository.save(updatedRegionOp);
         return modelMapper.map(savedRegion, RegionDTO.class);
 
+    }
+
+    public void softDeleteRegion(Long id) {
+        SoftDeleteSupport.softDelete(regionRepository, id, "region");
+        locationIndexService.deleteIndex(Long.toString(id));
     }
 
 //    @CacheEvict(cacheNames = "regions", key = "#id")
