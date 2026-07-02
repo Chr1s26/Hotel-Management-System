@@ -112,8 +112,14 @@ public class CityController {
 
     @GetMapping("/delete/{id}")
     @ActiveRole({"ADMIN", "EDITOR"})
-    public String deleteCity(@PathVariable Long id) throws Exception {
-        cityService.deleteCity(id);
+    public String deleteCity(@PathVariable Long id, @RequestParam(name = "hard", defaultValue = "false") boolean hard, RedirectAttributes redirectAttributes) throws Exception {
+        if (hard) {
+            cityService.deleteCity(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record permanently deleted.");
+        } else {
+            cityService.softDeleteCity(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record moved to Deleted (recoverable).");
+        }
         return "redirect:/cities";
     }
 

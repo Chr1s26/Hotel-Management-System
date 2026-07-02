@@ -10,6 +10,7 @@ import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.CityRepository;
 import com.project.HotelManagementSystem.repository.RegionRepository;
 import com.project.HotelManagementSystem.service.search.elasticSearch.LocationIndexService;
+import com.project.HotelManagementSystem.service.support.SoftDeleteSupport;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -78,6 +79,11 @@ public class CityService {
         cityOp.setStatus(StatusType.ACTIVE);
         City savedCity = cityRepository.save(cityOp);
         return modelMapper.map(savedCity,CityDTO.class);
+    }
+
+    public void softDeleteCity(Long id) throws Exception {
+        SoftDeleteSupport.softDelete(cityRepository, id, "city");
+        locationIndexService.deleteIndex(Long.toString(id));
     }
 
 //    @CacheEvict(cacheNames = "cities", key = "#id")

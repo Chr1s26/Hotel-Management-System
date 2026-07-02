@@ -11,6 +11,7 @@ import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.AddressRepository;
 import com.project.HotelManagementSystem.repository.CityRepository;
+import com.project.HotelManagementSystem.service.support.SoftDeleteSupport;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +84,10 @@ public class AddressService {
         updatedAddressOp.setUpdatedBy(authService.getCurrentUser());
         Address savedAddress = addressRepository.save(updatedAddressOp);
         return modelMapper.map(savedAddress,AddressUpdateDTO.class);
+    }
+
+    public void softDeleteAddress(Long id) {
+        SoftDeleteSupport.softDelete(addressRepository, id, "address");
     }
 
     public void deleteAddress(Long id) {

@@ -66,20 +66,20 @@ public class Booking extends MasterData {
     private Customer customer;
 
     @Column(nullable = true)
-    private String description;//
+    private String description;
 
-    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
-    private BookingGuest leadGuest;//
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    private BookingGuest leadGuest;
 
-    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookingRoom> bookingRooms = new ArrayList<>();
 
-    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
-    private BookingPreference preference;//
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
+    private BookingPreference preference;
 
-    @OneToOne(mappedBy = "booking",cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "booking", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Invoice invoice;
 
-    @OneToOne(mappedBy = "booking",cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "booking", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Payment payment;
 }

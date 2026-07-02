@@ -22,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -112,8 +113,14 @@ public class AddressController {
     @GetMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN') or @userSecurity.isOwner(#id)")
     @ActiveRole({"ADMIN", "EDITOR"})
-    public String deleteAddress(@PathVariable Long id) {
-        addressService.deleteAddress(id);
+    public String deleteAddress(@PathVariable Long id, @RequestParam(name = "hard", defaultValue = "false") boolean hard, RedirectAttributes redirectAttributes) {
+        if (hard) {
+            addressService.deleteAddress(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record permanently deleted.");
+        } else {
+            addressService.softDeleteAddress(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Record moved to Deleted (recoverable).");
+        }
         return "redirect:/addresses";
     }
 

@@ -10,6 +10,7 @@
 <body class="royal-form-page">
 <div th:replace="fragments/sidebar :: sidebar"></div>
 <div class="container mt-4">
+    <div th:replace="~{fragments/flash :: flash}"></div>
     <h2>Addresses</h2>
 
     <form th:action="@{/addresses}" th:object="${query}" method="post" class="row g-3 align-items-end mb-4 no-card">
@@ -123,7 +124,7 @@
             <td>
                 <a class="btn btn-sm btn-view" th:href="@{'/addresses/view/' + ${addr.id}}">View</a>
                 <a class="btn btn-sm btn-warning" th:href="@{'/addresses/edit/' + ${addr.id}}">Edit</a>
-                <a class="btn btn-sm btn-danger" th:href="@{'/addresses/delete/' + ${addr.id}}">Delete</a>
+                <div th:replace="~{fragments/delete-control :: deleteControl('/addresses', ${addr.id})}"></div>
             </td>
         </tr>
         </tbody>

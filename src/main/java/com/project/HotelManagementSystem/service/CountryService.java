@@ -66,6 +66,12 @@ public class CountryService {
     }
 
     @CacheEvict(cacheNames = "countries", key = "#id")
+    public void softDeleteCountry(Long id) throws Exception {
+        com.project.HotelManagementSystem.service.support.SoftDeleteSupport.softDelete(countryRepository, id, "country");
+        locationIndexService.deleteIndex(Long.toString(id));
+    }
+
+    @CacheEvict(cacheNames = "countries", key = "#id")
     public void deleteCountry(Long id) throws Exception {
         Optional<Country> country = countryRepository.findById(id);
         locationIndexService.deleteIndex(Long.toString(id));

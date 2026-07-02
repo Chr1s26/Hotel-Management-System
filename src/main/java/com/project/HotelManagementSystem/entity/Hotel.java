@@ -52,25 +52,25 @@ public class Hotel extends  MasterData {
     inverseJoinColumns = @JoinColumn(name = "policy_id"))
     private Set<Policy> policies = new HashSet<>();
 
-    @OneToMany(mappedBy = "hotel" ,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "hotel" , cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Room> rooms = new ArrayList<>();
 
-    @OneToMany(mappedBy = "hotel",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "hotel", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Booking> bookings = new ArrayList<>();
 
-    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "hotel", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Review> reviews = new ArrayList<>();
 
-    @OneToMany(mappedBy = "hotel",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "hotel", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Invoice> invoices = new ArrayList<>();
 
-    @OneToMany(mappedBy = "hotel",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "hotel", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Editor> editors = new ArrayList<>();
 
-    @OneToMany(mappedBy = "hotel",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HotelAttachment> hotelAttachments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "hotel",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RoomAttachment> roomAttachments = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)

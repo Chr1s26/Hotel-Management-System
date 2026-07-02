@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--
+  Reusable delete control. Usage from any listing row:
+    <div th:replace="~{fragments/delete-control :: deleteControl('/cities', ${ct.id})}"></div>
+  base = the controller base path (no trailing slash), id = the row id.
+-->
+<div th:fragment="deleteControl(base, id)" class="btn-group" role="group">
+    <a class="btn btn-sm btn-secondary"
+       th:href="@{${base} + '/delete/' + ${id}}">Soft delete</a>
+
+    <a class="btn btn-sm btn-danger"
+       th:href="@{${base} + '/delete/' + ${id} + '?hard=true'}"
+       onclick="return confirm('PERMANENTLY delete this record? Anything that depends on it will be removed if it cannot exist without it, and the action cannot be undone.');">
+        Hard delete</a>
+</div>
+</body>
+</html>

@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class MasterData implements Serializable {
+public abstract class MasterData implements Serializable, SoftDeletable {
     private static final long serialVersionUID = 1L;
 
     @Id

@@ -12,6 +12,7 @@ import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.AdminRepository;
 import com.project.HotelManagementSystem.repository.RoleRepository;
 import com.project.HotelManagementSystem.repository.UserRepository;
+import com.project.HotelManagementSystem.service.support.SoftDeleteSupport;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -98,6 +99,10 @@ public class AdminService {
         admin = adminRepository.save(admin);
         AdminUpdateDTO dto = toUpdateDTO(admin);
         return dto;
+    }
+
+    public void softDeleteAdmin(Long id) {
+        SoftDeleteSupport.softDelete(adminRepository, id, "admin");
     }
 
     public void deleteAdmin(Long id) {

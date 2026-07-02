@@ -9,6 +9,7 @@ import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.DuplicateException;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
 import com.project.HotelManagementSystem.repository.AmenitiesRepository;
+import com.project.HotelManagementSystem.service.support.SoftDeleteSupport;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -56,6 +57,10 @@ public class AmenitiesService {
         updatedAmenitiesOp.setUpdatedBy(authService.getCurrentUser());
         amenities = this.amenitiesRepository.save(updatedAmenitiesOp);
         return modelMapper.map(amenities, AmenitiesUpdateDTO.class);
+    }
+
+    public void softDeleteAmenities(Long id) {
+        SoftDeleteSupport.softDelete(amenitiesRepository, id, "amenities");
     }
 
     public void deleteAmenities(Long id) {
