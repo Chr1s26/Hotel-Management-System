@@ -1,52 +1,38 @@
-//package com.project.HotelManagementSystem.controller.api.v1;
-//
-//import com.project.HotelManagementSystem.dto.cart.CartDTO;
-//import com.project.HotelManagementSystem.entity.Cart;
-//import com.project.HotelManagementSystem.repository.document.CartV2Repository;
-//import com.project.HotelManagementSystem.service.CartService;
-//import com.project.HotelManagementSystem.util.AuthUtil;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.web.bind.annotation.*;
-//
-//import java.util.List;
-//
-//@RestController
-//@RequestMapping("/api/v1")
-//public class CartController {
-//    @Autowired
-//    private CartService cartService;
-//    @Autowired
-//    private CartV2Repository cartRepository;
-//    @Autowired
-//    private AuthUtil authUtil;
-//
-//    @PostMapping("/carts/room/{roomId}/quantity/{quantity}")
-//    public ResponseEntity<CartDTO> addProductToCart(@PathVariable Long roomId,
-//                                                    @PathVariable Integer quantity){
-//        CartDTO cartDTO = cartService.addRoomToCart(roomId,quantity);
-//        return new ResponseEntity<>(cartDTO, HttpStatus.CREATED);
-//    }
-//
-//    @GetMapping("/carts")
-//    public ResponseEntity<List<CartDTO>> getCarts(){
-//        List<CartDTO> carts = cartService.getAllCarts();
-//        return new ResponseEntity<List<CartDTO>>(carts, HttpStatus.FOUND);
-//    }
-//
-//    @GetMapping("/carts/users/cart")
-//    public ResponseEntity<CartDTO> getCartById(){
-//        String emailId = authUtil.loggedInEmail();
-//        Cart cart = cartRepository.findByEmail(emailId);
-//        Long cartId = cart.getId();
-//        CartDTO cartDTO = cartService.getCart(emailId, cartId);
-//        return new ResponseEntity<CartDTO>(cartDTO, HttpStatus.OK);
-//    }
-//
-//    @PutMapping("/carts/room/{roomId}/quantity/{operation}")
-//    public ResponseEntity<CartDTO> updateCartProduct(@PathVariable Long roomId,@PathVariable String operation){
-//        CartDTO cartDTO = cartService.updateRoomQuantityInCart(roomId,operation.equalsIgnoreCase("delete") ? -1:1);
-//        return new ResponseEntity<CartDTO>(cartDTO, HttpStatus.OK);
-//    }
-//}
+package com.project.HotelManagementSystem.controller.api.v1;
+
+import com.project.HotelManagementSystem.dto.cart.AddCartItemRequest;
+import com.project.HotelManagementSystem.dto.cart.CartResponse;
+import com.project.HotelManagementSystem.service.CartService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+/** Customer cart (JWT-protected — not under /public). */
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/cart")
+public class CartController {
+
+    private final CartService cartService;
+
+    @GetMapping
+    public ResponseEntity<CartResponse> getCart() {
+        return ResponseEntity.ok(cartService.getCart());
+    }
+
+    @PostMapping("/items")
+    public ResponseEntity<CartResponse> addItem(@RequestBody AddCartItemRequest request) {
+        return ResponseEntity.ok(cartService.addItem(request));
+    }
+
+    @PatchMapping("/items/{itemId}")
+    public ResponseEntity<CartResponse> updateQuantity(@PathVariable Long itemId,
+                                                       @RequestParam int quantity) {
+        return ResponseEntity.ok(cartService.updateQuantity(itemId, quantity));
+    }
+
+    @DeleteMapping("/items/{itemId}")
+    public ResponseEntity<CartResponse> removeItem(@PathVariable Long itemId) {
+        return ResponseEntity.ok(cartService.removeItem(itemId));
+    }
+}

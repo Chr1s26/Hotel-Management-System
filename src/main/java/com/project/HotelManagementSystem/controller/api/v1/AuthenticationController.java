@@ -6,10 +6,14 @@ import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.repository.RoleRepository;
 import com.project.HotelManagementSystem.repository.UserRepository;
 import com.project.HotelManagementSystem.security.jwt.JwtUtils;
+import com.project.HotelManagementSystem.security.request.ForgotPasswordRequest;
 import com.project.HotelManagementSystem.security.request.LoginRequest;
+import com.project.HotelManagementSystem.security.request.ResetPasswordRequest;
 import com.project.HotelManagementSystem.security.request.SignupRequest;
 import com.project.HotelManagementSystem.security.response.MessageResponse;
 import com.project.HotelManagementSystem.security.response.UserInfoResponse;
+import com.project.HotelManagementSystem.service.AuthService;
+import com.project.HotelManagementSystem.service.OtpService;
 import com.project.HotelManagementSystem.service.UserDetailsImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +47,10 @@ public class AuthenticationController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private OtpService otpService;
+    @Autowired
+    private AuthService authService;
 
 
     @PostMapping("/signin")
@@ -140,6 +148,32 @@ public class AuthenticationController {
     public ResponseEntity<?> logoutUser(){
         ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(new MessageResponse("Logout successfully!"));
+    }
+
+    /**
+     * Step 1 of password reset. Sends an OTP to the email if an account exists.
+     * Responds 200 regardless of whether the email exists, to avoid account enumeration.
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest request) {
+        userRepository.findByEmail(request.getEmail()).ifPresent(otpService::sendOtp);
+        return ResponseEntity.ok(new MessageResponse("If an account exists for that email, an OTP has been sent."));
+    }
+
+    /**
+     * Step 2 of password reset. Validates the OTP and sets the new password in one stateless call.
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(
+            @Valid @RequestBody ResetPasswordRequest request) {
+        try {
+            otpService.isOtpValid(request.getEmail(), request.getOtp()); // throws if invalid/expired
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Invalid or expired OTP."));
+        }
+        authService.resetPassword(request.getEmail(), request.getNewPassword());
+        return ResponseEntity.ok(new MessageResponse("Password has been reset. You can now sign in."));
     }
 
 }

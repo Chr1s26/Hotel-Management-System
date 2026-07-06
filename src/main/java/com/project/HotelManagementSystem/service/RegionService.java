@@ -64,7 +64,7 @@ public class RegionService {
 
     }
 
-    public void softDeleteRegion(Long id) {
+    public void softDeleteRegion(Long id) throws Exception {
         SoftDeleteSupport.softDelete(regionRepository, id, "region");
         locationIndexService.deleteIndex(Long.toString(id));
     }

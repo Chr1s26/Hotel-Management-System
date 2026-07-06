@@ -57,6 +57,9 @@ public class Booking extends MasterData {
     @Convert(converter = CurrencyTypeConverter.class)
     private CurrencyType currencyType;
 
+    @Column(name = "payment_intent_id")
+    private String paymentIntentId;
+
     @ManyToOne
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;

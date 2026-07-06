@@ -1,6 +1,6 @@
 package com.project.HotelManagementSystem.dto.cartItem;
 
-import com.project.HotelManagementSystem.dto.cart.CartDTO;
+import com.project.HotelManagementSystem.dto.cart.CartItemResponse;
 import com.project.HotelManagementSystem.dto.room.RoomDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CartItemsDTO {
     public Long cartItemId;
-    private CartDTO cartDTO;
+    private CartItemResponse cartDTO;
     private RoomDTO roomDTO;
     private Integer quantity;
     private Double discount;

@@ -79,20 +79,19 @@ public class ReviewService {
         reviewRepository.save(review);
     }
 
-//    public ReviewUpdateDTO updateReview(Long id, ReviewUpdateDTO reviewUpdateDTO) {
-//        Review reviewOp = reviewRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("review",reviewUpdateDTO,"id","reviews/edit","A review with this id cannot be found"));
-//        Review review = modelMapper.map(reviewUpdateDTO, Review.class);
-//        reviewOp.setDescription(review.getDescription());
-//        reviewOp.setRating(review.getRating());
-//        reviewOp.setReviewDate(review.getReviewDate());
-//        reviewOp.setHotel(review.getHotel());
-//        reviewOp.setCustomer(review.getCustomer());
-//        reviewOp.setUpdatedAt(LocalDateTime.now());
-//        reviewOp.setUpdatedBy(authService.getCurrentUser());
-//        reviewOp.setStatus(StatusType.ACTIVE);
-//        Review savedReview = reviewRepository.save(reviewOp);
-//        return modelMapper.map(savedReview,ReviewUpdateDTO.class);
-//    }
+    public void updateReview(Long id, ReviewUpdateDTO reviewUpdateDTO) {
+        Review reviewOp = reviewRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("review",reviewUpdateDTO,"id","reviews/edit","A review with this id cannot be found"));
+
+        reviewOp.setDescription(reviewUpdateDTO.getDescription());
+        reviewOp.setRating(reviewUpdateDTO.getRating());
+        reviewOp.setReviewDate(reviewUpdateDTO.getReviewDate());
+        reviewOp.setHotel(reviewUpdateDTO.getHotel());
+        reviewOp.setCustomer(reviewUpdateDTO.getCustomer());
+        reviewOp.setUpdatedAt(LocalDateTime.now());
+        reviewOp.setUpdatedBy(authService.getCurrentUser());
+        reviewOp.setStatus(StatusType.ACTIVE);
+        Review savedReview = reviewRepository.save(reviewOp);
+    }
 
     public void deleteReview(Long reviewId, Long customerId) {
         Review review = reviewRepository.findByIdAndCustomerId(reviewId, customerId)

@@ -183,6 +183,11 @@
             <artifactId>poi-ooxml</artifactId>
             <version>5.2.5</version>
         </dependency>
+        <dependency>
+            <groupId>com.stripe</groupId>
+            <artifactId>stripe-java</artifactId>
+            <version>25.7.0</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

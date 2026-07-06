@@ -1,4 +1,4 @@
-package com.project.HotelManagementSystem.service;
+package com.project.HotelManagementSystem.service.cache;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

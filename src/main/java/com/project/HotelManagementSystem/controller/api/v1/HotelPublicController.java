@@ -8,11 +8,15 @@ import com.project.HotelManagementSystem.repository.CustomerRepository;
 import com.project.HotelManagementSystem.service.AuthService;
 import com.project.HotelManagementSystem.service.HotelDetailPageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.time.LocalDate;
+
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/public")
 public class HotelPublicController {
@@ -21,17 +25,24 @@ public class HotelPublicController {
     private final AuthService authService;
 
     @GetMapping("/hotel/{hotelId}")
-    public String hotelDetail(@PathVariable Long hotelId, @SessionAttribute(value = "search", required = false) HotelSearchDTO searchDTO, Model model) {
+    public ResponseEntity<HotelDetailPageDTO> hotelDetail(
+            @PathVariable Long hotelId,
+            @RequestParam(value = "checkIn", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkIn) {
 
-        User user = authService.getCurrentUser();
-        Customer customer = customerRepository.findByUser(user).orElseThrow();
+        Long customerId = resolveCurrentCustomerId();
+        HotelDetailPageDTO hotel = hotelDetailPageService.getHotelDetailPage(hotelId, customerId, checkIn);
+        return ResponseEntity.ok(hotel);
+    }
 
-        HotelDetailPageDTO hotel = hotelDetailPageService.getHotelDetailPage(hotelId,customer.getId(),searchDTO.getCheckIn());
-        if (searchDTO == null) {
-            searchDTO = new HotelSearchDTO();
+    /** Returns the signed-in customer's id, or null for anonymous visitors. */
+    private Long resolveCurrentCustomerId() {
+        try {
+            User user = authService.getCurrentUser();
+            if (user == null) return null;
+            return customerRepository.findByUser(user).map(Customer::getId).orElse(null);
+        } catch (Exception e) {
+            return null; // anonymous
         }
-        model.addAttribute("hotel", hotel);
-        model.addAttribute("search", searchDTO);
-        return "search/detail";
     }
 }

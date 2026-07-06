@@ -15,7 +15,8 @@ public enum CurrencyType implements BaseEnum<Integer> {
     SGD(7),    // Singapore Dollar
     CNY(8),    // Chinese Yuan
     INR(9),    // Indian Rupee
-    MMK(10);   // Myanmar Kyat
+    MMK(10),   // Myanmar Kyat
+    THB(11);
 
     private final int value;
 

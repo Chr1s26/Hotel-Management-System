@@ -1,152 +1,147 @@
-//package com.project.HotelManagementSystem.service;
-//
-//import com.project.HotelManagementSystem.dto.cart.CartDTO;
-//import com.project.HotelManagementSystem.dto.room.RoomDTO;
-//import com.project.HotelManagementSystem.dto.room.RoomSimpleDTO;
-//import com.project.HotelManagementSystem.entity.Cart;
-//import com.project.HotelManagementSystem.entity.CartItem;
-//import com.project.HotelManagementSystem.entity.Promotion;
-//import com.project.HotelManagementSystem.entity.Room;
-//import com.project.HotelManagementSystem.exception.ApiException;
-//import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
-//import com.project.HotelManagementSystem.repository.RoomRepository;
-//import com.project.HotelManagementSystem.repository.document.CartItemV2Repository;
-//import com.project.HotelManagementSystem.repository.document.CartV2Repository;
-//import com.project.HotelManagementSystem.util.AuthUtil;
-//import jakarta.transaction.Transactional;
-//import org.modelmapper.ModelMapper;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Service;
-//
-//import java.util.List;
-//import java.util.stream.Collectors;
-//import java.util.stream.Stream;
-//
-//@Service
-//public class CartService {
-//
-//    @Autowired
-//    private CartV2Repository cartRepository;
-//    @Autowired
-//    private AuthUtil authUtil;
-//    @Autowired
-//    private RoomRepository roomRepository;
-//    @Autowired
-//    private CartItemV2Repository cartItemRepository;
-//    @Autowired
-//    private ModelMapper modelMapper;
-//
-//    public CartService(CartV2Repository cartRepository) {
-//        this.cartRepository = cartRepository;
-//    }
-//
-//    public CartDTO addRoomToCart(Long roomId, Integer quantity) {
-//        Cart cart = createCart();
-//
-//        //exception return type pyin ynn
-//        Room room = roomRepository.findById(roomId).orElseThrow(() -> new ResourceNotFoundException("Room",cart,"id","/carts","Room not found"));
-//
-//        CartItem cartItem = cartItemRepository.findCartItemByRoomIdAndCartId(cart.getId(),roomId);
-//
-//        if(cartItem != null) {
-//            throw new ApiException("Product" + room.getId() + " already exist");
-//        }
-//
-//        if(room.getQuantity() < quantity){
-//            throw new ApiException("Please, make an order of the "+ room.getId()+ "less than or equal to the quantity " + room.getQuantity()+ ".");
-//        }
-//
-//        CartItem newCartItem = new CartItem();
-//        newCartItem.setRoom(room);
-//        newCartItem.setQuantity(quantity);
-//        newCartItem.setCart(cart);
-//
-//        Promotion appliedPromo = room.getPromotions()
-//                .stream()
-//                .findFirst()
-//                .orElse(null);
-//
-//        newCartItem.setPromotion(appliedPromo);
-//
-//        newCartItem.setPrice(room.getPrice());
-//        cartItemRepository.save(newCartItem);
-//
-////        Reducing stocks
-////        product.setQuantity(product.getQuantity() - quantity);
-//
-//        cart.setTotalPrice(cart.getTotalPrice() + (room.getPrice() * quantity));
-//        cartRepository.save(cart);
-//
-//        CartDTO cartDTO = modelMapper.map(newCartItem, CartDTO.class);
-//
-//        List<CartItem> cartItems = cart.getCartItems();
-//
-//        Stream<RoomSimpleDTO> roomDTOStream = cartItems.stream().map(item ->{
-//            RoomSimpleDTO map = modelMapper.map(item.getRoom(), RoomSimpleDTO.class);
-//            map.setQuantity(item.getQuantity());
-//            return map;
-//        });
-//
-//        cartDTO.setRooms(roomDTOStream.toList());
-//        return cartDTO;
-//    }
-//
-//    public List<CartDTO> getAllCarts() {
-//        List<Cart> carts = cartRepository.findAll();
-//
-//        if(carts.size() == 0) {
-//            throw new ApiException("No carts found");
-//        }
-//
-//        List<CartDTO> cartDto = carts.stream().map( cart -> {
-//            CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
-//            List<RoomSimpleDTO> rooms = cart.getCartItems().stream().map(r -> modelMapper.map(r.getRoom(), RoomSimpleDTO.class)).collect(Collectors.toList());
-//            cartDTO.setRooms(rooms);
-//            return cartDTO;
-//        }).collect(Collectors.toList());
-//        return cartDto;
-//    }
-//
-//    public CartDTO getCart(String emailId, Long cartId) {
-//        Cart cart = cartRepository.findCartByEmailAndCartId(emailId, cartId);
-//        if(cart == null) {
-//            throw new ResourceNotFoundException("Cart",cart,"id","/carts","Cart not found");
-//        }
-//        CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
-//        cart.getCartItems().forEach(c -> c.getRoom().setQuantity(c.getQuantity()));
-//        List<RoomSimpleDTO> roomDTOS = cart.getCartItems().stream().map(p -> modelMapper.map(p.getRoom(), RoomSimpleDTO.class)).collect(Collectors.toList());
-//        cartDTO.setRooms(roomDTOS);
-//        return cartDTO;
-//    }
-//
-//    @Transactional
-//    public CartDTO updateRoomQuantityInCart(Long productId, int quantity) {
-//
-//        String emailId = authUtil.loggedInEmail();
-//        Cart userCart = cartRepository.findByEmail(emailId);
-//        Long cartId = userCart.getId();
-//        Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new ResourceNotFoundException("Cart",userCart,"id","/carts","Cart not found"));
-//        Room room = roomRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Room",userCart,"id","/rooms","Room not found"));
-//
-//        if(room.getQuantity() == 0) {
-//            throw new ApiException(room.getId() + " is not available");
-//        }
-//        if(room.getQuantity() < quantity){
-//            throw new ApiException("Please, make an order of the "+ room.getId()+ "less than or equal to the quantity " + room.getQuantity()+ ".");
-//        }
-//
-//        return null;
-//    }
-//
-//    private Cart createCart() {
-//        Cart userCart = cartRepository.findByEmail((authUtil.loggedInEmail()));
-//        if(userCart != null) {
-//            return userCart;
-//        }
-//        Cart cart = new Cart();
-//        cart.setTotalPrice(0.00);
-//        cart.setUser(authUtil.loggedInUser());
-//        Cart newCart = cartRepository.save(cart);
-//        return newCart;
-//    }
-//}
+package com.project.HotelManagementSystem.service;
+
+import com.project.HotelManagementSystem.dto.cart.AddCartItemRequest;
+import com.project.HotelManagementSystem.dto.cart.CartItemResponse;
+import com.project.HotelManagementSystem.dto.cart.CartResponse;
+import com.project.HotelManagementSystem.entity.*;
+import com.project.HotelManagementSystem.entity.constants.BookingStatus;
+import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
+import com.project.HotelManagementSystem.repository.CartItemRepository;
+import com.project.HotelManagementSystem.repository.CartRepository;
+import com.project.HotelManagementSystem.repository.RoomRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * Cart on the JPA Cart/CartItem entities. Adding to the cart does NOT hold inventory
+ * (per product decision) — availability is only enforced at checkout/webhook. When the cart
+ * is read, each item's availability is re-checked live so the UI can warn before checkout.
+ */
+@Service
+@RequiredArgsConstructor
+public class CartService {
+
+    private static final Set<BookingStatus> ACTIVE =
+            Set.of(BookingStatus.PENDING, BookingStatus.CONFIRMED);
+
+    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
+    private final RoomRepository roomRepository;
+    private final AuthService authService;
+
+    private Cart getOrCreateCart() {
+        User user = authService.getCurrentUser();
+        return cartRepository.findByUser(user).orElseGet(() -> {
+            Cart cart = new Cart();
+            cart.setUser(user);
+            cart.setTotalPrice(0.0);
+            return cartRepository.save(cart);
+        });
+    }
+
+    @Transactional
+    public CartResponse addItem(AddCartItemRequest req) {
+        if (req.getCheckIn() == null || req.getCheckOut() == null
+                || !req.getCheckOut().isAfter(req.getCheckIn())) {
+            throw new IllegalArgumentException("checkOut must be after checkIn");
+        }
+        Room room = roomRepository.findById(req.getRoomId()).orElseThrow(() ->
+                new ResourceNotFoundException("room", req.getRoomId(), "id", "rooms", "Room not found"));
+
+        int nights = (int) ChronoUnit.DAYS.between(req.getCheckIn(), req.getCheckOut());
+        double pricePerNight = room.getRoomType().getPrice();
+
+        Cart cart = getOrCreateCart();
+        CartItem item = new CartItem();
+        item.setCart(cart);
+        item.setRoom(room);
+        item.setCheckInDate(req.getCheckIn());
+        item.setCheckOutDate(req.getCheckOut());
+        item.setQuantity(Math.max(1, req.getQuantity()));
+        item.setPrice(pricePerNight * nights * Math.max(1, req.getQuantity()));
+        item.setCurrencyType(req.getCurrency());
+        cartItemRepository.save(item);
+
+        return getCart();
+    }
+
+    @Transactional
+    public CartResponse updateQuantity(Long itemId, int quantity) {
+        CartItem item = ownedItem(itemId);
+        int nights = (int) ChronoUnit.DAYS.between(item.getCheckInDate(), item.getCheckOutDate());
+        item.setQuantity(Math.max(1, quantity));
+        item.setPrice(item.getRoom().getRoomType().getPrice() * nights * Math.max(1, quantity));
+        cartItemRepository.save(item);
+        return getCart();
+    }
+
+    @Transactional
+    public CartResponse removeItem(Long itemId) {
+        cartItemRepository.delete(ownedItem(itemId));
+        return getCart();
+    }
+
+    public CartResponse getCart() {
+        Cart cart = getOrCreateCart();
+        CartResponse resp = new CartResponse();
+        resp.cartId = cart.getId();
+        resp.items = new ArrayList<>();
+
+        double total = 0;
+        var currencies = new java.util.HashSet<>();
+        var hotels = new java.util.HashSet<>();
+        var dateSpans = new java.util.HashSet<String>();
+
+        List<CartItem> items = cart.getCartItems() == null ? List.of() : cart.getCartItems();
+        for (CartItem it : items) {
+            CartItemResponse r = new CartItemResponse();
+            r.itemId = it.getId();
+            r.roomId = it.getRoom().getId();
+            r.roomName = it.getRoom().getRoomType() != null ? it.getRoom().getRoomType().getName() : null;
+            r.hotelId = it.getRoom().getHotel() != null ? it.getRoom().getHotel().getId() : null;
+            r.hotelName = it.getRoom().getHotel() != null ? it.getRoom().getHotel().getName() : null;
+            r.checkIn = it.getCheckInDate();
+            r.checkOut = it.getCheckOutDate();
+            r.nights = (int) ChronoUnit.DAYS.between(it.getCheckInDate(), it.getCheckOutDate());
+            r.quantity = it.getQuantity();
+            r.pricePerNight = it.getRoom().getRoomType().getPrice();
+            r.totalPrice = it.getPrice();
+            r.currency = it.getCurrencyType();
+            r.available = roomRepository.countActiveOverlaps(
+                    r.roomId, it.getCheckInDate(), it.getCheckOutDate(), ACTIVE) == 0;
+            resp.items.add(r);
+
+            total += it.getPrice();
+            currencies.add(it.getCurrencyType());
+            if (r.hotelId != null) hotels.add(r.hotelId);
+            dateSpans.add(it.getCheckInDate() + "_" + it.getCheckOutDate());
+        }
+        resp.grandTotal = total;
+        resp.currency = currencies.size() == 1 ? (com.project.HotelManagementSystem.entity.constants.CurrencyType) currencies.iterator().next() : null;
+
+        // Checkout readiness: v1 requires one hotel, one date span, one currency (see README).
+        if (items.isEmpty())            { resp.checkoutReady = false; resp.blockReason = "Cart is empty."; }
+        else if (currencies.size() > 1) { resp.checkoutReady = false; resp.blockReason = "Cart mixes currencies. One currency per checkout."; }
+        else if (hotels.size() > 1)     { resp.checkoutReady = false; resp.blockReason = "Cart mixes hotels. One hotel per checkout in this version."; }
+        else if (dateSpans.size() > 1)  { resp.checkoutReady = false; resp.blockReason = "Cart mixes date ranges. One stay per checkout in this version."; }
+        else                            { resp.checkoutReady = true; }
+        return resp;
+    }
+
+    private CartItem ownedItem(Long itemId) {
+        User user = authService.getCurrentUser();
+        CartItem item = cartItemRepository.findById(itemId).orElseThrow(() ->
+                new ResourceNotFoundException("cartItem", itemId, "id", "cart", "Cart item not found"));
+        if (item.getCart() == null || item.getCart().getUser() == null
+                || !item.getCart().getUser().getId().equals(user.getId())) {
+            throw new ResourceNotFoundException("cartItem", itemId, "id", "cart", "Cart item not found");
+        }
+        return item;
+    }
+}
