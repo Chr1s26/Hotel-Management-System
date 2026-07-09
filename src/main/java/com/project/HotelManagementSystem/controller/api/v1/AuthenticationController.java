@@ -1,8 +1,5 @@
 package com.project.HotelManagementSystem.controller.api.v1;
 
-import com.project.HotelManagementSystem.entity.Role;
-import com.project.HotelManagementSystem.entity.User;
-import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.repository.RoleRepository;
 import com.project.HotelManagementSystem.repository.UserRepository;
 import com.project.HotelManagementSystem.security.jwt.JwtUtils;
@@ -15,6 +12,11 @@ import com.project.HotelManagementSystem.security.response.UserInfoResponse;
 import com.project.HotelManagementSystem.service.AuthService;
 import com.project.HotelManagementSystem.service.OtpService;
 import com.project.HotelManagementSystem.service.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -25,16 +27,17 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@Tag(
+        name = "Authentication",
+        description = "Authentication and account management APIs including sign in, sign out, user registration, password recovery, and current user information."
+)
 public class AuthenticationController {
 
     @Autowired
@@ -54,6 +57,16 @@ public class AuthenticationController {
 
 
     @PostMapping("/signin")
+    @Operation(
+            summary = "Authenticate user",
+            description = "Authenticates a user using username/email and password." +
+                            "Returns authenticated user information and issues a JWT cookie for subsequent requests."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Authentication successful"),
+            @ApiResponse(responseCode = "401", description = "Invalid username or password"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest){
         Authentication authentication;
         try{
@@ -67,111 +80,106 @@ public class AuthenticationController {
 
             return new ResponseEntity<>(map, HttpStatus.UNAUTHORIZED);
         }
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
-        List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-        UserInfoResponse response = new UserInfoResponse(userDetails.getId(),jwtCookie.toString(), userDetails.getName(), roles);
+
+        UserInfoResponse response = authService.authenticateUser(authentication);
+
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, response.getJwtToken())
                 .body(response);
     }
 
     @PostMapping("/user/signup")
+    @Operation(
+            summary = "Register new customer account",
+            description = "Creates a new customer account with the default CUSTOMER role."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User registered successfully"),
+            @ApiResponse(responseCode = "400", description = "Validation failed or username/email already exists")
+    })
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest){
-        if(userRepository.existsByNameAndEmail(signupRequest.getName(),signupRequest.getEmail())){
-            return ResponseEntity.badRequest().body(new MessageResponse("User already with this name and email exists"));
-        }
-
-        User user = new User();
-        user.setName(signupRequest.getName());
-        user.setEmail(signupRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
-
-        Set<String> strRoles = signupRequest.getRoles();
-        Set<Role> roles = new HashSet<>();
-
-        if(strRoles == null){
-            Role customerRole = roleRepository.findByRoleName("CUSTOMER")
-                    .orElseThrow(()-> new RuntimeException("Error : Role not found"));
-            roles.add(customerRole);
-        }else{
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByRoleName("ADMIN")
-                                .orElseThrow(() -> new RuntimeException("Error: Role not found"));
-                        roles.add(adminRole);
-                        break;
-                    case "editor":
-                        Role editorRole = roleRepository.findByRoleName("EDITOR")
-                                .orElseThrow(() -> new RuntimeException("Error: Role not found"));
-                        roles.add(editorRole);
-                        break;
-                    default:
-                        Role customerRole = roleRepository.findByRoleName("CUSTOMER")
-                            .orElseThrow(() -> new RuntimeException("Error: Role not found"));
-                    roles.add(customerRole);
-                }
-            });
-        }
-        user.setRoles(roles);
-        user.setStatus(StatusType.ACTIVE);
-        user.setCreatedAt(LocalDateTime.now());
-        user.setConfirmedAt(LocalDateTime.now());
-        userRepository.save(user);
+        if (userRepository.existsByNameIgnoreCase(signupRequest.getName())) return ResponseEntity.badRequest().body(new MessageResponse("User already with this name exists"));
+        if (userRepository.existsByEmail(signupRequest.getEmail())) return ResponseEntity.badRequest().body(new MessageResponse("User already with this email exists"));
+        authService.registerUser(signupRequest);
         return ResponseEntity.ok(new MessageResponse("User registered successfully"));
     }
 
     @GetMapping("/username")
-    public String getCurrentUsername(Authentication authentication){
-        if(authentication != null){
-            return authentication.getName();
-        }else {
-            return "Username is null";
+    @Operation(
+            summary = "Get current username",
+            description = "Returns the username of the currently authenticated user.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Username retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "User is not authenticated")
+    })
+    public ResponseEntity<?> getCurrentUsername(Authentication authentication){
+        if(authentication == null){
+            return ResponseEntity.badRequest().body(new MessageResponse("You need to sign in first"));
         }
+        return ResponseEntity.ok().body(authentication.getName());
     }
 
     @GetMapping("/user")
+    @Operation(
+            summary = "Get current authenticated user",
+            description = "Returns profile information and assigned roles for the authenticated user.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User information retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "User is not authenticated")
+    })
     public ResponseEntity<?> getUserDetails(Authentication authentication){
         if(authentication == null){
             return ResponseEntity.badRequest().body(new MessageResponse("You need to sign in first"));
         }
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
-        List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-        UserInfoResponse response = new UserInfoResponse(userDetails.getId(),userDetails.getUsername(),roles);
+        UserInfoResponse response = authService.getCurrentUserDetails(authentication);
         return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("/signout")
+    @Operation(
+            summary = "Sign out",
+            description = "Logs out the current user by clearing the authentication JWT cookie.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Logout successful")
+    })
     public ResponseEntity<?> logoutUser(){
         ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(new MessageResponse("Logout successfully!"));
     }
 
-    /**
-     * Step 1 of password reset. Sends an OTP to the email if an account exists.
-     * Responds 200 regardless of whether the email exists, to avoid account enumeration.
-     */
     @PostMapping("/forgot-password")
+    @Operation(
+            summary = "Request password reset OTP",
+            description = "Generates and sends a One-Time Password (OTP) to the registered email address if the account exists."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OTP request processed successfully")
+    })
+
     public ResponseEntity<?> forgotPassword(
             @Valid @RequestBody ForgotPasswordRequest request) {
         userRepository.findByEmail(request.getEmail()).ifPresent(otpService::sendOtp);
         return ResponseEntity.ok(new MessageResponse("If an account exists for that email, an OTP has been sent."));
     }
 
-    /**
-     * Step 2 of password reset. Validates the OTP and sets the new password in one stateless call.
-     */
     @PostMapping("/reset-password")
+    @Operation(
+            summary = "Reset password",
+            description = "Resets the account password after successful OTP verification."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Password reset successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid or expired OTP")
+    })
     public ResponseEntity<?> resetPassword(
             @Valid @RequestBody ResetPasswordRequest request) {
-        try {
-            otpService.isOtpValid(request.getEmail(), request.getOtp()); // throws if invalid/expired
-        } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Invalid or expired OTP."));
-        }
+        otpService.isOtpValid(request.getEmail(), request.getOtp());
         authService.resetPassword(request.getEmail(), request.getNewPassword());
         return ResponseEntity.ok(new MessageResponse("Password has been reset. You can now sign in."));
     }

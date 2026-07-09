@@ -5,10 +5,7 @@ import lombok.Data;
 @Data
 public class UserNameNotFoundException extends RuntimeException {
 
-    private final String view;
-
-    public UserNameNotFoundException(String message, String view) {
+    public UserNameNotFoundException(String message) {
         super(message);
-        this.view = view;
     }
 }

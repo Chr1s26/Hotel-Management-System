@@ -3,7 +3,6 @@ package com.project.HotelManagementSystem.security.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-/** Stateless reset: client sends email + the OTP it received + the new password in one call. */
 public class ResetPasswordRequest {
     @NotBlank
     private String email;

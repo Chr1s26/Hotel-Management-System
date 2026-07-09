@@ -1,24 +1,30 @@
-package com.project.HotelManagementSystem.controller;
+package com.project.HotelManagementSystem.exception;
 
-import com.project.HotelManagementSystem.exception.*;
 import com.project.HotelManagementSystem.service.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
+import org.hibernate.PropertyValueException;
 import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import static org.springframework.validation.BindingResult.MODEL_KEY_PREFIX;
 
-@ControllerAdvice
+@ControllerAdvice(
+        annotations = Controller.class
+)
 @AllArgsConstructor
-public class GlobalExceptionHandler {
+public class MvcExceptionHandler {
 
     private final UserService userService;
     private final AddressService addressService;
@@ -51,24 +57,6 @@ public class GlobalExceptionHandler {
         return "redirect:" + (referer != null ? referer : "/");
     }
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public String handleResourceNotFound(ResourceNotFoundException ex, Model model) {
-        BindingResult br = new BeanPropertyBindingResult(ex.getObjectValue(), ex.getObjectName());
-        Object rejected = new BeanWrapperImpl(ex.getObjectValue()).getPropertyValue(ex.getField());
-        br.addError(new FieldError(
-                ex.getObjectName(),
-                ex.getField(),
-                rejected,
-                false,
-                new String[]{ex.getMessageKey()},
-                null,
-                ex.getDefaultMessage()
-        ));
-        model.addAttribute(ex.getObjectName(), ex.getObjectValue());
-        model.addAttribute(MODEL_KEY_PREFIX + ex.getObjectName(), br);
-        model.addAttribute("requestURI", ex.getView());
-        return ex.getView();
-    }
 
     @ExceptionHandler(DuplicateException.class)
     public String handleDuplicateField(DuplicateException ex, Model model) {
@@ -129,19 +117,6 @@ public class GlobalExceptionHandler {
         return ex.getView();
     }
 
-    @ExceptionHandler(org.springframework.security.authentication.InternalAuthenticationServiceException.class)
-    public String handleInternalAuthError(InternalAuthenticationServiceException ex, RedirectAttributes redirectAttributes, Model model) {
-
-        if (ex.getCause() instanceof UserNameNotFoundException unameEx) {
-            model.addAttribute("requestURI", unameEx.getView());
-            redirectAttributes.addFlashAttribute("alertMessage", unameEx.getMessage());
-            return "redirect:/" + unameEx.getView();
-        }
-        model.addAttribute("requestURI", "/login");
-        redirectAttributes.addFlashAttribute("alertMessage", "Authentication failed");
-        return "redirect:/login";
-    }
-
     @ExceptionHandler(ExportFailedException.class)
     public String handleExportFailed(ExportFailedException ex, RedirectAttributes redirectAttributes) {
 
@@ -170,6 +145,94 @@ public class GlobalExceptionHandler {
         }else if(object.equalsIgnoreCase("city")) {
             model.addAttribute("regions", regionService.findAllRegion());
         }
+    }
+
+
+    @ExceptionHandler(FileNotUploadException.class)
+    public ModelAndView myApiException(FileNotUploadException ex, HttpServletRequest request) {
+        ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("errorTitle", "There is no picture is selected to upload");
+        modelAndView.addObject("errorMessage", ex.getMessage());
+        modelAndView.addObject("requestURI", request.getRequestURL());
+        return modelAndView;
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ModelAndView myResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
+        ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("errorTitle", "Resource Not Found");
+        modelAndView.addObject("errorMessage", ex.getMessage());
+        modelAndView.addObject("requestURI", request.getRequestURL());
+        return modelAndView;
+    }
+
+    @ExceptionHandler(ApiException.class)
+    public ModelAndView myApiException(ApiException ex, HttpServletRequest request) {
+        ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("errorTitle", "API Error");
+        modelAndView.addObject("errorMessage", ex.getMessage());
+        modelAndView.addObject("requestURI", request.getRequestURL());
+        return modelAndView;
+    }
+
+    public ModelAndView myDuplicateException(DuplicateException ex, HttpServletRequest request) {
+        ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("errorTitle", "Duplicate Record");
+        modelAndView.addObject("errorMessage", ex.getMessage());
+        modelAndView.addObject("requestURI", request.getRequestURL());
+        return modelAndView;
+    }
+
+    @ExceptionHandler(InvalidDataAccessApiUsageException.class)
+    public ModelAndView myInvalidDataAccessApiUsageViolationException(InvalidDataAccessApiUsageException ex, HttpServletRequest request) {
+        String message = "Cannot delete this item because it is being used elsewhere.";
+
+        if(ex.getCause() != null && ex.getCause().getMessage().contains("foreign key")){
+            message = "Delete failed due to database foreign key constraint violation";
+        }
+
+        ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("errorTitle", "Data Integrity Violation");
+        modelAndView.addObject("errorMessage",message);
+        modelAndView.addObject("requestURI", request.getRequestURL());
+        return modelAndView;
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ModelAndView myConstraintViolationException(ConstraintViolationException ex, HttpServletRequest request) {
+        ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("errorTitle", "Constraint Violation");
+        modelAndView.addObject("errorMessage", "You try to use an entity that is already used by another entity");
+        modelAndView.addObject("requestURI", request.getRequestURL());
+        return modelAndView;
+    }
+
+    @ExceptionHandler(PropertyValueException.class)
+    public ModelAndView myPropertyValueException(PropertyValueException ex, HttpServletRequest request) {
+        ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("errorTitle", "Property Value Violation");
+        modelAndView.addObject("errorMessage", "You try to persist an entity with a null required field");
+        modelAndView.addObject("requestURI", request.getRequestURL());
+        return modelAndView;
+    }
+
+    @ExceptionHandler(UserNameNotFoundException.class)
+    public ModelAndView handle(UserNameNotFoundException ex,
+                               HttpServletRequest request) {
+        ModelAndView mv = new ModelAndView("error");
+        mv.addObject("errorTitle", "User Not Found");
+        mv.addObject("errorMessage", ex.getMessage());
+        mv.addObject("requestURI", request.getRequestURL());
+        return mv;
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ModelAndView handleGenericException(Exception ex, HttpServletRequest request) {
+        ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("errorTitle", "Unexpected Error");
+        modelAndView.addObject("errorMessage", ex.getMessage());
+        modelAndView.addObject("requestURI", request.getRequestURL());
+        return modelAndView;
     }
 
 }

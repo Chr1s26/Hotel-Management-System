@@ -2,29 +2,74 @@ package com.project.HotelManagementSystem.service;
 
 import com.project.HotelManagementSystem.entity.Role;
 import com.project.HotelManagementSystem.entity.User;
+import com.project.HotelManagementSystem.entity.constants.StatusType;
 import com.project.HotelManagementSystem.exception.ResourceNotFoundException;
+import com.project.HotelManagementSystem.repository.RoleRepository;
 import com.project.HotelManagementSystem.repository.UserRepository;
+import com.project.HotelManagementSystem.security.jwt.JwtUtils;
+import com.project.HotelManagementSystem.security.request.SignupRequest;
+import com.project.HotelManagementSystem.security.response.MessageResponse;
+import com.project.HotelManagementSystem.security.response.UserInfoResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
+@AllArgsConstructor
 public class AuthService {
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private OtpService otpService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final OtpService otpService;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
+    private final JwtUtils jwtUtils;
+
+    public UserInfoResponse  authenticateUser(Authentication authentication){
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+        List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+
+        return new UserInfoResponse(userDetails.getId(),jwtCookie.toString(), userDetails.getName(), roles);
+    }
+
+    public void registerUser(SignupRequest signupRequest){
+
+        User user = new User();
+        user.setName(signupRequest.getName());
+        user.setEmail(signupRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+
+        Set<Role> roles = new HashSet<>();
+
+        Optional<Role> customerRole = roleRepository.findByRoleName("CUSTOMER");
+
+        if(customerRole.isEmpty()){
+            throw new ResourceNotFoundException("role",null,"roleName","roles","Role Not found");
+        }
+        roles.add(customerRole.get());
+
+        user.setRoles(roles);
+        user.setStatus(StatusType.ACTIVE);
+        user.setCreatedAt(LocalDateTime.now());
+        user.setConfirmedAt(LocalDateTime.now());
+        userRepository.save(user);
+    }
 
     public User getCurrentUser() {
         var auth = SecurityContextHolder.getContext().getAuthentication();
@@ -38,6 +83,13 @@ public class AuthService {
         }
 
         return null;
+    }
+
+    public UserInfoResponse getCurrentUserDetails(Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        UserInfoResponse response = new UserInfoResponse(userDetails.getId(),userDetails.getUsername(),roles);
+        return response;
     }
 
     public String getCurrentUserRole(){

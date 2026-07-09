@@ -40,6 +40,8 @@ public class OtpService {
         if(!valid) {
             throw new OtpInvalidException("OTP is invalid");
         }
+        user.setOtp(null);
+        user.setOtpGeneratedAt(null);
         user.setConfirmedAt(LocalDateTime.now());
         userRepository.save(user);
     }
